@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOOLTEK® — Sistema de Inventario EPP & Prendas</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --tk-blue:#25638f;--tk-teal:#0081b0;--tk-light:#91cade;--tk-bg:#f4f8fb;
+  --tk-text:#1a2e3b;--tk-muted:#5a7a8e;--tk-border:#d0e4ef;
+  --tk-danger:#c0392b;--tk-success:#1a7a4a;--tk-warn:#b06a00;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--tk-bg);color:var(--tk-text);font-size:14px}
+.app{max-width:960px;margin:0 auto;padding:1rem}
+.header{background:var(--tk-blue);color:#fff;border-radius:10px;padding:1rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:600;letter-spacing:.3px}
+.header span{font-size:11px;opacity:.75;font-style:italic}
+.badge-tooltek{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:2px 10px;font-size:11px;font-weight:600;letter-spacing:1px;display:inline-block;margin-bottom:4px}
+.tabs{display:flex;gap:6px;margin-bottom:1rem}
+.tab{padding:7px 18px;border-radius:8px;border:1.5px solid var(--tk-border);background:#fff;color:var(--tk-muted);font-size:13px;font-weight:500;cursor:pointer;transition:.15s}
+.tab.active{background:var(--tk-teal);color:#fff;border-color:var(--tk-teal)}
+.tab:hover:not(.active){border-color:var(--tk-teal);color:var(--tk-teal)}
+.panel{display:none}.panel.active{display:block}
+.card{background:#fff;border:0.5px solid var(--tk-border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem}
+.card-title{font-size:13px;font-weight:600;color:var(--tk-blue);margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
+.form-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.6rem;align-items:center}
+.form-row input,.form-row select{border:1px solid var(--tk-border);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--tk-text);background:#fff;outline:none;flex:1;min-width:120px}
+.form-row input:focus,.form-row select:focus{border-color:var(--tk-teal);box-shadow:0 0 0 2px rgba(0,129,176,.1)}
+.form-row label{font-size:12px;color:var(--tk-muted);min-width:90px}
+.btn{padding:6px 16px;border-radius:6px;border:none;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--tk-teal);color:#fff}.btn-primary:hover{background:var(--tk-blue)}
+.btn-danger{background:#fff;color:var(--tk-danger);border:1px solid var(--tk-danger)}.btn-danger:hover{background:#fdf0f0}
+.btn-success{background:var(--tk-success);color:#fff}.btn-success:hover{filter:brightness(1.1)}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-outline{background:#fff;color:var(--tk-teal);border:1px solid var(--tk-teal)}.btn-outline:hover{background:var(--tk-bg)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{background:var(--tk-blue);color:#fff;padding:7px 10px;text-align:left;font-weight:500}
+.tbl td{padding:6px 10px;border-bottom:0.5px solid var(--tk-border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--tk-bg)}
+.pill{border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600;display:inline-block}
+.pill-ok{background:#e8f5ee;color:var(--tk-success)}
+.pill-warn{background:#fff3e0;color:var(--tk-warn)}
+.pill-danger{background:#fdf0f0;color:var(--tk-danger)}
+.pill-cat{background:#e8f0fa;color:var(--tk-blue)}
+.item-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+.item-row select,.item-row input{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;flex:1;min-width:100px;outline:none}
+.acta-card{background:#fff;border:0.5px solid var(--tk-border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center}
+.acta-card .acta-id{font-size:13px;font-weight:600;color:var(--tk-blue)}
+.acta-card .acta-meta{font-size:12px;color:var(--tk-muted);margin-top:2px}
+.qty-badge{display:inline-block;min-width:28px;text-align:center;background:var(--tk-light);color:var(--tk-blue);border-radius:4px;font-weight:600;font-size:12px;padding:1px 6px}
+.empty{color:var(--tk-muted);font-size:13px;padding:.75rem;text-align:center;font-style:italic}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:12px;padding:1.5rem;max-width:640px;width:95%;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.modal-title{font-size:15px;font-weight:600;color:var(--tk-blue)}
+.close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--tk-muted);line-height:1}
+@media print {
+  .modal-bg{display:flex!important;position:static;background:none}
+  .modal{box-shadow:none;border:none;max-height:none;padding:0}
+  .modal-header,.btn{display:none!important}
+  body > .app{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div>
+      <div class="badge-tooltek">TOOLTEK®</div>
+      <h1>Sistema de Inventario EPP &amp; Prendas</h1>
+    </div>
+    <span>Herramientas para construir el futuro</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('inventario',this)">
+      <i class="ti ti-archive"></i> Inventario
+    </button>
+    <button class="tab" onclick="showTab('entrega',this)">
+      <i class="ti ti-clipboard-check"></i> Emitir Entrega
+    </button>
+    <button class="tab" onclick="showTab('actas',this)">
+      <i class="ti ti-file-description"></i> Actas Emitidas
+    </button>
+  </div>
+
+  <!-- INVENTARIO -->
+  <div class="panel active" id="panel-inventario">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-plus-circle"></i> Agregar ítem al inventario</div>
+      <div class="form-row">
+        <input id="inv-nombre" type="text" placeholder="Nombre del artículo (ej: Casco de seguridad)" style="flex:2">
+        <input id="inv-codigo" type="text" placeholder="Código (ej: EPP-001)" style="flex:1">
+        <select id="inv-cat">
+          <option value="EPP">EPP</option>
+          <option value="Prenda">Prenda</option>
+          <option value="Herramienta">Herramienta</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <input id="inv-talla" type="text" placeholder="Talla / Especificación (opcional)">
+        <input id="inv-qty" type="number" placeholder="Cantidad inicial" min="0" value="1" style="flex:0 0 140px">
+        <button class="btn btn-primary" onclick="agregarItem()">
+          <i class="ti ti-plus"></i> Agregar
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-list"></i> Stock actual</div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Código</th><th>Artículo</th><th>Categoría</th>
+              <th>Talla</th><th>Stock</th><th>Estado</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody-inv"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTREGA -->
+  <div class="panel" id="panel-entrega">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user-check"></i> Datos del receptor</div>
+      <div class="form-row">
+        <label>Nombre</label>
+        <input id="ent-nombre" type="text" placeholder="Nombre completo del trabajador">
+      </div>
+      <div class="form-row">
+        <label>RUT / ID</label>
+        <input id="ent-rut" type="text" placeholder="RUT o identificación">
+        <label>Cargo</label>
+        <input id="ent-cargo" type="text" placeholder="Cargo">
+      </div>
+      <div class="form-row">
+        <label>Área / Faena</label>
+        <input id="ent-area" type="text" placeholder="Área o faena">
+        <label>Fecha</label>
+        <input id="ent-fecha" type="date">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-package"></i> Ítems a entregar</div>
+      <div id="items-entrega"></div>
+      <button class="btn btn-outline btn-sm" onclick="addItemEntrega()" style="margin-top:6px">
+        <i class="ti ti-plus"></i> Agregar ítem
+      </button>
+    </div>
+    <div class="card" style="background:var(--tk-bg)">
+      <div class="form-row">
+        <label>Observaciones</label>
+        <input id="ent-obs" type="text" placeholder="Observaciones opcionales">
+      </div>
+      <button class="btn btn-success" onclick="emitirActa()" style="margin-top:.5rem;width:100%;padding:10px;justify-content:center">
+        <i class="ti ti-file-plus"></i> Emitir Acta de Entrega
+      </button>
+    </div>
+  </div>
+
+  <!-- ACTAS -->
+  <div class="panel" id="panel-actas">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-files"></i> Historial de actas emitidas</div>
+      <div id="lista-actas"><div class="empty">No hay actas emitidas aún.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ACTA -->
+<div class="modal-bg" id="modal-acta">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Vista previa — Acta de Entrega</span>
+      <button class="close-btn" onclick="cerrarModal()">✕</button>
+    </div>
+    <div id="modal-content"></div>
+    <div style="display:flex;gap:8px;margin-top:1rem;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="imprimirActa()">
+        <i class="ti ti-printer"></i> Imprimir / Guardar PDF
+      </button>
+      <button class="btn btn-outline" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Estado ──────────────────────────────────────────────
+let inventario = [
+  {id:'EPP-001',nombre:'Casco de seguridad',cat:'EPP',talla:'Universal',qty:20},
+  {id:'EPP-002',nombre:'Guantes de cuero',cat:'EPP',talla:'L',qty:15},
+  {id:'EPP-003',nombre:'Lentes de protección',cat:'EPP',talla:'Universal',qty:30},
+  {id:'PRE-001',nombre:'Chaleco reflectante',cat:'Prenda',talla:'M',qty:10},
+  {id:'PRE-002',nombre:'Zapatos de seguridad',cat:'Prenda',talla:'42',qty:8},
+];
+let actas = [];
+let acta_counter = 1;
+let itemsEntrega = [];
+
+// ── Navegación ───────────────────────────────────────────
+function showTab(t, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + t).classList.add('active');
+  btn.classList.add('active');
+  if (t === 'inventario') renderInventario();
+  if (t === 'entrega') initEntrega();
+  if (t === 'actas') renderActas();
+}
+
+// ── INVENTARIO ───────────────────────────────────────────
+function renderInventario() {
+  const tb = document.getElementById('tbody-inv');
+  if (!inventario.length) {
+    tb.innerHTML = '<tr><td colspan="7" class="empty">Sin ítems registrados</td></tr>';
+    return;
+  }
+  tb.innerHTML = inventario.map((it, i) => {
+    const estado = it.qty === 0
+      ? '<span class="pill pill-danger">Sin stock</span>'
+      : it.qty <= 5
+        ? '<span class="pill pill-warn">Stock bajo</span>'
+        : '<span class="pill pill-ok">Disponible</span>';
+    return `<tr>
+      <td><code style="font-size:11px;color:var(--tk-teal)">${it.id}</code></td>
+      <td>${it.nombre}</td>
+      <td><span class="pill pill-cat">${it.cat}</span></td>
+      <td>${it.talla || '—'}</td>
+      <td><span class="qty-badge">${it.qty}</span></td>
+      <td>${estado}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm btn-outline" onclick="ajustarQty(${i})" title="Ajustar stock">
+          <i class="ti ti-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarItem(${i})" title="Eliminar" style="margin-left:4px">
+          <i class="ti ti-trash"></i>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function agregarItem() {
+  const n = document.getElementById('inv-nombre').value.trim();
+  const c = document.getElementById('inv-codigo').value.trim().toUpperCase();
+  const cat = document.getElementById('inv-cat').value;
+  const t = document.getElementById('inv-talla').value.trim();
+  const q = parseInt(document.getElementById('inv-qty').value) || 0;
+  if (!n || !c) { alert('Ingresa nombre y código del artículo.'); return; }
+  if (inventario.find(x => x.id === c)) { alert('El código ya existe en el inventario.'); return; }
+  inventario.push({ id: c, nombre: n, cat, talla: t, qty: q });
+  document.getElementById('inv-nombre').value = '';
+  document.getElementById('inv-codigo').value = '';
+  document.getElementById('inv-talla').value = '';
+  document.getElementById('inv-qty').value = 1;
+  renderInventario();
+}
+
+function ajustarQty(i) {
+  const v = prompt(`Nuevo stock para "${inventario[i].nombre}":`, inventario[i].qty);
+  if (v === null) return;
+  const n = parseInt(v);
+  if (isNaN(n) || n < 0) { alert('Ingresa un número válido (≥ 0).'); return; }
+  inventario[i].qty = n;
+  renderInventario();
+}
+
+function eliminarItem(i) {
+  if (!confirm(`¿Eliminar "${inventario[i].nombre}" del inventario?`)) return;
+  inventario.splice(i, 1);
+  renderInventario();
+}
+
+// ── ENTREGA ──────────────────────────────────────────────
+function initEntrega() {
+  const f = document.getElementById('ent-fecha');
+  if (!f.value) f.value = new Date().toISOString().split('T')[0];
+  if (!itemsEntrega.length) addItemEntrega();
+  else renderItemsEntrega();
+}
+
+function addItemEntrega() {
+  itemsEntrega.push({ invIdx: -1, qty: 1 });
+  renderItemsEntrega();
+}
+
+function renderItemsEntrega() {
+  const opts = inventario.map((it, i) =>
+    `<option value="${i}">${it.nombre} (${it.id}) — Stock: ${it.qty}</option>`
+  ).join('');
+  document.getElementById('items-entrega').innerHTML = itemsEntrega.map((itm, i) => `
+    <div class="item-row">
+      <select onchange="setItem(${i}, this.value)">
+        <option value="-1">— Seleccionar artículo —</option>
+        ${opts}
+      </select>
+      <input type="number" min="1" value="${itm.qty}" style="flex:0 0 80px"
+        onchange="setQty(${i}, this.value)" placeholder="Cant.">
+      <button class="btn btn-danger btn-sm" onclick="removeItemEntrega(${i})">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>`).join('');
+}
+
+function setItem(i, v) { itemsEntrega[i].invIdx = parseInt(v); }
+function setQty(i, v) { itemsEntrega[i].qty = Math.max(1, parseInt(v) || 1); }
+function removeItemEntrega(i) { itemsEntrega.splice(i, 1); renderItemsEntrega(); }
+
+function emitirActa() {
+  const nombre = document.getElementById('ent-nombre').value.trim();
+  const rut    = document.getElementById('ent-rut').value.trim();
+  const cargo  = document.getElementById('ent-cargo').value.trim();
+  const area   = document.getElementById('ent-area').value.trim();
+  const fecha  = document.getElementById('ent-fecha').value;
+  const obs    = document.getElementById('ent-obs').value.trim();
+
+  if (!nombre || !rut) { alert('Ingresa nombre y RUT del receptor.'); return; }
+  if (!fecha) { alert('Indica la fecha de entrega.'); return; }
+
+  const validos = itemsEntrega.filter(it => it.invIdx >= 0);
+  if (!validos.length) { alert('Agrega al menos un artículo válido.'); return; }
+
+  const errores = validos
+    .filter(it => it.qty > inventario[it.invIdx].qty)
+    .map(it => `Stock insuficiente para "${inventario[it.invIdx].nombre}" (disponible: ${inventario[it.invIdx].qty})`);
+  if (errores.length) { alert(errores.join('\n')); return; }
+
+  if (!confirm('¿Confirmar la emisión del acta y descontar del stock?')) return;
+
+  // Descontar stock
+  validos.forEach(it => { inventario[it.invIdx].qty -= it.qty; });
+
+  const num = String(acta_counter++).padStart(4, '0');
+  const acta = {
+    num, nombre, rut, cargo, area, fecha, obs,
+    items: validos.map(it => ({
+      codigo: inventario[it.invIdx].id,
+      nombre: inventario[it.invIdx].nombre,
+      cat:    inventario[it.invIdx].cat,
+      talla:  inventario[it.invIdx].talla,
+      qty:    it.qty,
+    })),
+    emision: new Date().toLocaleString('es-CL'),
+  };
+  actas.unshift(acta);
+
+  // Limpiar formulario
+  itemsEntrega = [];
+  ['ent-nombre','ent-rut','ent-cargo','ent-area','ent-obs'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  mostrarActa(acta);
+}
+
+// ── ACTAS ────────────────────────────────────────────────
+function renderActas() {
+  const c = document.getElementById('lista-actas');
+  if (!actas.length) { c.innerHTML = '<div class="empty">No hay actas emitidas aún.</div>'; return; }
+  c.innerHTML = actas.map(a => `
+    <div class="acta-card">
+      <div>
+        <div class="acta-id">Acta N° ${a.num}</div>
+        <div class="acta-meta">${a.nombre} — ${a.items.length} ítem(s) — ${formatFecha(a.fecha)}</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick='verActa("${a.num}")'>
+        <i class="ti ti-eye"></i> Ver
+      </button>
+    </div>`).join('');
+}
+
+function verActa(num) {
+  const a = actas.find(x => x.num === num);
+  if (a) mostrarActa(a);
+}
+
+// ── MODAL ────────────────────────────────────────────────
+function mostrarActa(acta) {
+  document.getElementById('modal-content').innerHTML = generarHTMLActa(acta);
+  document.getElementById('modal-acta').classList.add('open');
+}
+
+function cerrarModal() {
+  document.getElementById('modal-acta').classList.remove('open');
+}
+
+function generarHTMLActa(a) {
+  const filas = a.items.map(it => `
+    <tr>
+      <td>${it.codigo}</td>
+      <td>${it.nombre}</td>
+      <td>${it.cat}</td>
+      <td>${it.talla || '—'}</td>
+      <td style="text-align:center;font-weight:600">${it.qty}</td>
+    </tr>`).join('');
+
+  return `<div style="font-size:13px;line-height:1.6">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--tk-teal);letter-spacing:1px">TOOLTEK®</div>
+        <h2 style="font-size:16px;color:var(--tk-blue);margin-top:2px">Acta de Entrega de EPP y Prendas</h2>
+        <div style="font-size:12px;color:var(--tk-muted)">N° ${a.num} &nbsp;|&nbsp; Emitida: ${a.emision}</div>
+      </div>
+      <div style="text-align:right;font-size:12px;color:var(--tk-muted)">
+        <div><strong>Fecha entrega:</strong> ${formatFecha(a.fecha)}</div>
+        <div><strong>Área:</strong> ${a.area || '—'}</div>
+      </div>
+    </div>
+    <div style="background:var(--tk-bg);border-radius:8px;padding:.6rem 1rem;margin-bottom:1rem;font-size:13px">
+      <strong>Nombre:</strong> ${a.nombre} &nbsp;|&nbsp;
+      <strong>RUT:</strong> ${a.rut} &nbsp;|&nbsp;
+      <strong>Cargo:</strong> ${a.cargo || '—'}
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1rem">
+      <thead>
+        <tr style="background:var(--tk-blue);color:#fff">
+          <th style="padding:6px 10px;text-align:left">Código</th>
+          <th style="padding:6px 10px;text-align:left">Artículo</th>
+          <th style="padding:6px 10px;text-align:left">Categoría</th>
+          <th style="padding:6px 10px;text-align:left">Talla</th>
+          <th style="padding:6px 10px;text-align:center">Cantidad</th>
+        </tr>
+      </thead>
+      <tbody>${filas}</tbody>
+    </table>
+    ${a.obs ? `<div style="font-size:12px;margin-bottom:.75rem"><strong>Observaciones:</strong> ${a.obs}</div>` : ''}
+    <p style="font-size:11px;color:var(--tk-muted);margin-bottom:1.5rem">
+      El trabajador declara haber recibido los artículos indicados en conformidad y en buen estado,
+      comprometiéndose a su uso correcto y devolución cuando corresponda.
+    </p>
+    <div style="display:flex;gap:3rem;margin-top:1.5rem">
+      <div style="flex:1;border-top:1.5px solid #bbb;padding-top:6px;font-size:11px;color:var(--tk-muted);text-align:center">
+        Firma Receptor<br>
+        <strong style="font-size:12px;color:var(--tk-text)">${a.nombre}</strong><br>
+        RUT: ${a.rut}
+      </div>
+      <div style="flex:1;border-top:1.5px solid #bbb;padding-top:6px;font-size:11px;color:var(--tk-muted);text-align:center">
+        Firma Responsable Entrega<br>&nbsp;<br>&nbsp;
+      </div>
+    </div>
+    <div style="margin-top:1.25rem;border-top:2px solid var(--tk-teal);padding-top:6px;font-size:10px;color:var(--tk-muted);text-align:center;font-style:italic">
+      TOOLTEK® — Herramientas para construir el futuro
+    </div>
+  </div>`;
+}
+
+function imprimirActa() {
+  const c = document.getElementById('modal-content').innerHTML;
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html lang="es"><head>
+    <meta charset="UTF-8">
+    <title>Acta TOOLTEK®</title>
+    <style>
+      body{font-family:'Segoe UI',sans-serif;padding:2cm;font-size:13px;color:#1a2e3b;max-width:800px;margin:0 auto}
+      table{width:100%;border-collapse:collapse}
+      th{background:#25638f;color:#fff;padding:6px 10px;font-size:12px;text-align:left}
+      td{padding:5px 10px;border-bottom:1px solid #eee;font-size:12px}
+      @media print{@page{margin:2cm}}
+    </style>
+  </head><body>${c}</body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 400);
+}
+
+// ── Utilidades ───────────────────────────────────────────
+function formatFecha(f) {
+  if (!f) return '—';
+  const [y, m, d] = f.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// ── Init ─────────────────────────────────────────────────
+document.getElementById('ent-fecha').value = new Date().toISOString().split('T')[0];
+renderInventario();
+</script>
+</body>
+</html>
