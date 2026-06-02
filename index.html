@@ -415,7 +415,7 @@ function renderInventario() {
       <td><span class="qty-badge">${it.qty}</span></td>
       <td>${estado}</td>
       <td style="white-space:nowrap">
-        <button class="btn btn-sm btn-outline" onclick="ajustarQty(${i})"><i class="ti ti-pencil"></i></button>
+        <button class="btn btn-sm btn-outline" onclick="abrirEditar(${i})"><i class="ti ti-pencil"></i> Editar</button>
         <button class="btn btn-sm btn-danger" onclick="eliminarItem(${i})" style="margin-left:3px"><i class="ti ti-trash"></i></button>
       </td></tr>`;
   }).join('');
@@ -435,12 +435,26 @@ function agregarItem() {
   document.getElementById('inv-qty').value=0;
   renderInventario();
 }
-function ajustarQty(i){
-  const v=prompt(`Nuevo stock para "${inventario[i].nombre}":`,inventario[i].qty);
-  if(v===null)return;const n=parseInt(v);
-  if(isNaN(n)||n<0){alert('Número inválido.');return;}
-  inventario[i].qty=n;renderInventario();
+function abrirEditar(i){
+  const it=inventario[i];
+  document.getElementById('edit-idx').value=i;
+  document.getElementById('edit-qty').value=it.qty;
+  document.getElementById('edit-ubicacion').value=it.ubicacion||'';
+  document.getElementById('edit-nombre').textContent=it.nombre;
+  document.getElementById('modal-editar').classList.add('open');
+  setTimeout(()=>document.getElementById('edit-qty').focus(),100);
 }
+function guardarEdicion(){
+  const i=parseInt(document.getElementById('edit-idx').value);
+  const qty=parseInt(document.getElementById('edit-qty').value);
+  const ubi=document.getElementById('edit-ubicacion').value.trim();
+  if(isNaN(qty)||qty<0){alert('Cantidad inválida.');return;}
+  inventario[i].qty=qty;
+  inventario[i].ubicacion=ubi;
+  cerrarModalEditar();
+  renderInventario();
+}
+function cerrarModalEditar(){document.getElementById('modal-editar').classList.remove('open');}
 function eliminarItem(i){
   if(!confirm(`¿Eliminar "${inventario[i].nombre}"?`))return;
   inventario.splice(i,1);renderInventario();
@@ -663,7 +677,39 @@ function imprimirActa(){
   table{width:100%;border-collapse:collapse}th{border:1px solid #333;padding:5px 10px;background:#e8e8e8;font-weight:700;text-align:center}
   td{border:1px solid #555;padding:5px 10px}p{margin-bottom:.6rem;text-align:justify}
   code{font-size:11px}@media print{@page{margin:2cm}}</style>
-  </head><body>${c}</body></html>`);
+  </head><body>${c}
+<!-- MODAL EDITAR ÍTEM -->
+<div class="modal-bg" id="modal-editar">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <span class="modal-title"><i class="ti ti-pencil"></i> Editar ítem</span>
+      <button class="close-btn" onclick="cerrarModalEditar()">✕</button>
+    </div>
+    <p id="edit-nombre" style="font-weight:600;color:var(--tk-blue);margin-bottom:1rem;font-size:13px"></p>
+    <input type="hidden" id="edit-idx">
+    <div style="margin-bottom:1rem">
+      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Cantidad en stock</label>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="stepQty(-1)" style="font-size:16px;padding:4px 12px">−</button>
+        <input type="number" id="edit-qty" min="0" style="flex:1;text-align:center;font-size:18px;font-weight:700;color:var(--tk-blue);border:1.5px solid var(--tk-border);border-radius:6px;padding:6px;outline:none"
+          onkeydown="if(event.key==='Enter')guardarEdicion()">
+        <button class="btn btn-outline btn-sm" onclick="stepQty(1)" style="font-size:16px;padding:4px 12px">+</button>
+      </div>
+    </div>
+    <div style="margin-bottom:1.25rem">
+      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Ubicación</label>
+      <input type="text" id="edit-ubicacion" placeholder="Ej: Bodega A, Estante 3" 
+        style="width:100%;border:1.5px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none"
+        onkeydown="if(event.key==='Enter')guardarEdicion()">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="guardarEdicion()"><i class="ti ti-check"></i> Guardar</button>
+      <button class="btn btn-outline" onclick="cerrarModalEditar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+</body></html>`);
   w.document.close();setTimeout(()=>w.print(),400);
 }
 
@@ -676,8 +722,46 @@ function formatFechaLarga(f){
   const[y,m,d]=f.split('-');return`${parseInt(d)} de ${meses[parseInt(m)-1]} de ${y}`;
 }
 
+
+function stepQty(delta){
+  const el=document.getElementById('edit-qty');
+  el.value=Math.max(0,(parseInt(el.value)||0)+delta);
+}
+
 // ═══ INIT ════════════════════════════════════════════════════════════════════
 renderInventario();
 </script>
+
+<!-- MODAL EDITAR ÍTEM -->
+<div class="modal-bg" id="modal-editar">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <span class="modal-title"><i class="ti ti-pencil"></i> Editar ítem</span>
+      <button class="close-btn" onclick="cerrarModalEditar()">✕</button>
+    </div>
+    <p id="edit-nombre" style="font-weight:600;color:var(--tk-blue);margin-bottom:1rem;font-size:13px"></p>
+    <input type="hidden" id="edit-idx">
+    <div style="margin-bottom:1rem">
+      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Cantidad en stock</label>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="stepQty(-1)" style="font-size:16px;padding:4px 12px">−</button>
+        <input type="number" id="edit-qty" min="0" style="flex:1;text-align:center;font-size:18px;font-weight:700;color:var(--tk-blue);border:1.5px solid var(--tk-border);border-radius:6px;padding:6px;outline:none"
+          onkeydown="if(event.key==='Enter')guardarEdicion()">
+        <button class="btn btn-outline btn-sm" onclick="stepQty(1)" style="font-size:16px;padding:4px 12px">+</button>
+      </div>
+    </div>
+    <div style="margin-bottom:1.25rem">
+      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Ubicación</label>
+      <input type="text" id="edit-ubicacion" placeholder="Ej: Bodega A, Estante 3" 
+        style="width:100%;border:1.5px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none"
+        onkeydown="if(event.key==='Enter')guardarEdicion()">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="guardarEdicion()"><i class="ti ti-check"></i> Guardar</button>
+      <button class="btn btn-outline" onclick="cerrarModalEditar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
