@@ -13,57 +13,73 @@
   --tk-danger:#c0392b;--tk-success:#1a7a4a;--tk-warn:#b06a00;
 }
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--tk-bg);color:var(--tk-text);font-size:14px}
-.app{max-width:960px;margin:0 auto;padding:1rem}
+.app{max-width:1100px;margin:0 auto;padding:1rem}
 .header{background:var(--tk-blue);color:#fff;border-radius:10px;padding:1rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
-.header h1{font-size:18px;font-weight:600;letter-spacing:.3px}
+.header h1{font-size:18px;font-weight:600}
 .header span{font-size:11px;opacity:.75;font-style:italic}
 .badge-tooltek{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:2px 10px;font-size:11px;font-weight:600;letter-spacing:1px;display:inline-block;margin-bottom:4px}
-.tabs{display:flex;gap:6px;margin-bottom:1rem}
+.tabs{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
 .tab{padding:7px 18px;border-radius:8px;border:1.5px solid var(--tk-border);background:#fff;color:var(--tk-muted);font-size:13px;font-weight:500;cursor:pointer;transition:.15s}
 .tab.active{background:var(--tk-teal);color:#fff;border-color:var(--tk-teal)}
 .tab:hover:not(.active){border-color:var(--tk-teal);color:var(--tk-teal)}
 .panel{display:none}.panel.active{display:block}
-.card{background:#fff;border:0.5px solid var(--tk-border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem}
+.card{background:#fff;border:.5px solid var(--tk-border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem}
 .card-title{font-size:13px;font-weight:600;color:var(--tk-blue);margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
 .form-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.6rem;align-items:center}
-.form-row input,.form-row select{border:1px solid var(--tk-border);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--tk-text);background:#fff;outline:none;flex:1;min-width:120px}
+.form-row input,.form-row select{border:1px solid var(--tk-border);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--tk-text);background:#fff;outline:none;flex:1;min-width:110px}
 .form-row input:focus,.form-row select:focus{border-color:var(--tk-teal);box-shadow:0 0 0 2px rgba(0,129,176,.1)}
-.form-row label{font-size:12px;color:var(--tk-muted);min-width:90px}
-.btn{padding:6px 16px;border-radius:6px;border:none;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.form-row label{font-size:12px;color:var(--tk-muted);min-width:80px}
+.btn{padding:6px 14px;border-radius:6px;border:none;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:5px}
 .btn-primary{background:var(--tk-teal);color:#fff}.btn-primary:hover{background:var(--tk-blue)}
 .btn-danger{background:#fff;color:var(--tk-danger);border:1px solid var(--tk-danger)}.btn-danger:hover{background:#fdf0f0}
 .btn-success{background:var(--tk-success);color:#fff}.btn-success:hover{filter:brightness(1.1)}
-.btn-sm{padding:4px 10px;font-size:12px}
+.btn-sm{padding:4px 9px;font-size:12px}
 .btn-outline{background:#fff;color:var(--tk-teal);border:1px solid var(--tk-teal)}.btn-outline:hover{background:var(--tk-bg)}
+.search-bar{display:flex;gap:8px;margin-bottom:.75rem;flex-wrap:wrap}
+.search-bar input{border:1px solid var(--tk-border);border-radius:6px;padding:7px 12px;font-size:13px;flex:1;min-width:160px;outline:none}
+.search-bar input:focus{border-color:var(--tk-teal)}
+.search-bar select{border:1px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none;background:#fff}
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
-.tbl th{background:var(--tk-blue);color:#fff;padding:7px 10px;text-align:left;font-weight:500}
-.tbl td{padding:6px 10px;border-bottom:0.5px solid var(--tk-border);vertical-align:middle}
+.tbl th{background:var(--tk-blue);color:#fff;padding:7px 10px;text-align:left;font-weight:500;white-space:nowrap}
+.tbl td{padding:6px 10px;border-bottom:.5px solid var(--tk-border);vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:var(--tk-bg)}
-.pill{border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600;display:inline-block}
+.pill{border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600;display:inline-block;white-space:nowrap}
 .pill-ok{background:#e8f5ee;color:var(--tk-success)}
 .pill-warn{background:#fff3e0;color:var(--tk-warn)}
 .pill-danger{background:#fdf0f0;color:var(--tk-danger)}
 .pill-cat{background:#e8f0fa;color:var(--tk-blue)}
-.item-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
-.item-row select,.item-row input{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;flex:1;min-width:100px;outline:none}
-.acta-card{background:#fff;border:0.5px solid var(--tk-border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center}
-.acta-card .acta-id{font-size:13px;font-weight:600;color:var(--tk-blue)}
-.acta-card .acta-meta{font-size:12px;color:var(--tk-muted);margin-top:2px}
 .qty-badge{display:inline-block;min-width:28px;text-align:center;background:var(--tk-light);color:var(--tk-blue);border-radius:4px;font-weight:600;font-size:12px;padding:1px 6px}
+.item-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+.item-row select,.item-row input[type=number]{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none}
+.item-row input[type=text]{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none;flex:1}
+.acta-card{background:#fff;border:.5px solid var(--tk-border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center}
+.acta-id{font-size:13px;font-weight:600;color:var(--tk-blue)}
+.acta-meta{font-size:12px;color:var(--tk-muted);margin-top:2px}
+.acta-tipo{font-size:11px;margin-top:2px}
 .empty{color:var(--tk-muted);font-size:13px;padding:.75rem;text-align:center;font-style:italic}
+.stats-row{display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.stat-box{background:#fff;border:.5px solid var(--tk-border);border-radius:8px;padding:.6rem 1rem;flex:1;min-width:110px;text-align:center}
+.stat-box .val{font-size:22px;font-weight:700;color:var(--tk-blue)}
+.stat-box .lbl{font-size:11px;color:var(--tk-muted);margin-top:2px}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:12px;padding:1.5rem;max-width:640px;width:95%;max-height:90vh;overflow-y:auto}
+.modal{background:#fff;border-radius:12px;padding:1.5rem;max-width:700px;width:95%;max-height:90vh;overflow-y:auto}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
 .modal-title{font-size:15px;font-weight:600;color:var(--tk-blue)}
-.close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--tk-muted);line-height:1}
-@media print {
-  .modal-bg{display:flex!important;position:static;background:none}
-  .modal{box-shadow:none;border:none;max-height:none;padding:0}
-  .modal-header,.btn{display:none!important}
-  body > .app{display:none}
-}
+.close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--tk-muted)}
+code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;border-radius:3px}
+.section-sep{border:none;border-top:2px solid var(--tk-border);margin:1rem 0}
+/* Acta impresa */
+.acta-doc{font-family:'Times New Roman',serif;font-size:13px;line-height:1.7;color:#111;padding:.5rem}
+.acta-doc h2{font-size:16px;font-weight:700;text-align:center;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px}
+.acta-doc .subtitle{text-align:center;font-size:13px;margin-bottom:1rem}
+.acta-doc p{margin-bottom:.6rem;text-align:justify}
+.acta-doc table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:13px}
+.acta-doc table th{border:1px solid #333;padding:5px 10px;background:#e8e8e8;font-weight:700;text-align:center}
+.acta-doc table td{border:1px solid #555;padding:5px 10px}
+.acta-doc .firma-section{margin-top:2rem}
+.acta-doc .firma-line{border-top:1px solid #333;width:70%;margin:2rem auto 0;padding-top:4px;text-align:center;font-size:12px}
 </style>
 </head>
 <body>
@@ -71,101 +87,147 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--tk-bg);color:v
   <div class="header">
     <div>
       <div class="badge-tooltek">TOOLTEK®</div>
-      <h1>Sistema de Inventario EPP &amp; Prendas</h1>
+      <h1>Sistema de Inventario EPP &amp; Uniformes</h1>
     </div>
     <span>Herramientas para construir el futuro</span>
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('inventario',this)">
-      <i class="ti ti-archive"></i> Inventario
-    </button>
-    <button class="tab" onclick="showTab('entrega',this)">
-      <i class="ti ti-clipboard-check"></i> Emitir Entrega
-    </button>
-    <button class="tab" onclick="showTab('actas',this)">
-      <i class="ti ti-file-description"></i> Actas Emitidas
-    </button>
+    <button class="tab active" onclick="showTab('inventario',this)"><i class="ti ti-archive"></i> Inventario</button>
+    <button class="tab" onclick="showTab('entrega-epp',this)"><i class="ti ti-shield-check"></i> Entrega EPP</button>
+    <button class="tab" onclick="showTab('entrega-uniforme',this)"><i class="ti ti-shirt"></i> Entrega Uniformes</button>
+    <button class="tab" onclick="showTab('actas',this)"><i class="ti ti-file-description"></i> Actas Emitidas</button>
   </div>
 
-  <!-- INVENTARIO -->
+  <!-- ═══ INVENTARIO ═══ -->
   <div class="panel active" id="panel-inventario">
+    <div class="stats-row" id="stats-row"></div>
     <div class="card">
       <div class="card-title"><i class="ti ti-plus-circle"></i> Agregar ítem al inventario</div>
       <div class="form-row">
-        <input id="inv-nombre" type="text" placeholder="Nombre del artículo (ej: Casco de seguridad)" style="flex:2">
-        <input id="inv-codigo" type="text" placeholder="Código (ej: EPP-001)" style="flex:1">
+        <input id="inv-nombre" type="text" placeholder="Nombre del artículo" style="flex:2">
+        <input id="inv-codigo" type="text" placeholder="Código (ej: PPSH)">
+        <input id="inv-barcode" type="text" placeholder="Código de barra">
+      </div>
+      <div class="form-row">
         <select id="inv-cat">
+          <option value="Prenda">Prenda / Uniforme</option>
           <option value="EPP">EPP</option>
-          <option value="Prenda">Prenda</option>
           <option value="Herramienta">Herramienta</option>
           <option value="Otro">Otro</option>
         </select>
+        <input id="inv-tipo" type="text" placeholder="Tipo (ej: Pique, Polo)">
+        <input id="inv-talla" type="text" placeholder="Talla">
+        <input id="inv-modelo" type="text" placeholder="Modelo (Hombre/Mujer/Unisex)">
       </div>
       <div class="form-row">
-        <input id="inv-talla" type="text" placeholder="Talla / Especificación (opcional)">
-        <input id="inv-qty" type="number" placeholder="Cantidad inicial" min="0" value="1" style="flex:0 0 140px">
-        <button class="btn btn-primary" onclick="agregarItem()">
-          <i class="ti ti-plus"></i> Agregar
-        </button>
+        <input id="inv-qty" type="number" placeholder="Cantidad" min="0" value="0" style="flex:0 0 120px">
+        <input id="inv-ubicacion" type="text" placeholder="Ubicación (opcional)">
+        <button class="btn btn-primary" onclick="agregarItem()"><i class="ti ti-plus"></i> Agregar</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title"><i class="ti ti-list"></i> Stock actual</div>
+      <div class="card-title"><i class="ti ti-list"></i> Stock actual <span id="count-badge" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span></div>
+      <div class="search-bar">
+        <input id="filtro-texto" type="text" placeholder="Buscar por nombre, código o código de barra..." oninput="renderInventario()">
+        <select id="filtro-cat" onchange="renderInventario()">
+          <option value="">Todas las categorías</option>
+          <option value="Prenda">Prenda / Uniforme</option>
+          <option value="EPP">EPP</option>
+          <option value="Herramienta">Herramienta</option>
+          <option value="Otro">Otro</option>
+        </select>
+        <select id="filtro-estado" onchange="renderInventario()">
+          <option value="">Todos los estados</option>
+          <option value="ok">Disponible</option>
+          <option value="warn">Stock bajo</option>
+          <option value="zero">Sin stock</option>
+        </select>
+      </div>
       <div style="overflow-x:auto">
         <table class="tbl">
-          <thead>
-            <tr>
-              <th>Código</th><th>Artículo</th><th>Categoría</th>
-              <th>Talla</th><th>Stock</th><th>Estado</th><th></th>
-            </tr>
-          </thead>
+          <thead><tr>
+            <th>Código</th><th>Cód. Barra</th><th>Artículo</th>
+            <th>Tipo</th><th>Talla</th><th>Modelo</th>
+            <th>Ubic.</th><th>Stock</th><th>Estado</th><th></th>
+          </tr></thead>
           <tbody id="tbody-inv"></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- ENTREGA -->
-  <div class="panel" id="panel-entrega">
+  <!-- ═══ ENTREGA EPP ═══ -->
+  <div class="panel" id="panel-entrega-epp">
     <div class="card">
-      <div class="card-title"><i class="ti ti-user-check"></i> Datos del receptor</div>
+      <div class="card-title"><i class="ti ti-user-check"></i> Datos del receptor — EPP</div>
       <div class="form-row">
         <label>Nombre</label>
-        <input id="ent-nombre" type="text" placeholder="Nombre completo del trabajador">
+        <input id="epp-nombre" type="text" placeholder="Nombre completo del trabajador">
       </div>
       <div class="form-row">
         <label>RUT / ID</label>
-        <input id="ent-rut" type="text" placeholder="RUT o identificación">
+        <input id="epp-rut" type="text" placeholder="RUT o identificación">
         <label>Cargo</label>
-        <input id="ent-cargo" type="text" placeholder="Cargo">
+        <input id="epp-cargo" type="text" placeholder="Cargo">
       </div>
       <div class="form-row">
         <label>Área / Faena</label>
-        <input id="ent-area" type="text" placeholder="Área o faena">
+        <input id="epp-area" type="text" placeholder="Área o faena">
         <label>Fecha</label>
-        <input id="ent-fecha" type="date">
+        <input id="epp-fecha" type="date">
       </div>
     </div>
     <div class="card">
-      <div class="card-title"><i class="ti ti-package"></i> Ítems a entregar</div>
-      <div id="items-entrega"></div>
-      <button class="btn btn-outline btn-sm" onclick="addItemEntrega()" style="margin-top:6px">
-        <i class="ti ti-plus"></i> Agregar ítem
-      </button>
+      <div class="card-title"><i class="ti ti-package"></i> Ítems EPP a entregar</div>
+      <div id="items-epp"></div>
+      <button class="btn btn-outline btn-sm" onclick="addItemEPP()" style="margin-top:6px"><i class="ti ti-plus"></i> Agregar ítem</button>
     </div>
     <div class="card" style="background:var(--tk-bg)">
       <div class="form-row">
         <label>Observaciones</label>
-        <input id="ent-obs" type="text" placeholder="Observaciones opcionales">
+        <input id="epp-obs" type="text" placeholder="Observaciones opcionales">
       </div>
-      <button class="btn btn-success" onclick="emitirActa()" style="margin-top:.5rem;width:100%;padding:10px;justify-content:center">
-        <i class="ti ti-file-plus"></i> Emitir Acta de Entrega
+      <button class="btn btn-success" onclick="emitirActaEPP()" style="margin-top:.5rem;width:100%;padding:10px;justify-content:center">
+        <i class="ti ti-file-plus"></i> Emitir Acta de Entrega EPP
       </button>
     </div>
   </div>
 
-  <!-- ACTAS -->
+  <!-- ═══ ENTREGA UNIFORMES ═══ -->
+  <div class="panel" id="panel-entrega-uniforme">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user-check"></i> Datos del trabajador — Acta de Entrega de Uniforme</div>
+      <div class="form-row">
+        <label>Nombre</label>
+        <input id="uni-nombre" type="text" placeholder="Nombre completo">
+      </div>
+      <div class="form-row">
+        <label>RUT</label>
+        <input id="uni-rut" type="text" placeholder="RUT (ej: 16.043.654-9)">
+        <label>Cargo</label>
+        <input id="uni-cargo" type="text" placeholder="Cargo">
+      </div>
+      <div class="form-row">
+        <label>Fecha</label>
+        <input id="uni-fecha" type="date">
+        <label>Ciudad</label>
+        <input id="uni-ciudad" type="text" placeholder="Ciudad" value="Santiago">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-shirt"></i> Prendas de uniforme a entregar</div>
+      <div id="items-uni"></div>
+      <button class="btn btn-outline btn-sm" onclick="addItemUni()" style="margin-top:6px"><i class="ti ti-plus"></i> Agregar prenda</button>
+    </div>
+    <div class="card" style="background:var(--tk-bg)">
+      <button class="btn btn-success" onclick="emitirActaUni()" style="width:100%;padding:10px;justify-content:center">
+        <i class="ti ti-file-plus"></i> Emitir Acta de Entrega de Uniforme
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ ACTAS ═══ -->
   <div class="panel" id="panel-actas">
     <div class="card">
       <div class="card-title"><i class="ti ti-files"></i> Historial de actas emitidas</div>
@@ -174,310 +236,447 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--tk-bg);color:v
   </div>
 </div>
 
-<!-- MODAL ACTA -->
+<!-- MODAL -->
 <div class="modal-bg" id="modal-acta">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">Vista previa — Acta de Entrega</span>
+      <span class="modal-title" id="modal-titulo">Vista previa — Acta</span>
       <button class="close-btn" onclick="cerrarModal()">✕</button>
     </div>
     <div id="modal-content"></div>
     <div style="display:flex;gap:8px;margin-top:1rem;justify-content:flex-end">
-      <button class="btn btn-primary" onclick="imprimirActa()">
-        <i class="ti ti-printer"></i> Imprimir / Guardar PDF
-      </button>
+      <button class="btn btn-primary" onclick="imprimirActa()"><i class="ti ti-printer"></i> Imprimir / PDF</button>
       <button class="btn btn-outline" onclick="cerrarModal()">Cerrar</button>
     </div>
   </div>
 </div>
 
 <script>
-// ── Estado ──────────────────────────────────────────────
+// ═══ INVENTARIO INICIAL ═══════════════════════════════════════════════════════
 let inventario = [
-  {id:'EPP-001',nombre:'Casco de seguridad',cat:'EPP',talla:'Universal',qty:20},
-  {id:'EPP-002',nombre:'Guantes de cuero',cat:'EPP',talla:'L',qty:15},
-  {id:'EPP-003',nombre:'Lentes de protección',cat:'EPP',talla:'Universal',qty:30},
-  {id:'PRE-001',nombre:'Chaleco reflectante',cat:'Prenda',talla:'M',qty:10},
-  {id:'PRE-002',nombre:'Zapatos de seguridad',cat:'Prenda',talla:'42',qty:8},
+  {id:'PPSH',barcode:'Polera Pique S Hombre',nombre:'Polera Pique S Hombre',cat:'Prenda',tipo:'Pique',talla:'S',modelo:'Hombre',qty:5,ubicacion:'2'},
+  {id:'PPSM',barcode:'Polera Pique S Mujer',nombre:'Polera Pique S Mujer',cat:'Prenda',tipo:'Pique',talla:'S',modelo:'Mujer',qty:6,ubicacion:'2'},
+  {id:'PPMH',barcode:'Polera Pique M Hombre',nombre:'Polera Pique M Hombre',cat:'Prenda',tipo:'Pique',talla:'M',modelo:'Hombre',qty:10,ubicacion:''},
+  {id:'PPMM',barcode:'Polera Pique M Mujer',nombre:'Polera Pique M Mujer',cat:'Prenda',tipo:'Pique',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PPLH',barcode:'Polera Pique L Hombre',nombre:'Polera Pique L Hombre',cat:'Prenda',tipo:'Pique',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PPLM',barcode:'Polera Pique L Mujer',nombre:'Polera Pique L Mujer',cat:'Prenda',tipo:'Pique',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PPXH',barcode:'Polera Pique XL Hombre',nombre:'Polera Pique XL Hombre',cat:'Prenda',tipo:'Pique',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PPXM',barcode:'Polera Pique XL Mujer',nombre:'Polera Pique XL Mujer',cat:'Prenda',tipo:'Pique',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PPXXH',barcode:'Polera Pique XXL Hombre',nombre:'Polera Pique XXL Hombre',cat:'Prenda',tipo:'Pique',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PPXXM',barcode:'Polera Pique XXL Mujer',nombre:'Polera Pique XXL Mujer',cat:'Prenda',tipo:'Pique',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PP3H',barcode:'Polera Pique 3XL Hombre',nombre:'Polera Pique 3XL Hombre',cat:'Prenda',tipo:'Pique',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PP3M',barcode:'Polera Pique 3XL Mujer',nombre:'Polera Pique 3XL Mujer',cat:'Prenda',tipo:'Pique',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PP4H',barcode:'Polera Pique 4XL Hombre',nombre:'Polera Pique 4XL Hombre',cat:'Prenda',tipo:'Pique',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PP4M',barcode:'Polera Pique 4XL Mujer',nombre:'Polera Pique 4XL Mujer',cat:'Prenda',tipo:'Pique',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'POLOSH',barcode:'Polera Polo S Hombre',nombre:'Polera Polo S Hombre',cat:'Prenda',tipo:'Polo',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'POLOSM',barcode:'Polera Polo S Mujer',nombre:'Polera Polo S Mujer',cat:'Prenda',tipo:'Polo',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'POLOMH',barcode:'Polera Polo M Hombre',nombre:'Polera Polo M Hombre',cat:'Prenda',tipo:'Polo',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'POLOMM',barcode:'Polera Polo M Mujer',nombre:'Polera Polo M Mujer',cat:'Prenda',tipo:'Polo',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'POLOLH',barcode:'Polera Polo L Hombre',nombre:'Polera Polo L Hombre',cat:'Prenda',tipo:'Polo',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'POLOLM',barcode:'Polera Polo L Mujer',nombre:'Polera Polo L Mujer',cat:'Prenda',tipo:'Polo',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'POLOXH',barcode:'Polera Polo XL Hombre',nombre:'Polera Polo XL Hombre',cat:'Prenda',tipo:'Polo',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'POLOXM',barcode:'Polera Polo XL Mujer',nombre:'Polera Polo XL Mujer',cat:'Prenda',tipo:'Polo',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'POLOXXH',barcode:'Polera Polo XXL Hombre',nombre:'Polera Polo XXL Hombre',cat:'Prenda',tipo:'Polo',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'POLOXXM',barcode:'Polera Polo XXL Mujer',nombre:'Polera Polo XXL Mujer',cat:'Prenda',tipo:'Polo',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'POLO3H',barcode:'Polera Polo 3XL Hombre',nombre:'Polera Polo 3XL Hombre',cat:'Prenda',tipo:'Polo',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'POLO3M',barcode:'Polera Polo 3XL Mujer',nombre:'Polera Polo 3XL Mujer',cat:'Prenda',tipo:'Polo',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'POLO4H',barcode:'Polera Polo 4XL Hombre',nombre:'Polera Polo 4XL Hombre',cat:'Prenda',tipo:'Polo',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'POLO4M',barcode:'Polera Polo 4XL Mujer',nombre:'Polera Polo 4XL Mujer',cat:'Prenda',tipo:'Polo',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PBSH',barcode:'Pantalon Buzo S Hombre',nombre:'Pantalon Buzo S Hombre',cat:'Prenda',tipo:'Buzo',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PBSM',barcode:'Pantalon Buzo S Mujer',nombre:'Pantalon Buzo S Mujer',cat:'Prenda',tipo:'Buzo',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PBMH',barcode:'Pantalon Buzo M Hombre',nombre:'Pantalon Buzo M Hombre',cat:'Prenda',tipo:'Buzo',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PBMM',barcode:'Pantalon Buzo M Mujer',nombre:'Pantalon Buzo M Mujer',cat:'Prenda',tipo:'Buzo',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PBLH',barcode:'Pantalon Buzo L Hombre',nombre:'Pantalon Buzo L Hombre',cat:'Prenda',tipo:'Buzo',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PBLM',barcode:'Pantalon Buzo L Mujer',nombre:'Pantalon Buzo L Mujer',cat:'Prenda',tipo:'Buzo',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PBXH',barcode:'Pantalon Buzo XL Hombre',nombre:'Pantalon Buzo XL Hombre',cat:'Prenda',tipo:'Buzo',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PBXM',barcode:'Pantalon Buzo XL Mujer',nombre:'Pantalon Buzo XL Mujer',cat:'Prenda',tipo:'Buzo',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PBXXH',barcode:'Pantalon Buzo XXL Hombre',nombre:'Pantalon Buzo XXL Hombre',cat:'Prenda',tipo:'Buzo',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PBXXM',barcode:'Pantalon Buzo XXL Mujer',nombre:'Pantalon Buzo XXL Mujer',cat:'Prenda',tipo:'Buzo',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PB3H',barcode:'Pantalon Buzo 3XL Hombre',nombre:'Pantalon Buzo 3XL Hombre',cat:'Prenda',tipo:'Buzo',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PB3M',barcode:'Pantalon Buzo 3XL Mujer',nombre:'Pantalon Buzo 3XL Mujer',cat:'Prenda',tipo:'Buzo',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PB4H',barcode:'Pantalon Buzo 4XL Hombre',nombre:'Pantalon Buzo 4XL Hombre',cat:'Prenda',tipo:'Buzo',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PB4M',barcode:'Pantalon Buzo 4XL Mujer',nombre:'Pantalon Buzo 4XL Mujer',cat:'Prenda',tipo:'Buzo',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PJSH',barcode:'Poleron Jogger S Hombre',nombre:'Poleron Jogger S Hombre',cat:'Prenda',tipo:'Jogger',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PJSM',barcode:'Poleron Jogger S Mujer',nombre:'Poleron Jogger S Mujer',cat:'Prenda',tipo:'Jogger',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PJMH',barcode:'Poleron Jogger M Hombre',nombre:'Poleron Jogger M Hombre',cat:'Prenda',tipo:'Jogger',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PJMM',barcode:'Poleron Jogger M Mujer',nombre:'Poleron Jogger M Mujer',cat:'Prenda',tipo:'Jogger',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PJLH',barcode:'Poleron Jogger L Hombre',nombre:'Poleron Jogger L Hombre',cat:'Prenda',tipo:'Jogger',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PJLM',barcode:'Poleron Jogger L Mujer',nombre:'Poleron Jogger L Mujer',cat:'Prenda',tipo:'Jogger',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PJXH',barcode:'Poleron Jogger XL Hombre',nombre:'Poleron Jogger XL Hombre',cat:'Prenda',tipo:'Jogger',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PJXM',barcode:'Poleron Jogger XL Mujer',nombre:'Poleron Jogger XL Mujer',cat:'Prenda',tipo:'Jogger',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PJXXH',barcode:'Poleron Jogger XXL Hombre',nombre:'Poleron Jogger XXL Hombre',cat:'Prenda',tipo:'Jogger',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PJXXM',barcode:'Poleron Jogger XXL Mujer',nombre:'Poleron Jogger XXL Mujer',cat:'Prenda',tipo:'Jogger',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PJ3H',barcode:'Poleron Jogger 3XL Hombre',nombre:'Poleron Jogger 3XL Hombre',cat:'Prenda',tipo:'Jogger',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PJ3M',barcode:'Poleron Jogger 3XL Mujer',nombre:'Poleron Jogger 3XL Mujer',cat:'Prenda',tipo:'Jogger',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'PJ4H',barcode:'Poleron Jogger 4XL Hombre',nombre:'Poleron Jogger 4XL Hombre',cat:'Prenda',tipo:'Jogger',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'PJ4M',barcode:'Poleron Jogger 4XL Mujer',nombre:'Poleron Jogger 4XL Mujer',cat:'Prenda',tipo:'Jogger',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'SSH',barcode:'Softshell S Hombre',nombre:'Softshell S Hombre',cat:'Prenda',tipo:'Softshell',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'SSM',barcode:'Softshell S Mujer',nombre:'Softshell S Mujer',cat:'Prenda',tipo:'Softshell',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'SMH',barcode:'Softshell M Hombre',nombre:'Softshell M Hombre',cat:'Prenda',tipo:'Softshell',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'SMM',barcode:'Softshell M Mujer',nombre:'Softshell M Mujer',cat:'Prenda',tipo:'Softshell',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'SLH',barcode:'Softshell L Hombre',nombre:'Softshell L Hombre',cat:'Prenda',tipo:'Softshell',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'SLM',barcode:'Softshell L Mujer',nombre:'Softshell L Mujer',cat:'Prenda',tipo:'Softshell',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'SXH',barcode:'Softshell XL Hombre',nombre:'Softshell XL Hombre',cat:'Prenda',tipo:'Softshell',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'SXM',barcode:'Softshell XL Mujer',nombre:'Softshell XL Mujer',cat:'Prenda',tipo:'Softshell',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'SXXH',barcode:'Softshell XXL Hombre',nombre:'Softshell XXL Hombre',cat:'Prenda',tipo:'Softshell',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'SXXM',barcode:'Softshell XXL Mujer',nombre:'Softshell XXL Mujer',cat:'Prenda',tipo:'Softshell',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'S3H',barcode:'Softshell 3XL Hombre',nombre:'Softshell 3XL Hombre',cat:'Prenda',tipo:'Softshell',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'S3M',barcode:'Softshell 3XL Mujer',nombre:'Softshell 3XL Mujer',cat:'Prenda',tipo:'Softshell',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'S4H',barcode:'Softshell 4XL Hombre',nombre:'Softshell 4XL Hombre',cat:'Prenda',tipo:'Softshell',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'S4M',barcode:'Softshell 4XL Mujer',nombre:'Softshell 4XL Mujer',cat:'Prenda',tipo:'Softshell',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'CCSH',barcode:'Camisas Celeste S Hombre',nombre:'Camisa Celeste S Hombre',cat:'Prenda',tipo:'Celeste',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'CCSM',barcode:'Camisas Celeste S Mujer',nombre:'Camisa Celeste S Mujer',cat:'Prenda',tipo:'Celeste',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'CCMH',barcode:'Camisas Celeste M Hombre',nombre:'Camisa Celeste M Hombre',cat:'Prenda',tipo:'Celeste',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'CCMM',barcode:'Camisas Celeste M Mujer',nombre:'Camisa Celeste M Mujer',cat:'Prenda',tipo:'Celeste',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'CCLH',barcode:'Camisas Celeste L Hombre',nombre:'Camisa Celeste L Hombre',cat:'Prenda',tipo:'Celeste',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'CCLM',barcode:'Camisas Celeste L Mujer',nombre:'Camisa Celeste L Mujer',cat:'Prenda',tipo:'Celeste',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'CCXH',barcode:'Camisas Celeste XL Hombre',nombre:'Camisa Celeste XL Hombre',cat:'Prenda',tipo:'Celeste',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'CCXM',barcode:'Camisas Celeste XL Mujer',nombre:'Camisa Celeste XL Mujer',cat:'Prenda',tipo:'Celeste',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'CCXXH',barcode:'Camisas Celeste XXL Hombre',nombre:'Camisa Celeste XXL Hombre',cat:'Prenda',tipo:'Celeste',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'CCXXM',barcode:'Camisas Celeste XXL Mujer',nombre:'Camisa Celeste XXL Mujer',cat:'Prenda',tipo:'Celeste',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'CC3H',barcode:'Camisas Celeste 3XL Hombre',nombre:'Camisa Celeste 3XL Hombre',cat:'Prenda',tipo:'Celeste',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'CC3M',barcode:'Camisas Celeste 3XL Mujer',nombre:'Camisa Celeste 3XL Mujer',cat:'Prenda',tipo:'Celeste',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'CC4H',barcode:'Camisas Celeste 4XL Hombre',nombre:'Camisa Celeste 4XL Hombre',cat:'Prenda',tipo:'Celeste',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
+  {id:'CC4M',barcode:'Camisas Celeste 4XL Mujer',nombre:'Camisa Celeste 4XL Mujer',cat:'Prenda',tipo:'Celeste',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
+  {id:'GHSU',barcode:'Geologo Hemic S Unisex',nombre:'Geologo Hemic S Unisex',cat:'Prenda',tipo:'Hemic',talla:'S',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'GHMU',barcode:'Geologo Hemic M Unisex',nombre:'Geologo Hemic M Unisex',cat:'Prenda',tipo:'Hemic',talla:'M',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'GHLU',barcode:'Geologo Hemic L Unisex',nombre:'Geologo Hemic L Unisex',cat:'Prenda',tipo:'Hemic',talla:'L',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'GHXU',barcode:'Geologo Hemic XL Unisex',nombre:'Geologo Hemic XL Unisex',cat:'Prenda',tipo:'Hemic',talla:'XL',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'GHXXU',barcode:'Geologo Hemic XXL Unisex',nombre:'Geologo Hemic XXL Unisex',cat:'Prenda',tipo:'Hemic',talla:'XXL',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'GH3U',barcode:'Geologo Hemic 3XL Unisex',nombre:'Geologo Hemic 3XL Unisex',cat:'Prenda',tipo:'Hemic',talla:'3XL',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'GH4U',barcode:'Geologo Hemic 4XL Unisex',nombre:'Geologo Hemic 4XL Unisex',cat:'Prenda',tipo:'Hemic',talla:'4XL',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'ZAP40',barcode:'Zapatos 40',nombre:'Zapatos Talla 40',cat:'Prenda',tipo:'Zapatos',talla:'40',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'ZAP41',barcode:'Zapatos 41',nombre:'Zapatos Talla 41',cat:'Prenda',tipo:'Zapatos',talla:'41',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'ZAP42',barcode:'Zapatos 42',nombre:'Zapatos Talla 42',cat:'Prenda',tipo:'Zapatos',talla:'42',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'ZAP43',barcode:'Zapatos 43',nombre:'Zapatos Talla 43',cat:'Prenda',tipo:'Zapatos',talla:'43',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'ZAP44',barcode:'Zapatos 44',nombre:'Zapatos Talla 44',cat:'Prenda',tipo:'Zapatos',talla:'44',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'ZAP45',barcode:'Zapatos 45',nombre:'Zapatos Talla 45',cat:'Prenda',tipo:'Zapatos',talla:'45',modelo:'Unisex',qty:0,ubicacion:''},
+  {id:'ZAP46',barcode:'Zapatos 46',nombre:'Zapatos Talla 46',cat:'Prenda',tipo:'Zapatos',talla:'46',modelo:'Unisex',qty:0,ubicacion:''},
 ];
+
 let actas = [];
 let acta_counter = 1;
-let itemsEntrega = [];
+let itemsEPP = [];
+let itemsUni = [];
 
-// ── Navegación ───────────────────────────────────────────
+// ═══ NAVEGACIÓN ══════════════════════════════════════════════════════════════
 function showTab(t, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + t).classList.add('active');
   btn.classList.add('active');
   if (t === 'inventario') renderInventario();
-  if (t === 'entrega') initEntrega();
+  if (t === 'entrega-epp') initEPP();
+  if (t === 'entrega-uniforme') initUni();
   if (t === 'actas') renderActas();
 }
 
-// ── INVENTARIO ───────────────────────────────────────────
+// ═══ ESTADÍSTICAS ════════════════════════════════════════════════════════════
+function renderStats() {
+  const total = inventario.length;
+  const conStock = inventario.filter(i => i.qty > 0).length;
+  const sinStock = inventario.filter(i => i.qty === 0).length;
+  const totalUnidades = inventario.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-box"><div class="val">${total}</div><div class="lbl">Artículos</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-success)">${conStock}</div><div class="lbl">Con stock</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-danger)">${sinStock}</div><div class="lbl">Sin stock</div></div>
+    <div class="stat-box"><div class="val">${totalUnidades}</div><div class="lbl">Unidades totales</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-teal)">${actas.length}</div><div class="lbl">Actas emitidas</div></div>`;
+}
+
+// ═══ INVENTARIO ══════════════════════════════════════════════════════════════
 function renderInventario() {
+  renderStats();
+  const txt = (document.getElementById('filtro-texto').value || '').toLowerCase();
+  const cat = document.getElementById('filtro-cat').value;
+  const est = document.getElementById('filtro-estado').value;
+  const filtrado = inventario.filter(it => {
+    const matchTxt = !txt || it.nombre.toLowerCase().includes(txt) ||
+      it.id.toLowerCase().includes(txt) || (it.barcode||'').toLowerCase().includes(txt);
+    const matchCat = !cat || it.cat === cat;
+    const matchEst = !est ||
+      (est==='ok' && it.qty>5) || (est==='warn' && it.qty>0 && it.qty<=5) || (est==='zero' && it.qty===0);
+    return matchTxt && matchCat && matchEst;
+  });
+  document.getElementById('count-badge').textContent = `(${filtrado.length} de ${inventario.length})`;
   const tb = document.getElementById('tbody-inv');
-  if (!inventario.length) {
-    tb.innerHTML = '<tr><td colspan="7" class="empty">Sin ítems registrados</td></tr>';
-    return;
-  }
-  tb.innerHTML = inventario.map((it, i) => {
-    const estado = it.qty === 0
-      ? '<span class="pill pill-danger">Sin stock</span>'
-      : it.qty <= 5
-        ? '<span class="pill pill-warn">Stock bajo</span>'
-        : '<span class="pill pill-ok">Disponible</span>';
+  if (!filtrado.length) { tb.innerHTML='<tr><td colspan="10" class="empty">Sin resultados</td></tr>'; return; }
+  tb.innerHTML = filtrado.map(it => {
+    const i = inventario.indexOf(it);
+    const estado = it.qty===0 ? '<span class="pill pill-danger">Sin stock</span>'
+      : it.qty<=5 ? '<span class="pill pill-warn">Stock bajo</span>'
+      : '<span class="pill pill-ok">Disponible</span>';
     return `<tr>
-      <td><code style="font-size:11px;color:var(--tk-teal)">${it.id}</code></td>
-      <td>${it.nombre}</td>
-      <td><span class="pill pill-cat">${it.cat}</span></td>
-      <td>${it.talla || '—'}</td>
+      <td><code>${it.id}</code></td>
+      <td style="font-size:11px;color:var(--tk-muted)">${it.barcode||'—'}</td>
+      <td>${it.nombre}</td><td>${it.tipo||'—'}</td><td>${it.talla||'—'}</td><td>${it.modelo||'—'}</td>
+      <td style="font-size:11px">${it.ubicacion||'—'}</td>
       <td><span class="qty-badge">${it.qty}</span></td>
       <td>${estado}</td>
       <td style="white-space:nowrap">
-        <button class="btn btn-sm btn-outline" onclick="ajustarQty(${i})" title="Ajustar stock">
-          <i class="ti ti-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="eliminarItem(${i})" title="Eliminar" style="margin-left:4px">
-          <i class="ti ti-trash"></i>
-        </button>
-      </td>
-    </tr>`;
+        <button class="btn btn-sm btn-outline" onclick="ajustarQty(${i})"><i class="ti ti-pencil"></i></button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarItem(${i})" style="margin-left:3px"><i class="ti ti-trash"></i></button>
+      </td></tr>`;
   }).join('');
 }
 
 function agregarItem() {
-  const n = document.getElementById('inv-nombre').value.trim();
-  const c = document.getElementById('inv-codigo').value.trim().toUpperCase();
-  const cat = document.getElementById('inv-cat').value;
-  const t = document.getElementById('inv-talla').value.trim();
-  const q = parseInt(document.getElementById('inv-qty').value) || 0;
-  if (!n || !c) { alert('Ingresa nombre y código del artículo.'); return; }
-  if (inventario.find(x => x.id === c)) { alert('El código ya existe en el inventario.'); return; }
-  inventario.push({ id: c, nombre: n, cat, talla: t, qty: q });
-  document.getElementById('inv-nombre').value = '';
-  document.getElementById('inv-codigo').value = '';
-  document.getElementById('inv-talla').value = '';
-  document.getElementById('inv-qty').value = 1;
+  const n=document.getElementById('inv-nombre').value.trim();
+  const c=document.getElementById('inv-codigo').value.trim().toUpperCase();
+  if(!n||!c){alert('Ingresa nombre y código.');return;}
+  if(inventario.find(x=>x.id===c)){alert('Código ya existe.');return;}
+  inventario.push({id:c,barcode:document.getElementById('inv-barcode').value.trim(),nombre:n,
+    cat:document.getElementById('inv-cat').value,tipo:document.getElementById('inv-tipo').value.trim(),
+    talla:document.getElementById('inv-talla').value.trim(),modelo:document.getElementById('inv-modelo').value.trim(),
+    qty:parseInt(document.getElementById('inv-qty').value)||0,
+    ubicacion:document.getElementById('inv-ubicacion').value.trim()});
+  ['inv-nombre','inv-codigo','inv-barcode','inv-tipo','inv-talla','inv-modelo','inv-ubicacion'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inv-qty').value=0;
   renderInventario();
 }
-
-function ajustarQty(i) {
-  const v = prompt(`Nuevo stock para "${inventario[i].nombre}":`, inventario[i].qty);
-  if (v === null) return;
-  const n = parseInt(v);
-  if (isNaN(n) || n < 0) { alert('Ingresa un número válido (≥ 0).'); return; }
-  inventario[i].qty = n;
-  renderInventario();
+function ajustarQty(i){
+  const v=prompt(`Nuevo stock para "${inventario[i].nombre}":`,inventario[i].qty);
+  if(v===null)return;const n=parseInt(v);
+  if(isNaN(n)||n<0){alert('Número inválido.');return;}
+  inventario[i].qty=n;renderInventario();
+}
+function eliminarItem(i){
+  if(!confirm(`¿Eliminar "${inventario[i].nombre}"?`))return;
+  inventario.splice(i,1);renderInventario();
 }
 
-function eliminarItem(i) {
-  if (!confirm(`¿Eliminar "${inventario[i].nombre}" del inventario?`)) return;
-  inventario.splice(i, 1);
-  renderInventario();
+// ═══ EPP ═════════════════════════════════════════════════════════════════════
+function initEPP(){
+  if(!document.getElementById('epp-fecha').value) document.getElementById('epp-fecha').value=hoy();
+  if(!itemsEPP.length) addItemEPP(); else renderItemsEPP();
 }
-
-// ── ENTREGA ──────────────────────────────────────────────
-function initEntrega() {
-  const f = document.getElementById('ent-fecha');
-  if (!f.value) f.value = new Date().toISOString().split('T')[0];
-  if (!itemsEntrega.length) addItemEntrega();
-  else renderItemsEntrega();
-}
-
-function addItemEntrega() {
-  itemsEntrega.push({ invIdx: -1, qty: 1 });
-  renderItemsEntrega();
-}
-
-function renderItemsEntrega() {
-  const opts = inventario.map((it, i) =>
-    `<option value="${i}">${it.nombre} (${it.id}) — Stock: ${it.qty}</option>`
-  ).join('');
-  document.getElementById('items-entrega').innerHTML = itemsEntrega.map((itm, i) => `
+function addItemEPP(){itemsEPP.push({invIdx:-1,qty:1});renderItemsEPP();}
+function renderItemsEPP(){
+  const opts=inventario.map((it,i)=>`<option value="${i}">[${it.id}] ${it.nombre} — Stock: ${it.qty}</option>`).join('');
+  document.getElementById('items-epp').innerHTML=itemsEPP.map((itm,i)=>`
     <div class="item-row">
-      <select onchange="setItem(${i}, this.value)">
-        <option value="-1">— Seleccionar artículo —</option>
-        ${opts}
+      <select onchange="setItemEPP(${i},this.value)" style="flex:3">
+        <option value="-1">— Seleccionar artículo —</option>${opts}
       </select>
-      <input type="number" min="1" value="${itm.qty}" style="flex:0 0 80px"
-        onchange="setQty(${i}, this.value)" placeholder="Cant.">
-      <button class="btn btn-danger btn-sm" onclick="removeItemEntrega(${i})">
-        <i class="ti ti-x"></i>
-      </button>
+      <input type="number" min="1" value="${itm.qty}" style="width:75px" onchange="setQtyEPP(${i},this.value)">
+      <button class="btn btn-danger btn-sm" onclick="removeItemEPP(${i})"><i class="ti ti-x"></i></button>
     </div>`).join('');
 }
+function setItemEPP(i,v){itemsEPP[i].invIdx=parseInt(v);}
+function setQtyEPP(i,v){itemsEPP[i].qty=Math.max(1,parseInt(v)||1);}
+function removeItemEPP(i){itemsEPP.splice(i,1);renderItemsEPP();}
 
-function setItem(i, v) { itemsEntrega[i].invIdx = parseInt(v); }
-function setQty(i, v) { itemsEntrega[i].qty = Math.max(1, parseInt(v) || 1); }
-function removeItemEntrega(i) { itemsEntrega.splice(i, 1); renderItemsEntrega(); }
-
-function emitirActa() {
-  const nombre = document.getElementById('ent-nombre').value.trim();
-  const rut    = document.getElementById('ent-rut').value.trim();
-  const cargo  = document.getElementById('ent-cargo').value.trim();
-  const area   = document.getElementById('ent-area').value.trim();
-  const fecha  = document.getElementById('ent-fecha').value;
-  const obs    = document.getElementById('ent-obs').value.trim();
-
-  if (!nombre || !rut) { alert('Ingresa nombre y RUT del receptor.'); return; }
-  if (!fecha) { alert('Indica la fecha de entrega.'); return; }
-
-  const validos = itemsEntrega.filter(it => it.invIdx >= 0);
-  if (!validos.length) { alert('Agrega al menos un artículo válido.'); return; }
-
-  const errores = validos
-    .filter(it => it.qty > inventario[it.invIdx].qty)
-    .map(it => `Stock insuficiente para "${inventario[it.invIdx].nombre}" (disponible: ${inventario[it.invIdx].qty})`);
-  if (errores.length) { alert(errores.join('\n')); return; }
-
-  if (!confirm('¿Confirmar la emisión del acta y descontar del stock?')) return;
-
-  // Descontar stock
-  validos.forEach(it => { inventario[it.invIdx].qty -= it.qty; });
-
-  const num = String(acta_counter++).padStart(4, '0');
-  const acta = {
-    num, nombre, rut, cargo, area, fecha, obs,
-    items: validos.map(it => ({
-      codigo: inventario[it.invIdx].id,
-      nombre: inventario[it.invIdx].nombre,
-      cat:    inventario[it.invIdx].cat,
-      talla:  inventario[it.invIdx].talla,
-      qty:    it.qty,
-    })),
-    emision: new Date().toLocaleString('es-CL'),
-  };
-  actas.unshift(acta);
-
-  // Limpiar formulario
-  itemsEntrega = [];
-  ['ent-nombre','ent-rut','ent-cargo','ent-area','ent-obs'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-
+function emitirActaEPP(){
+  const nombre=document.getElementById('epp-nombre').value.trim();
+  const rut=document.getElementById('epp-rut').value.trim();
+  const cargo=document.getElementById('epp-cargo').value.trim();
+  const area=document.getElementById('epp-area').value.trim();
+  const fecha=document.getElementById('epp-fecha').value;
+  const obs=document.getElementById('epp-obs').value.trim();
+  if(!nombre||!rut){alert('Ingresa nombre y RUT.');return;}
+  if(!fecha){alert('Indica la fecha.');return;}
+  const validos=itemsEPP.filter(it=>it.invIdx>=0);
+  if(!validos.length){alert('Agrega al menos un artículo.');return;}
+  const errores=validos.filter(it=>it.qty>inventario[it.invIdx].qty)
+    .map(it=>`Stock insuficiente: "${inventario[it.invIdx].nombre}" (disp: ${inventario[it.invIdx].qty})`);
+  if(errores.length){alert(errores.join('\n'));return;}
+  if(!confirm('¿Confirmar emisión del acta EPP y descontar stock?'))return;
+  validos.forEach(it=>{inventario[it.invIdx].qty-=it.qty;});
+  const num=String(acta_counter++).padStart(4,'0');
+  const acta={num,tipo:'EPP',nombre,rut,cargo,area,fecha,obs,
+    items:validos.map(it=>({codigo:inventario[it.invIdx].id,barcode:inventario[it.invIdx].barcode,
+      nombre:inventario[it.invIdx].nombre,talla:inventario[it.invIdx].talla,modelo:inventario[it.invIdx].modelo,qty:it.qty})),
+    emision:new Date().toLocaleString('es-CL')};
+  actas.unshift(acta);itemsEPP=[];
+  ['epp-nombre','epp-rut','epp-cargo','epp-area','epp-obs'].forEach(id=>document.getElementById(id).value='');
   mostrarActa(acta);
 }
 
-// ── ACTAS ────────────────────────────────────────────────
-function renderActas() {
-  const c = document.getElementById('lista-actas');
-  if (!actas.length) { c.innerHTML = '<div class="empty">No hay actas emitidas aún.</div>'; return; }
-  c.innerHTML = actas.map(a => `
+// ═══ UNIFORMES ════════════════════════════════════════════════════════════════
+function initUni(){
+  if(!document.getElementById('uni-fecha').value) document.getElementById('uni-fecha').value=hoy();
+  if(!itemsUni.length) addItemUni(); else renderItemsUni();
+}
+function addItemUni(){itemsUni.push({invIdx:-1,qty:1,fechaEntrega:hoy()});renderItemsUni();}
+function renderItemsUni(){
+  const opts=inventario.map((it,i)=>`<option value="${i}">[${it.id}] ${it.nombre} — Stock: ${it.qty}</option>`).join('');
+  document.getElementById('items-uni').innerHTML=itemsUni.map((itm,i)=>`
+    <div class="item-row" style="background:#f9fbfd;padding:6px;border-radius:6px;border:.5px solid var(--tk-border)">
+      <select onchange="setItemUni(${i},this.value)" style="flex:3;min-width:180px">
+        <option value="-1">— Seleccionar prenda —</option>${opts}
+      </select>
+      <input type="number" min="1" value="${itm.qty}" style="width:70px" onchange="setQtyUni(${i},this.value)" placeholder="Cant.">
+      <input type="date" value="${itm.fechaEntrega}" style="width:140px" onchange="setFechaUni(${i},this.value)">
+      <button class="btn btn-danger btn-sm" onclick="removeItemUni(${i})"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+}
+function setItemUni(i,v){itemsUni[i].invIdx=parseInt(v);}
+function setQtyUni(i,v){itemsUni[i].qty=Math.max(1,parseInt(v)||1);}
+function setFechaUni(i,v){itemsUni[i].fechaEntrega=v;}
+function removeItemUni(i){itemsUni.splice(i,1);renderItemsUni();}
+
+function emitirActaUni(){
+  const nombre=document.getElementById('uni-nombre').value.trim();
+  const rut=document.getElementById('uni-rut').value.trim();
+  const cargo=document.getElementById('uni-cargo').value.trim();
+  const fecha=document.getElementById('uni-fecha').value;
+  const ciudad=document.getElementById('uni-ciudad').value.trim()||'Santiago';
+  if(!nombre||!rut){alert('Ingresa nombre y RUT.');return;}
+  if(!fecha){alert('Indica la fecha.');return;}
+  const validos=itemsUni.filter(it=>it.invIdx>=0);
+  if(!validos.length){alert('Agrega al menos una prenda.');return;}
+  const errores=validos.filter(it=>it.qty>inventario[it.invIdx].qty)
+    .map(it=>`Stock insuficiente: "${inventario[it.invIdx].nombre}" (disp: ${inventario[it.invIdx].qty})`);
+  if(errores.length){alert(errores.join('\n'));return;}
+  if(!confirm('¿Confirmar emisión del acta de uniforme y descontar stock?'))return;
+  validos.forEach(it=>{inventario[it.invIdx].qty-=it.qty;});
+  const num=String(acta_counter++).padStart(4,'0');
+  const acta={num,tipo:'Uniforme',nombre,rut,cargo,ciudad,fecha,
+    items:validos.map(it=>({codigo:inventario[it.invIdx].id,
+      nombre:inventario[it.invIdx].nombre,talla:inventario[it.invIdx].talla,
+      qty:it.qty,fechaEntrega:it.fechaEntrega})),
+    emision:new Date().toLocaleString('es-CL')};
+  actas.unshift(acta);itemsUni=[];
+  ['uni-nombre','uni-rut','uni-cargo'].forEach(id=>document.getElementById(id).value='');
+  mostrarActa(acta);
+}
+
+// ═══ ACTAS ════════════════════════════════════════════════════════════════════
+function renderActas(){
+  const c=document.getElementById('lista-actas');
+  if(!actas.length){c.innerHTML='<div class="empty">No hay actas emitidas aún.</div>';return;}
+  c.innerHTML=actas.map(a=>`
     <div class="acta-card">
       <div>
         <div class="acta-id">Acta N° ${a.num}</div>
         <div class="acta-meta">${a.nombre} — ${a.items.length} ítem(s) — ${formatFecha(a.fecha)}</div>
+        <div class="acta-tipo"><span class="pill ${a.tipo==='Uniforme'?'pill-ok':'pill-cat'}">${a.tipo}</span></div>
       </div>
-      <button class="btn btn-outline btn-sm" onclick='verActa("${a.num}")'>
-        <i class="ti ti-eye"></i> Ver
-      </button>
+      <button class="btn btn-outline btn-sm" onclick='verActa("${a.num}")'><i class="ti ti-eye"></i> Ver</button>
     </div>`).join('');
 }
 
-function verActa(num) {
-  const a = actas.find(x => x.num === num);
-  if (a) mostrarActa(a);
-}
+function verActa(num){const a=actas.find(x=>x.num===num);if(a)mostrarActa(a);}
 
-// ── MODAL ────────────────────────────────────────────────
-function mostrarActa(acta) {
-  document.getElementById('modal-content').innerHTML = generarHTMLActa(acta);
+// ═══ MODAL ════════════════════════════════════════════════════════════════════
+function mostrarActa(acta){
+  document.getElementById('modal-titulo').textContent =
+    acta.tipo==='Uniforme' ? 'Acta de Entrega de Uniforme' : 'Acta de Entrega EPP';
+  document.getElementById('modal-content').innerHTML =
+    acta.tipo==='Uniforme' ? generarActaUniforme(acta) : generarActaEPP(acta);
   document.getElementById('modal-acta').classList.add('open');
 }
+function cerrarModal(){document.getElementById('modal-acta').classList.remove('open');}
 
-function cerrarModal() {
-  document.getElementById('modal-acta').classList.remove('open');
+// ── Acta Uniforme (fiel al documento ODT) ────────────────────────────────────
+function generarActaUniforme(a){
+  const filasFecha = a.items.map(it=>`
+    <tr>
+      <td style="text-align:center">${it.qty}</td>
+      <td>${it.nombre}${it.talla?' — Talla '+it.talla:''}</td>
+      <td style="text-align:center">${it.talla||'—'}</td>
+      <td style="text-align:center">${formatFecha(it.fechaEntrega)}</td>
+    </tr>`).join('');
+  return `<div class="acta-doc">
+    <h2>Acta Entrega de Uniforme</h2>
+    <p class="subtitle">${a.ciudad}, ${formatFechaLarga(a.fecha)}</p>
+    <p>Por medio de la presente acta, se le hace entrega de las siguientes piezas de ropa para uniforme:</p>
+    <table>
+      <thead><tr>
+        <th style="width:80px">Cantidad</th>
+        <th>Descripción</th>
+        <th style="width:80px">Talla</th>
+        <th style="width:120px">Fecha de entrega</th>
+      </tr></thead>
+      <tbody>${filasFecha}</tbody>
+    </table>
+    <p>El trabajador manifiesta que:</p>
+    <p>La dotación que aquí se entrega es y será de la empresa en todo momento, en caso de terminación del contrato de trabajo o entrega de una nueva dotación, se compromete a hacer la devolución de forma inmediata. Además, se compromete a mantener los mismos limpios y en buen estado por un periodo mínimo a 12 meses. En caso de daño de la dotación o parte de ella, el trabajador debe devolverla a la empresa.</p>
+    <p>Conforme a lo señalado anteriormente, recibo conforme:</p>
+    <p><strong>Nombre:</strong> ${a.nombre}</p>
+    <p><strong>Cargo:</strong> ${a.cargo||'—'}</p>
+    <p><strong>Rut</strong> ${a.rut}</p>
+    <div class="firma-section">
+      <div class="firma-line">
+        Firma: _________________________________________________________________
+      </div>
+    </div>
+    <div style="margin-top:1.5rem;border-top:1px solid #0081b0;padding-top:6px;font-size:10px;color:#5a7a8e;text-align:center;font-style:italic">
+      TOOLTEK® — Herramientas para construir el futuro &nbsp;|&nbsp; Acta N° ${a.num} &nbsp;|&nbsp; Emitida: ${a.emision}
+    </div>
+  </div>`;
 }
 
-function generarHTMLActa(a) {
-  const filas = a.items.map(it => `
-    <tr>
-      <td>${it.codigo}</td>
-      <td>${it.nombre}</td>
-      <td>${it.cat}</td>
-      <td>${it.talla || '—'}</td>
-      <td style="text-align:center;font-weight:600">${it.qty}</td>
-    </tr>`).join('');
-
+// ── Acta EPP ──────────────────────────────────────────────────────────────────
+function generarActaEPP(a){
+  const filas=a.items.map(it=>`<tr>
+    <td><code style="font-size:11px">${it.codigo}</code></td>
+    <td style="font-size:11px;color:#5a7a8e">${it.barcode||'—'}</td>
+    <td>${it.nombre}</td><td>${it.talla||'—'}</td><td>${it.modelo||'—'}</td>
+    <td style="text-align:center;font-weight:600">${it.qty}</td>
+  </tr>`).join('');
   return `<div style="font-size:13px;line-height:1.6">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
       <div>
-        <div style="font-size:11px;font-weight:700;color:var(--tk-teal);letter-spacing:1px">TOOLTEK®</div>
-        <h2 style="font-size:16px;color:var(--tk-blue);margin-top:2px">Acta de Entrega de EPP y Prendas</h2>
-        <div style="font-size:12px;color:var(--tk-muted)">N° ${a.num} &nbsp;|&nbsp; Emitida: ${a.emision}</div>
+        <div style="font-size:11px;font-weight:700;color:#0081b0;letter-spacing:1px">TOOLTEK®</div>
+        <h2 style="font-size:16px;color:#25638f;margin-top:2px">Acta de Entrega de EPP</h2>
+        <div style="font-size:12px;color:#5a7a8e">N° ${a.num} &nbsp;|&nbsp; Emitida: ${a.emision}</div>
       </div>
-      <div style="text-align:right;font-size:12px;color:var(--tk-muted)">
-        <div><strong>Fecha entrega:</strong> ${formatFecha(a.fecha)}</div>
-        <div><strong>Área:</strong> ${a.area || '—'}</div>
+      <div style="text-align:right;font-size:12px;color:#5a7a8e">
+        <div><strong>Fecha:</strong> ${formatFecha(a.fecha)}</div>
+        <div><strong>Área:</strong> ${a.area||'—'}</div>
       </div>
     </div>
-    <div style="background:var(--tk-bg);border-radius:8px;padding:.6rem 1rem;margin-bottom:1rem;font-size:13px">
-      <strong>Nombre:</strong> ${a.nombre} &nbsp;|&nbsp;
-      <strong>RUT:</strong> ${a.rut} &nbsp;|&nbsp;
-      <strong>Cargo:</strong> ${a.cargo || '—'}
+    <div style="background:#f4f8fb;border-radius:8px;padding:.6rem 1rem;margin-bottom:1rem;font-size:13px">
+      <strong>Nombre:</strong> ${a.nombre} &nbsp;|&nbsp; <strong>RUT:</strong> ${a.rut} &nbsp;|&nbsp; <strong>Cargo:</strong> ${a.cargo||'—'}
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1rem">
-      <thead>
-        <tr style="background:var(--tk-blue);color:#fff">
-          <th style="padding:6px 10px;text-align:left">Código</th>
-          <th style="padding:6px 10px;text-align:left">Artículo</th>
-          <th style="padding:6px 10px;text-align:left">Categoría</th>
-          <th style="padding:6px 10px;text-align:left">Talla</th>
-          <th style="padding:6px 10px;text-align:center">Cantidad</th>
-        </tr>
-      </thead>
-      <tbody>${filas}</tbody>
+      <thead><tr style="background:#25638f;color:#fff">
+        <th style="padding:6px 10px">Código</th><th style="padding:6px 10px">Cód. Barra</th>
+        <th style="padding:6px 10px">Artículo</th><th style="padding:6px 10px">Talla</th>
+        <th style="padding:6px 10px">Modelo</th><th style="padding:6px 10px;text-align:center">Cant.</th>
+      </tr></thead><tbody>${filas}</tbody>
     </table>
-    ${a.obs ? `<div style="font-size:12px;margin-bottom:.75rem"><strong>Observaciones:</strong> ${a.obs}</div>` : ''}
-    <p style="font-size:11px;color:var(--tk-muted);margin-bottom:1.5rem">
-      El trabajador declara haber recibido los artículos indicados en conformidad y en buen estado,
-      comprometiéndose a su uso correcto y devolución cuando corresponda.
-    </p>
+    ${a.obs?`<div style="font-size:12px;margin-bottom:.75rem"><strong>Obs:</strong> ${a.obs}</div>`:''}
+    <p style="font-size:11px;color:#5a7a8e;margin-bottom:1.5rem">El trabajador declara haber recibido los artículos en conformidad y en buen estado, comprometiéndose a su uso correcto y devolución cuando corresponda.</p>
     <div style="display:flex;gap:3rem;margin-top:1.5rem">
-      <div style="flex:1;border-top:1.5px solid #bbb;padding-top:6px;font-size:11px;color:var(--tk-muted);text-align:center">
-        Firma Receptor<br>
-        <strong style="font-size:12px;color:var(--tk-text)">${a.nombre}</strong><br>
-        RUT: ${a.rut}
+      <div style="flex:1;border-top:1.5px solid #bbb;padding-top:6px;font-size:11px;color:#5a7a8e;text-align:center">
+        Firma Receptor<br><strong style="font-size:12px;color:#1a2e3b">${a.nombre}</strong><br>RUT: ${a.rut}
       </div>
-      <div style="flex:1;border-top:1.5px solid #bbb;padding-top:6px;font-size:11px;color:var(--tk-muted);text-align:center">
+      <div style="flex:1;border-top:1.5px solid #bbb;padding-top:6px;font-size:11px;color:#5a7a8e;text-align:center">
         Firma Responsable Entrega<br>&nbsp;<br>&nbsp;
       </div>
     </div>
-    <div style="margin-top:1.25rem;border-top:2px solid var(--tk-teal);padding-top:6px;font-size:10px;color:var(--tk-muted);text-align:center;font-style:italic">
+    <div style="margin-top:1.25rem;border-top:2px solid #0081b0;padding-top:6px;font-size:10px;color:#5a7a8e;text-align:center;font-style:italic">
       TOOLTEK® — Herramientas para construir el futuro
     </div>
   </div>`;
 }
 
-function imprimirActa() {
-  const c = document.getElementById('modal-content').innerHTML;
-  const w = window.open('', '_blank');
-  w.document.write(`<!DOCTYPE html><html lang="es"><head>
-    <meta charset="UTF-8">
-    <title>Acta TOOLTEK®</title>
-    <style>
-      body{font-family:'Segoe UI',sans-serif;padding:2cm;font-size:13px;color:#1a2e3b;max-width:800px;margin:0 auto}
-      table{width:100%;border-collapse:collapse}
-      th{background:#25638f;color:#fff;padding:6px 10px;font-size:12px;text-align:left}
-      td{padding:5px 10px;border-bottom:1px solid #eee;font-size:12px}
-      @media print{@page{margin:2cm}}
-    </style>
+function imprimirActa(){
+  const c=document.getElementById('modal-content').innerHTML;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Acta TOOLTEK®</title>
+  <style>body{font-family:'Times New Roman',serif;padding:2cm;font-size:13px;color:#111;max-width:800px;margin:0 auto}
+  h2{text-align:center;font-size:16px;text-transform:uppercase;margin-bottom:.5rem}
+  table{width:100%;border-collapse:collapse}th{border:1px solid #333;padding:5px 10px;background:#e8e8e8;font-weight:700;text-align:center}
+  td{border:1px solid #555;padding:5px 10px}p{margin-bottom:.6rem;text-align:justify}
+  code{font-size:11px}@media print{@page{margin:2cm}}</style>
   </head><body>${c}</body></html>`);
-  w.document.close();
-  setTimeout(() => w.print(), 400);
+  w.document.close();setTimeout(()=>w.print(),400);
 }
 
-// ── Utilidades ───────────────────────────────────────────
-function formatFecha(f) {
-  if (!f) return '—';
-  const [y, m, d] = f.split('-');
-  return `${d}/${m}/${y}`;
+// ═══ UTILIDADES ══════════════════════════════════════════════════════════════
+function hoy(){return new Date().toISOString().split('T')[0];}
+function formatFecha(f){if(!f)return'—';const[y,m,d]=f.split('-');return`${d}/${m}/${y}`;}
+function formatFechaLarga(f){
+  if(!f)return'—';
+  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const[y,m,d]=f.split('-');return`${parseInt(d)} de ${meses[parseInt(m)-1]} de ${y}`;
 }
 
-// ── Init ─────────────────────────────────────────────────
-document.getElementById('ent-fecha').value = new Date().toISOString().split('T')[0];
+// ═══ INIT ════════════════════════════════════════════════════════════════════
 renderInventario();
 </script>
 </body>
