@@ -18,6 +18,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--tk-bg);color:v
 .header h1{font-size:18px;font-weight:600}
 .header span{font-size:11px;opacity:.75;font-style:italic}
 .badge-tooltek{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:2px 10px;font-size:11px;font-weight:600;letter-spacing:1px;display:inline-block;margin-bottom:4px}
+.sync-badge{display:inline-block;margin-top:4px;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600;font-style:normal;opacity:1}
+.sync-ok{background:rgba(46,204,113,.25);color:#d8ffe9}
+.sync-busy{background:rgba(255,255,255,.18);color:#eaf6ff}
+.sync-err{background:rgba(231,76,60,.3);color:#ffd9d4}
+.spin{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .tabs{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
 .tab{padding:7px 18px;border-radius:8px;border:1.5px solid var(--tk-border);background:#fff;color:var(--tk-muted);font-size:13px;font-weight:500;cursor:pointer;transition:.15s}
 .tab.active{background:var(--tk-teal);color:#fff;border-color:var(--tk-teal)}
@@ -89,7 +95,10 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
       <div class="badge-tooltek">TOOLTEK®</div>
       <h1>Sistema de Inventario EPP &amp; Uniformes</h1>
     </div>
-    <span>Herramientas para construir el futuro</span>
+    <div style="text-align:right">
+      <span>Herramientas para construir el futuro</span><br>
+      <span id="sync-badge" class="sync-badge sync-busy"><i class="ti ti-loader-2 spin"></i> Cargando…</span>
+    </div>
   </div>
 
   <div class="tabs">
@@ -252,110 +261,75 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
 </div>
 
 <script>
-// ═══ INVENTARIO INICIAL ═══════════════════════════════════════════════════════
-let inventario = [
-  {id:'PPSH',barcode:'Polera Pique S Hombre',nombre:'Polera Pique S Hombre',cat:'Prenda',tipo:'Pique',talla:'S',modelo:'Hombre',qty:5,ubicacion:'2'},
-  {id:'PPSM',barcode:'Polera Pique S Mujer',nombre:'Polera Pique S Mujer',cat:'Prenda',tipo:'Pique',talla:'S',modelo:'Mujer',qty:6,ubicacion:'2'},
-  {id:'PPMH',barcode:'Polera Pique M Hombre',nombre:'Polera Pique M Hombre',cat:'Prenda',tipo:'Pique',talla:'M',modelo:'Hombre',qty:10,ubicacion:''},
-  {id:'PPMM',barcode:'Polera Pique M Mujer',nombre:'Polera Pique M Mujer',cat:'Prenda',tipo:'Pique',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PPLH',barcode:'Polera Pique L Hombre',nombre:'Polera Pique L Hombre',cat:'Prenda',tipo:'Pique',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PPLM',barcode:'Polera Pique L Mujer',nombre:'Polera Pique L Mujer',cat:'Prenda',tipo:'Pique',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PPXH',barcode:'Polera Pique XL Hombre',nombre:'Polera Pique XL Hombre',cat:'Prenda',tipo:'Pique',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PPXM',barcode:'Polera Pique XL Mujer',nombre:'Polera Pique XL Mujer',cat:'Prenda',tipo:'Pique',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PPXXH',barcode:'Polera Pique XXL Hombre',nombre:'Polera Pique XXL Hombre',cat:'Prenda',tipo:'Pique',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PPXXM',barcode:'Polera Pique XXL Mujer',nombre:'Polera Pique XXL Mujer',cat:'Prenda',tipo:'Pique',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PP3H',barcode:'Polera Pique 3XL Hombre',nombre:'Polera Pique 3XL Hombre',cat:'Prenda',tipo:'Pique',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PP3M',barcode:'Polera Pique 3XL Mujer',nombre:'Polera Pique 3XL Mujer',cat:'Prenda',tipo:'Pique',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PP4H',barcode:'Polera Pique 4XL Hombre',nombre:'Polera Pique 4XL Hombre',cat:'Prenda',tipo:'Pique',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PP4M',barcode:'Polera Pique 4XL Mujer',nombre:'Polera Pique 4XL Mujer',cat:'Prenda',tipo:'Pique',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'POLOSH',barcode:'Polera Polo S Hombre',nombre:'Polera Polo S Hombre',cat:'Prenda',tipo:'Polo',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'POLOSM',barcode:'Polera Polo S Mujer',nombre:'Polera Polo S Mujer',cat:'Prenda',tipo:'Polo',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'POLOMH',barcode:'Polera Polo M Hombre',nombre:'Polera Polo M Hombre',cat:'Prenda',tipo:'Polo',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'POLOMM',barcode:'Polera Polo M Mujer',nombre:'Polera Polo M Mujer',cat:'Prenda',tipo:'Polo',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'POLOLH',barcode:'Polera Polo L Hombre',nombre:'Polera Polo L Hombre',cat:'Prenda',tipo:'Polo',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'POLOLM',barcode:'Polera Polo L Mujer',nombre:'Polera Polo L Mujer',cat:'Prenda',tipo:'Polo',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'POLOXH',barcode:'Polera Polo XL Hombre',nombre:'Polera Polo XL Hombre',cat:'Prenda',tipo:'Polo',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'POLOXM',barcode:'Polera Polo XL Mujer',nombre:'Polera Polo XL Mujer',cat:'Prenda',tipo:'Polo',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'POLOXXH',barcode:'Polera Polo XXL Hombre',nombre:'Polera Polo XXL Hombre',cat:'Prenda',tipo:'Polo',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'POLOXXM',barcode:'Polera Polo XXL Mujer',nombre:'Polera Polo XXL Mujer',cat:'Prenda',tipo:'Polo',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'POLO3H',barcode:'Polera Polo 3XL Hombre',nombre:'Polera Polo 3XL Hombre',cat:'Prenda',tipo:'Polo',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'POLO3M',barcode:'Polera Polo 3XL Mujer',nombre:'Polera Polo 3XL Mujer',cat:'Prenda',tipo:'Polo',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'POLO4H',barcode:'Polera Polo 4XL Hombre',nombre:'Polera Polo 4XL Hombre',cat:'Prenda',tipo:'Polo',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'POLO4M',barcode:'Polera Polo 4XL Mujer',nombre:'Polera Polo 4XL Mujer',cat:'Prenda',tipo:'Polo',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PBSH',barcode:'Pantalon Buzo S Hombre',nombre:'Pantalon Buzo S Hombre',cat:'Prenda',tipo:'Buzo',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PBSM',barcode:'Pantalon Buzo S Mujer',nombre:'Pantalon Buzo S Mujer',cat:'Prenda',tipo:'Buzo',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PBMH',barcode:'Pantalon Buzo M Hombre',nombre:'Pantalon Buzo M Hombre',cat:'Prenda',tipo:'Buzo',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PBMM',barcode:'Pantalon Buzo M Mujer',nombre:'Pantalon Buzo M Mujer',cat:'Prenda',tipo:'Buzo',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PBLH',barcode:'Pantalon Buzo L Hombre',nombre:'Pantalon Buzo L Hombre',cat:'Prenda',tipo:'Buzo',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PBLM',barcode:'Pantalon Buzo L Mujer',nombre:'Pantalon Buzo L Mujer',cat:'Prenda',tipo:'Buzo',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PBXH',barcode:'Pantalon Buzo XL Hombre',nombre:'Pantalon Buzo XL Hombre',cat:'Prenda',tipo:'Buzo',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PBXM',barcode:'Pantalon Buzo XL Mujer',nombre:'Pantalon Buzo XL Mujer',cat:'Prenda',tipo:'Buzo',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PBXXH',barcode:'Pantalon Buzo XXL Hombre',nombre:'Pantalon Buzo XXL Hombre',cat:'Prenda',tipo:'Buzo',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PBXXM',barcode:'Pantalon Buzo XXL Mujer',nombre:'Pantalon Buzo XXL Mujer',cat:'Prenda',tipo:'Buzo',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PB3H',barcode:'Pantalon Buzo 3XL Hombre',nombre:'Pantalon Buzo 3XL Hombre',cat:'Prenda',tipo:'Buzo',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PB3M',barcode:'Pantalon Buzo 3XL Mujer',nombre:'Pantalon Buzo 3XL Mujer',cat:'Prenda',tipo:'Buzo',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PB4H',barcode:'Pantalon Buzo 4XL Hombre',nombre:'Pantalon Buzo 4XL Hombre',cat:'Prenda',tipo:'Buzo',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PB4M',barcode:'Pantalon Buzo 4XL Mujer',nombre:'Pantalon Buzo 4XL Mujer',cat:'Prenda',tipo:'Buzo',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PJSH',barcode:'Poleron Jogger S Hombre',nombre:'Poleron Jogger S Hombre',cat:'Prenda',tipo:'Jogger',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PJSM',barcode:'Poleron Jogger S Mujer',nombre:'Poleron Jogger S Mujer',cat:'Prenda',tipo:'Jogger',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PJMH',barcode:'Poleron Jogger M Hombre',nombre:'Poleron Jogger M Hombre',cat:'Prenda',tipo:'Jogger',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PJMM',barcode:'Poleron Jogger M Mujer',nombre:'Poleron Jogger M Mujer',cat:'Prenda',tipo:'Jogger',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PJLH',barcode:'Poleron Jogger L Hombre',nombre:'Poleron Jogger L Hombre',cat:'Prenda',tipo:'Jogger',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PJLM',barcode:'Poleron Jogger L Mujer',nombre:'Poleron Jogger L Mujer',cat:'Prenda',tipo:'Jogger',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PJXH',barcode:'Poleron Jogger XL Hombre',nombre:'Poleron Jogger XL Hombre',cat:'Prenda',tipo:'Jogger',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PJXM',barcode:'Poleron Jogger XL Mujer',nombre:'Poleron Jogger XL Mujer',cat:'Prenda',tipo:'Jogger',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PJXXH',barcode:'Poleron Jogger XXL Hombre',nombre:'Poleron Jogger XXL Hombre',cat:'Prenda',tipo:'Jogger',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PJXXM',barcode:'Poleron Jogger XXL Mujer',nombre:'Poleron Jogger XXL Mujer',cat:'Prenda',tipo:'Jogger',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PJ3H',barcode:'Poleron Jogger 3XL Hombre',nombre:'Poleron Jogger 3XL Hombre',cat:'Prenda',tipo:'Jogger',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PJ3M',barcode:'Poleron Jogger 3XL Mujer',nombre:'Poleron Jogger 3XL Mujer',cat:'Prenda',tipo:'Jogger',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'PJ4H',barcode:'Poleron Jogger 4XL Hombre',nombre:'Poleron Jogger 4XL Hombre',cat:'Prenda',tipo:'Jogger',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'PJ4M',barcode:'Poleron Jogger 4XL Mujer',nombre:'Poleron Jogger 4XL Mujer',cat:'Prenda',tipo:'Jogger',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'SSH',barcode:'Softshell S Hombre',nombre:'Softshell S Hombre',cat:'Prenda',tipo:'Softshell',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'SSM',barcode:'Softshell S Mujer',nombre:'Softshell S Mujer',cat:'Prenda',tipo:'Softshell',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'SMH',barcode:'Softshell M Hombre',nombre:'Softshell M Hombre',cat:'Prenda',tipo:'Softshell',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'SMM',barcode:'Softshell M Mujer',nombre:'Softshell M Mujer',cat:'Prenda',tipo:'Softshell',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'SLH',barcode:'Softshell L Hombre',nombre:'Softshell L Hombre',cat:'Prenda',tipo:'Softshell',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'SLM',barcode:'Softshell L Mujer',nombre:'Softshell L Mujer',cat:'Prenda',tipo:'Softshell',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'SXH',barcode:'Softshell XL Hombre',nombre:'Softshell XL Hombre',cat:'Prenda',tipo:'Softshell',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'SXM',barcode:'Softshell XL Mujer',nombre:'Softshell XL Mujer',cat:'Prenda',tipo:'Softshell',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'SXXH',barcode:'Softshell XXL Hombre',nombre:'Softshell XXL Hombre',cat:'Prenda',tipo:'Softshell',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'SXXM',barcode:'Softshell XXL Mujer',nombre:'Softshell XXL Mujer',cat:'Prenda',tipo:'Softshell',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'S3H',barcode:'Softshell 3XL Hombre',nombre:'Softshell 3XL Hombre',cat:'Prenda',tipo:'Softshell',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'S3M',barcode:'Softshell 3XL Mujer',nombre:'Softshell 3XL Mujer',cat:'Prenda',tipo:'Softshell',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'S4H',barcode:'Softshell 4XL Hombre',nombre:'Softshell 4XL Hombre',cat:'Prenda',tipo:'Softshell',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'S4M',barcode:'Softshell 4XL Mujer',nombre:'Softshell 4XL Mujer',cat:'Prenda',tipo:'Softshell',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'CCSH',barcode:'Camisas Celeste S Hombre',nombre:'Camisa Celeste S Hombre',cat:'Prenda',tipo:'Celeste',talla:'S',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'CCSM',barcode:'Camisas Celeste S Mujer',nombre:'Camisa Celeste S Mujer',cat:'Prenda',tipo:'Celeste',talla:'S',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'CCMH',barcode:'Camisas Celeste M Hombre',nombre:'Camisa Celeste M Hombre',cat:'Prenda',tipo:'Celeste',talla:'M',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'CCMM',barcode:'Camisas Celeste M Mujer',nombre:'Camisa Celeste M Mujer',cat:'Prenda',tipo:'Celeste',talla:'M',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'CCLH',barcode:'Camisas Celeste L Hombre',nombre:'Camisa Celeste L Hombre',cat:'Prenda',tipo:'Celeste',talla:'L',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'CCLM',barcode:'Camisas Celeste L Mujer',nombre:'Camisa Celeste L Mujer',cat:'Prenda',tipo:'Celeste',talla:'L',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'CCXH',barcode:'Camisas Celeste XL Hombre',nombre:'Camisa Celeste XL Hombre',cat:'Prenda',tipo:'Celeste',talla:'XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'CCXM',barcode:'Camisas Celeste XL Mujer',nombre:'Camisa Celeste XL Mujer',cat:'Prenda',tipo:'Celeste',talla:'XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'CCXXH',barcode:'Camisas Celeste XXL Hombre',nombre:'Camisa Celeste XXL Hombre',cat:'Prenda',tipo:'Celeste',talla:'XXL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'CCXXM',barcode:'Camisas Celeste XXL Mujer',nombre:'Camisa Celeste XXL Mujer',cat:'Prenda',tipo:'Celeste',talla:'XXL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'CC3H',barcode:'Camisas Celeste 3XL Hombre',nombre:'Camisa Celeste 3XL Hombre',cat:'Prenda',tipo:'Celeste',talla:'3XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'CC3M',barcode:'Camisas Celeste 3XL Mujer',nombre:'Camisa Celeste 3XL Mujer',cat:'Prenda',tipo:'Celeste',talla:'3XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'CC4H',barcode:'Camisas Celeste 4XL Hombre',nombre:'Camisa Celeste 4XL Hombre',cat:'Prenda',tipo:'Celeste',talla:'4XL',modelo:'Hombre',qty:0,ubicacion:''},
-  {id:'CC4M',barcode:'Camisas Celeste 4XL Mujer',nombre:'Camisa Celeste 4XL Mujer',cat:'Prenda',tipo:'Celeste',talla:'4XL',modelo:'Mujer',qty:0,ubicacion:''},
-  {id:'GHSU',barcode:'Geologo Hemic S Unisex',nombre:'Geologo Hemic S Unisex',cat:'Prenda',tipo:'Hemic',talla:'S',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'GHMU',barcode:'Geologo Hemic M Unisex',nombre:'Geologo Hemic M Unisex',cat:'Prenda',tipo:'Hemic',talla:'M',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'GHLU',barcode:'Geologo Hemic L Unisex',nombre:'Geologo Hemic L Unisex',cat:'Prenda',tipo:'Hemic',talla:'L',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'GHXU',barcode:'Geologo Hemic XL Unisex',nombre:'Geologo Hemic XL Unisex',cat:'Prenda',tipo:'Hemic',talla:'XL',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'GHXXU',barcode:'Geologo Hemic XXL Unisex',nombre:'Geologo Hemic XXL Unisex',cat:'Prenda',tipo:'Hemic',talla:'XXL',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'GH3U',barcode:'Geologo Hemic 3XL Unisex',nombre:'Geologo Hemic 3XL Unisex',cat:'Prenda',tipo:'Hemic',talla:'3XL',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'GH4U',barcode:'Geologo Hemic 4XL Unisex',nombre:'Geologo Hemic 4XL Unisex',cat:'Prenda',tipo:'Hemic',talla:'4XL',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'ZAP40',barcode:'Zapatos 40',nombre:'Zapatos Talla 40',cat:'Prenda',tipo:'Zapatos',talla:'40',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'ZAP41',barcode:'Zapatos 41',nombre:'Zapatos Talla 41',cat:'Prenda',tipo:'Zapatos',talla:'41',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'ZAP42',barcode:'Zapatos 42',nombre:'Zapatos Talla 42',cat:'Prenda',tipo:'Zapatos',talla:'42',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'ZAP43',barcode:'Zapatos 43',nombre:'Zapatos Talla 43',cat:'Prenda',tipo:'Zapatos',talla:'43',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'ZAP44',barcode:'Zapatos 44',nombre:'Zapatos Talla 44',cat:'Prenda',tipo:'Zapatos',talla:'44',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'ZAP45',barcode:'Zapatos 45',nombre:'Zapatos Talla 45',cat:'Prenda',tipo:'Zapatos',talla:'45',modelo:'Unisex',qty:0,ubicacion:''},
-  {id:'ZAP46',barcode:'Zapatos 46',nombre:'Zapatos Talla 46',cat:'Prenda',tipo:'Zapatos',talla:'46',modelo:'Unisex',qty:0,ubicacion:''},
-];
+// ═══ CONFIGURACIÓN API (Google Apps Script) ═══════════════════════════════════
+// Pega aquí la URL de tu implementación web de Apps Script (termina en /exec)
+const API_URL = 'https://script.google.com/macros/s/AKfycbwpFDKIKmRq_wc-H8b2N7nCeuoLPBYz6_athqh7ElGOkw2FNNgoAVqZF1c7Y_Zv7Buk/exec';
 
+// ═══ ESTADO ═══════════════════════════════════════════════════════════════════
+let inventario = [];
 let actas = [];
-let acta_counter = 1;
+
+// ═══ CAPA API ═════════════════════════════════════════════════════════════════
+function apiConfigurada(){ return API_URL && API_URL.startsWith('https://'); }
+
+function setSync(estado, texto){
+  const el = document.getElementById('sync-badge');
+  if(!el) return;
+  el.className = 'sync-badge sync-' + estado;
+  el.innerHTML = (estado==='busy' ? '<i class="ti ti-loader-2 spin"></i> ' :
+                  estado==='ok'   ? '<i class="ti ti-cloud-check"></i> ' :
+                                    '<i class="ti ti-cloud-off"></i> ') + texto;
+}
+
+async function apiGet(params){
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(API_URL + '?' + qs, { method:'GET' });
+  if(!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+// Sincronización en segundo plano (no bloquea la UI)
+async function apiSync(action, params){
+  if(!apiConfigurada()) return null;
+  try{
+    setSync('busy','Guardando…');
+    const r = await apiGet(Object.assign({action}, params||{}));
+    if(r && r.ok===false) throw new Error(r.error||'Error en servidor');
+    setSync('ok','Sincronizado');
+    return r;
+  }catch(err){
+    console.error('Error de sincronización:', err);
+    setSync('err','Sin conexión');
+    alert('⚠ No se pudo guardar en Google Sheets:\n' + err.message + '\n\nEl cambio quedó solo en esta sesión.');
+    return null;
+  }
+}
+
+async function cargarDatos(){
+  if(!apiConfigurada()){
+    setSync('err','Sin conexión a Sheets');
+    alert('Configura API_URL en el código para conectar con Google Sheets.\nLa app funcionará en modo local (los datos se perderán al recargar).');
+    renderInventario();
+    return;
+  }
+  try{
+    setSync('busy','Cargando…');
+    const r = await apiGet({action:'getAll'});
+    if(r && r.ok){
+      inventario = r.inventario || [];
+      actas = r.actas || [];
+      setSync('ok','Sincronizado');
+    }else{
+      throw new Error((r && r.error) || 'Respuesta inválida');
+    }
+  }catch(err){
+    console.error('Error al cargar:', err);
+    setSync('err','Sin conexión');
+    alert('⚠ No se pudieron cargar los datos desde Google Sheets:\n' + err.message);
+  }
+  renderInventario();
+  renderActas();
+}
 let itemsEPP = [];
 let itemsUni = [];
 
@@ -426,14 +400,16 @@ function agregarItem() {
   const c=document.getElementById('inv-codigo').value.trim().toUpperCase();
   if(!n||!c){alert('Ingresa nombre y código.');return;}
   if(inventario.find(x=>x.id===c)){alert('Código ya existe.');return;}
-  inventario.push({id:c,barcode:document.getElementById('inv-barcode').value.trim(),nombre:n,
+  const item={id:c,barcode:document.getElementById('inv-barcode').value.trim(),nombre:n,
     cat:document.getElementById('inv-cat').value,tipo:document.getElementById('inv-tipo').value.trim(),
     talla:document.getElementById('inv-talla').value.trim(),modelo:document.getElementById('inv-modelo').value.trim(),
     qty:parseInt(document.getElementById('inv-qty').value)||0,
-    ubicacion:document.getElementById('inv-ubicacion').value.trim()});
+    ubicacion:document.getElementById('inv-ubicacion').value.trim()};
+  inventario.push(item);
   ['inv-nombre','inv-codigo','inv-barcode','inv-tipo','inv-talla','inv-modelo','inv-ubicacion'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('inv-qty').value=0;
   renderInventario();
+  apiSync('saveItem',{data:JSON.stringify(item)});
 }
 function abrirEditar(i){
   const it=inventario[i];
@@ -453,11 +429,14 @@ function guardarEdicion(){
   inventario[i].ubicacion=ubi;
   cerrarModalEditar();
   renderInventario();
+  apiSync('updateStock',{id:inventario[i].id,qty:qty,ubicacion:ubi});
 }
 function cerrarModalEditar(){document.getElementById('modal-editar').classList.remove('open');}
 function eliminarItem(i){
   if(!confirm(`¿Eliminar "${inventario[i].nombre}"?`))return;
+  const id=inventario[i].id;
   inventario.splice(i,1);renderInventario();
+  apiSync('deleteItem',{id:id});
 }
 
 // ═══ EPP ═════════════════════════════════════════════════════════════════════
@@ -496,14 +475,31 @@ function emitirActaEPP(){
     .map(it=>`Stock insuficiente: "${inventario[it.invIdx].nombre}" (disp: ${inventario[it.invIdx].qty})`);
   if(errores.length){alert(errores.join('\n'));return;}
   if(!confirm('¿Confirmar emisión del acta EPP y descontar stock?'))return;
-  validos.forEach(it=>{inventario[it.invIdx].qty-=it.qty;});
-  const num=String(acta_counter++).padStart(4,'0');
-  const acta={num,tipo:'EPP',nombre,rut,cargo,area,fecha,obs,
+  const acta={tipo:'EPP',nombre,rut,cargo,area,ciudad:'',fecha,obs,
     items:validos.map(it=>({codigo:inventario[it.invIdx].id,barcode:inventario[it.invIdx].barcode,
       nombre:inventario[it.invIdx].nombre,talla:inventario[it.invIdx].talla,modelo:inventario[it.invIdx].modelo,qty:it.qty})),
     emision:new Date().toLocaleString('es-CL')};
-  actas.unshift(acta);itemsEPP=[];
-  ['epp-nombre','epp-rut','epp-cargo','epp-area','epp-obs'].forEach(id=>document.getElementById(id).value='');
+  emitirActa(acta, validos, ()=>{
+    itemsEPP=[];
+    ['epp-nombre','epp-rut','epp-cargo','epp-area','epp-obs'].forEach(id=>document.getElementById(id).value='');
+  });
+}
+
+// Emisión centralizada: el servidor asigna el correlativo y descuenta stock
+async function emitirActa(acta, validos, limpiar){
+  if(apiConfigurada()){
+    const r = await apiSync('addActa',{data:JSON.stringify(acta)});
+    if(!r || !r.ok) return; // apiSync ya mostró el error
+    acta.num = r.num;
+    inventario = r.inventario; // stock actualizado desde Sheets
+  }else{
+    validos.forEach(it=>{inventario[it.invIdx].qty-=it.qty;});
+    const max = actas.reduce((m,a)=>Math.max(m,parseInt(a.num)||0),0);
+    acta.num = String(max+1).padStart(4,'0');
+  }
+  actas.unshift(acta);
+  limpiar();
+  renderInventario();
   mostrarActa(acta);
 }
 
@@ -544,16 +540,15 @@ function emitirActaUni(){
     .map(it=>`Stock insuficiente: "${inventario[it.invIdx].nombre}" (disp: ${inventario[it.invIdx].qty})`);
   if(errores.length){alert(errores.join('\n'));return;}
   if(!confirm('¿Confirmar emisión del acta de uniforme y descontar stock?'))return;
-  validos.forEach(it=>{inventario[it.invIdx].qty-=it.qty;});
-  const num=String(acta_counter++).padStart(4,'0');
-  const acta={num,tipo:'Uniforme',nombre,rut,cargo,ciudad,fecha,
+  const acta={tipo:'Uniforme',nombre,rut,cargo,area:'',ciudad,fecha,obs:'',
     items:validos.map(it=>({codigo:inventario[it.invIdx].id,
       nombre:inventario[it.invIdx].nombre,talla:inventario[it.invIdx].talla,
       qty:it.qty,fechaEntrega:it.fechaEntrega})),
     emision:new Date().toLocaleString('es-CL')};
-  actas.unshift(acta);itemsUni=[];
-  ['uni-nombre','uni-rut','uni-cargo'].forEach(id=>document.getElementById(id).value='');
-  mostrarActa(acta);
+  emitirActa(acta, validos, ()=>{
+    itemsUni=[];
+    ['uni-nombre','uni-rut','uni-cargo'].forEach(id=>document.getElementById(id).value='');
+  });
 }
 
 // ═══ ACTAS ════════════════════════════════════════════════════════════════════
@@ -729,7 +724,7 @@ function stepQty(delta){
 }
 
 // ═══ INIT ════════════════════════════════════════════════════════════════════
-renderInventario();
+cargarDatos();
 </script>
 
 <!-- MODAL EDITAR ÍTEM -->
