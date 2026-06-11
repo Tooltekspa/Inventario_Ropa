@@ -1271,7 +1271,7 @@ function cerrarEditarWorker(){
   document.getElementById('modal-edit-worker').classList.remove('open');
 }
 
-
+function guardarTallaLive(rut, key, val){
   const w = NOMINA_BASE.find(x=>x.rut===rut);
   if(w) w.t[key] = val.trim();
   // No necesita re-render completo; actualiza silenciosamente
