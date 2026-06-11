@@ -45,6 +45,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--tk-bg);color:v
 .search-bar input{border:1px solid var(--tk-border);border-radius:6px;padding:7px 12px;font-size:13px;flex:1;min-width:160px;outline:none}
 .search-bar input:focus{border-color:var(--tk-teal)}
 .search-bar select{border:1px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none;background:#fff}
+/* Multi-estado dropdown */
+.ms-wrap{position:relative;display:inline-block}
+.ms-btn{border:1px solid var(--tk-border);border-radius:6px;padding:7px 10px 7px 12px;font-size:13px;background:#fff;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;color:var(--tk-text);user-select:none;min-width:160px}
+.ms-btn:hover{border-color:var(--tk-teal)}
+.ms-btn.active-filter{border-color:var(--tk-teal);background:#eef6fa;color:var(--tk-blue);font-weight:600}
+.ms-btn .chevron{margin-left:auto;font-size:10px;color:var(--tk-muted);transition:.15s}
+.ms-btn.open .chevron{transform:rotate(180deg)}
+.ms-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--tk-border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:50;min-width:180px;padding:6px 0}
+.ms-dropdown.open{display:block}
+.ms-option{display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;font-size:13px;color:var(--tk-text);transition:.1s}
+.ms-option:hover{background:var(--tk-bg)}
+.ms-option input[type=checkbox]{accent-color:var(--tk-teal);width:14px;height:14px;cursor:pointer;flex-shrink:0}
+.ms-option .pill{pointer-events:none}
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
 .tbl th{background:var(--tk-blue);color:#fff;padding:7px 10px;text-align:left;font-weight:500;white-space:nowrap}
 .tbl td{padding:6px 10px;border-bottom:.5px solid var(--tk-border);vertical-align:middle}
@@ -76,6 +89,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--tk-bg);color:v
 .close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--tk-muted)}
 code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;border-radius:3px}
 .section-sep{border:none;border-top:2px solid var(--tk-border);margin:1rem 0}
+/* Umbrales inline */
+.umbral-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:.55rem .75rem;background:var(--tk-bg);border-radius:8px;border:.5px solid var(--tk-border)}
+.umbral-row label{font-size:12px;color:var(--tk-muted);white-space:nowrap}
+.umbral-row input[type=number]{width:68px;border:1px solid var(--tk-border);border-radius:6px;padding:4px 8px;font-size:13px;font-weight:600;color:var(--tk-blue);text-align:center;outline:none}
+.umbral-row input[type=number]:focus{border-color:var(--tk-teal)}
+.umbral-legend{display:flex;gap:10px;font-size:11px;align-items:center;flex-wrap:wrap;margin-left:auto}
 /* Acta impresa */
 .acta-doc{font-family:'Times New Roman',serif;font-size:13px;line-height:1.7;color:#111;padding:.5rem}
 .acta-doc h2{font-size:16px;font-weight:700;text-align:center;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px}
@@ -137,6 +156,26 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
     </div>
     <div class="card">
       <div class="card-title"><i class="ti ti-list"></i> Stock actual <span id="count-badge" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span></div>
+
+      <!-- ── Umbrales configurables ── -->
+      <div class="umbral-row" style="margin-bottom:.75rem">
+        <i class="ti ti-adjustments-horizontal" style="color:var(--tk-muted);font-size:15px"></i>
+        <label>Stock bajo si cantidad ≤</label>
+        <input type="number" id="umbral-bajo" min="1" max="999" value="5"
+               oninput="actualizarUmbrales()" title="Umbral stock bajo">
+        <label style="margin-left:4px">Disponible si cantidad ≥</label>
+        <input type="number" id="umbral-ok" min="1" max="999" value="6"
+               oninput="actualizarUmbrales()" title="Umbral disponible">
+        <div class="umbral-legend">
+          <span class="pill pill-ok">Disponible</span>
+          <span id="lbl-ok" style="color:var(--tk-muted)">≥ 6</span>
+          <span class="pill pill-warn">Stock bajo</span>
+          <span id="lbl-warn" style="color:var(--tk-muted)">1 – 5</span>
+          <span class="pill pill-danger">Sin stock</span>
+          <span style="color:var(--tk-muted)">0</span>
+        </div>
+      </div>
+
       <div class="search-bar">
         <input id="filtro-texto" type="text" placeholder="Buscar por nombre, código o código de barra..." oninput="renderInventario()">
         <select id="filtro-cat" onchange="renderInventario()">
@@ -146,12 +185,27 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
           <option value="Herramienta">Herramienta</option>
           <option value="Otro">Otro</option>
         </select>
-        <select id="filtro-estado" onchange="renderInventario()">
-          <option value="">Todos los estados</option>
-          <option value="ok">Disponible</option>
-          <option value="warn">Stock bajo</option>
-          <option value="zero">Sin stock</option>
-        </select>
+        <!-- Multi-estado -->
+        <div class="ms-wrap" id="ms-wrap">
+          <div class="ms-btn" id="ms-btn" onclick="toggleMsDropdown()">
+            <span id="ms-label">Todos los estados</span>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="ms-dropdown" id="ms-dropdown">
+            <label class="ms-option">
+              <input type="checkbox" value="ok"   onchange="onMsChange()">
+              <span class="pill pill-ok">Disponible</span>
+            </label>
+            <label class="ms-option">
+              <input type="checkbox" value="warn" onchange="onMsChange()">
+              <span class="pill pill-warn">Stock bajo</span>
+            </label>
+            <label class="ms-option">
+              <input type="checkbox" value="zero" onchange="onMsChange()">
+              <span class="pill pill-danger">Sin stock</span>
+            </label>
+          </div>
+        </div>
       </div>
       <div style="overflow-x:auto">
         <table class="tbl">
@@ -245,7 +299,7 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL ACTA -->
 <div class="modal-bg" id="modal-acta">
   <div class="modal">
     <div class="modal-header">
@@ -260,16 +314,78 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
   </div>
 </div>
 
+<!-- MODAL EDITAR ÍTEM -->
+<div class="modal-bg" id="modal-editar">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <span class="modal-title"><i class="ti ti-pencil"></i> Editar ítem</span>
+      <button class="close-btn" onclick="cerrarModalEditar()">✕</button>
+    </div>
+    <p id="edit-nombre" style="font-weight:600;color:var(--tk-blue);margin-bottom:1rem;font-size:13px"></p>
+    <input type="hidden" id="edit-idx">
+    <div style="margin-bottom:1rem">
+      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Cantidad en stock</label>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="stepQty(-1)" style="font-size:16px;padding:4px 12px">−</button>
+        <input type="number" id="edit-qty" min="0" style="flex:1;text-align:center;font-size:18px;font-weight:700;color:var(--tk-blue);border:1.5px solid var(--tk-border);border-radius:6px;padding:6px;outline:none"
+          onkeydown="if(event.key==='Enter')guardarEdicion()">
+        <button class="btn btn-outline btn-sm" onclick="stepQty(1)" style="font-size:16px;padding:4px 12px">+</button>
+      </div>
+    </div>
+    <div style="margin-bottom:1.25rem">
+      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Ubicación</label>
+      <input type="text" id="edit-ubicacion" placeholder="Ej: Bodega A, Estante 3"
+        style="width:100%;border:1.5px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none"
+        onkeydown="if(event.key==='Enter')guardarEdicion()">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="guardarEdicion()"><i class="ti ti-check"></i> Guardar</button>
+      <button class="btn btn-outline" onclick="cerrarModalEditar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ═══ CONFIGURACIÓN API (Google Apps Script) ═══════════════════════════════════
-// Pega aquí la URL de tu implementación web de Apps Script (termina en /exec)
+// ═══ CONFIGURACIÓN API ═══════════════════════════════════════════════════════
 const API_URL = 'https://script.google.com/macros/s/AKfycbwpFDKIKmRq_wc-H8b2N7nCeuoLPBYz6_athqh7ElGOkw2FNNgoAVqZF1c7Y_Zv7Buk/exec';
 
-// ═══ ESTADO ═══════════════════════════════════════════════════════════════════
+// ═══ ESTADO ══════════════════════════════════════════════════════════════════
 let inventario = [];
 let actas = [];
+let itemsEPP = [];
+let itemsUni = [];
 
-// ═══ CAPA API ═════════════════════════════════════════════════════════════════
+// ═══ UMBRALES (configurables por el usuario) ══════════════════════════════════
+let umbralBajo = 5;   // qty <= umbralBajo → "Stock bajo"
+                      // qty > umbralBajo   → "Disponible"
+
+function actualizarUmbrales(){
+  const bajo = parseInt(document.getElementById('umbral-bajo').value) || 1;
+  const ok   = parseInt(document.getElementById('umbral-ok').value)   || bajo + 1;
+
+  // Sincronizar: bajo siempre = ok - 1  (evita solapamientos)
+  umbralBajo = bajo;
+
+  // Ajustar el campo "Disponible" para que siempre sea bajo+1
+  const elOk = document.getElementById('umbral-ok');
+  if(ok <= bajo){
+    elOk.value = bajo + 1;
+  }
+
+  // Actualizar leyenda
+  document.getElementById('lbl-ok').textContent   = '≥ ' + (umbralBajo + 1);
+  document.getElementById('lbl-warn').textContent  = umbralBajo > 1 ? '1 – ' + umbralBajo : '1';
+
+  renderInventario();
+}
+
+function estadoItem(qty){
+  if(qty === 0)          return {cls:'pill-danger', txt:'Sin stock',   key:'zero'};
+  if(qty <= umbralBajo)  return {cls:'pill-warn',   txt:'Stock bajo',  key:'warn'};
+  return                        {cls:'pill-ok',     txt:'Disponible',  key:'ok'};
+}
+
+// ═══ CAPA API ════════════════════════════════════════════════════════════════
 function apiConfigurada(){ return API_URL && API_URL.startsWith('https://'); }
 
 function setSync(estado, texto){
@@ -277,8 +393,8 @@ function setSync(estado, texto){
   if(!el) return;
   el.className = 'sync-badge sync-' + estado;
   el.innerHTML = (estado==='busy' ? '<i class="ti ti-loader-2 spin"></i> ' :
-                  estado==='ok'   ? '<i class="ti ti-cloud-check"></i> ' :
-                                    '<i class="ti ti-cloud-off"></i> ') + texto;
+                  estado==='ok'   ? '<i class="ti ti-cloud-check"></i> '   :
+                                    '<i class="ti ti-cloud-off"></i> ')    + texto;
 }
 
 async function apiGet(params){
@@ -288,7 +404,6 @@ async function apiGet(params){
   return res.json();
 }
 
-// Sincronización en segundo plano (no bloquea la UI)
 async function apiSync(action, params){
   if(!apiConfigurada()) return null;
   try{
@@ -330,8 +445,6 @@ async function cargarDatos(){
   renderInventario();
   renderActas();
 }
-let itemsEPP = [];
-let itemsUni = [];
 
 // ═══ NAVEGACIÓN ══════════════════════════════════════════════════════════════
 function showTab(t, btn) {
@@ -347,13 +460,15 @@ function showTab(t, btn) {
 
 // ═══ ESTADÍSTICAS ════════════════════════════════════════════════════════════
 function renderStats() {
-  const total = inventario.length;
-  const conStock = inventario.filter(i => i.qty > 0).length;
-  const sinStock = inventario.filter(i => i.qty === 0).length;
+  const total         = inventario.length;
+  const conStock      = inventario.filter(i => i.qty > 0).length;
+  const sinStock      = inventario.filter(i => i.qty === 0).length;
+  const stockBajo     = inventario.filter(i => i.qty > 0 && i.qty <= umbralBajo).length;
   const totalUnidades = inventario.reduce((s, i) => s + i.qty, 0);
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-box"><div class="val">${total}</div><div class="lbl">Artículos</div></div>
     <div class="stat-box"><div class="val" style="color:var(--tk-success)">${conStock}</div><div class="lbl">Con stock</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-warn)">${stockBajo}</div><div class="lbl">Stock bajo</div></div>
     <div class="stat-box"><div class="val" style="color:var(--tk-danger)">${sinStock}</div><div class="lbl">Sin stock</div></div>
     <div class="stat-box"><div class="val">${totalUnidades}</div><div class="lbl">Unidades totales</div></div>
     <div class="stat-box"><div class="val" style="color:var(--tk-teal)">${actas.length}</div><div class="lbl">Actas emitidas</div></div>`;
@@ -364,13 +479,13 @@ function renderInventario() {
   renderStats();
   const txt = (document.getElementById('filtro-texto').value || '').toLowerCase();
   const cat = document.getElementById('filtro-cat').value;
-  const est = document.getElementById('filtro-estado').value;
+  const estados = getEstadosFiltro();
   const filtrado = inventario.filter(it => {
     const matchTxt = !txt || it.nombre.toLowerCase().includes(txt) ||
       it.id.toLowerCase().includes(txt) || (it.barcode||'').toLowerCase().includes(txt);
     const matchCat = !cat || it.cat === cat;
-    const matchEst = !est ||
-      (est==='ok' && it.qty>5) || (est==='warn' && it.qty>0 && it.qty<=5) || (est==='zero' && it.qty===0);
+    const e = estadoItem(it.qty);
+    const matchEst = estados.length === 0 || estados.includes(e.key);
     return matchTxt && matchCat && matchEst;
   });
   document.getElementById('count-badge').textContent = `(${filtrado.length} de ${inventario.length})`;
@@ -378,16 +493,14 @@ function renderInventario() {
   if (!filtrado.length) { tb.innerHTML='<tr><td colspan="10" class="empty">Sin resultados</td></tr>'; return; }
   tb.innerHTML = filtrado.map(it => {
     const i = inventario.indexOf(it);
-    const estado = it.qty===0 ? '<span class="pill pill-danger">Sin stock</span>'
-      : it.qty<=5 ? '<span class="pill pill-warn">Stock bajo</span>'
-      : '<span class="pill pill-ok">Disponible</span>';
+    const e = estadoItem(it.qty);
     return `<tr>
       <td><code>${it.id}</code></td>
       <td style="font-size:11px;color:var(--tk-muted)">${it.barcode||'—'}</td>
       <td>${it.nombre}</td><td>${it.tipo||'—'}</td><td>${it.talla||'—'}</td><td>${it.modelo||'—'}</td>
       <td style="font-size:11px">${it.ubicacion||'—'}</td>
       <td><span class="qty-badge">${it.qty}</span></td>
-      <td>${estado}</td>
+      <td><span class="pill ${e.cls}">${e.txt}</span></td>
       <td style="white-space:nowrap">
         <button class="btn btn-sm btn-outline" onclick="abrirEditar(${i})"><i class="ti ti-pencil"></i> Editar</button>
         <button class="btn btn-sm btn-danger" onclick="eliminarItem(${i})" style="margin-left:3px"><i class="ti ti-trash"></i></button>
@@ -411,6 +524,7 @@ function agregarItem() {
   renderInventario();
   apiSync('saveItem',{data:JSON.stringify(item)});
 }
+
 function abrirEditar(i){
   const it=inventario[i];
   document.getElementById('edit-idx').value=i;
@@ -485,13 +599,12 @@ function emitirActaEPP(){
   });
 }
 
-// Emisión centralizada: el servidor asigna el correlativo y descuenta stock
 async function emitirActa(acta, validos, limpiar){
   if(apiConfigurada()){
     const r = await apiSync('addActa',{data:JSON.stringify(acta)});
-    if(!r || !r.ok) return; // apiSync ya mostró el error
+    if(!r || !r.ok) return;
     acta.num = r.num;
-    inventario = r.inventario; // stock actualizado desde Sheets
+    inventario = r.inventario;
   }else{
     validos.forEach(it=>{inventario[it.invIdx].qty-=it.qty;});
     const max = actas.reduce((m,a)=>Math.max(m,parseInt(a.num)||0),0);
@@ -578,7 +691,6 @@ function mostrarActa(acta){
 }
 function cerrarModal(){document.getElementById('modal-acta').classList.remove('open');}
 
-// ── Acta Uniforme (fiel al documento ODT) ────────────────────────────────────
 function generarActaUniforme(a){
   const filasFecha = a.items.map(it=>`
     <tr>
@@ -607,9 +719,7 @@ function generarActaUniforme(a){
     <p><strong>Cargo:</strong> ${a.cargo||'—'}</p>
     <p><strong>Rut</strong> ${a.rut}</p>
     <div class="firma-section">
-      <div class="firma-line">
-        Firma: _________________________________________________________________
-      </div>
+      <div class="firma-line">Firma: _________________________________________________________________</div>
     </div>
     <div style="margin-top:1.5rem;border-top:1px solid #0081b0;padding-top:6px;font-size:10px;color:#5a7a8e;text-align:center;font-style:italic">
       TOOLTEK® — Herramientas para construir el futuro &nbsp;|&nbsp; Acta N° ${a.num} &nbsp;|&nbsp; Emitida: ${a.emision}
@@ -617,7 +727,6 @@ function generarActaUniforme(a){
   </div>`;
 }
 
-// ── Acta EPP ──────────────────────────────────────────────────────────────────
 function generarActaEPP(a){
   const filas=a.items.map(it=>`<tr>
     <td><code style="font-size:11px">${it.codigo}</code></td>
@@ -672,39 +781,7 @@ function imprimirActa(){
   table{width:100%;border-collapse:collapse}th{border:1px solid #333;padding:5px 10px;background:#e8e8e8;font-weight:700;text-align:center}
   td{border:1px solid #555;padding:5px 10px}p{margin-bottom:.6rem;text-align:justify}
   code{font-size:11px}@media print{@page{margin:2cm}}</style>
-  </head><body>${c}
-<!-- MODAL EDITAR ÍTEM -->
-<div class="modal-bg" id="modal-editar">
-  <div class="modal" style="max-width:380px">
-    <div class="modal-header">
-      <span class="modal-title"><i class="ti ti-pencil"></i> Editar ítem</span>
-      <button class="close-btn" onclick="cerrarModalEditar()">✕</button>
-    </div>
-    <p id="edit-nombre" style="font-weight:600;color:var(--tk-blue);margin-bottom:1rem;font-size:13px"></p>
-    <input type="hidden" id="edit-idx">
-    <div style="margin-bottom:1rem">
-      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Cantidad en stock</label>
-      <div style="display:flex;align-items:center;gap:6px">
-        <button class="btn btn-outline btn-sm" onclick="stepQty(-1)" style="font-size:16px;padding:4px 12px">−</button>
-        <input type="number" id="edit-qty" min="0" style="flex:1;text-align:center;font-size:18px;font-weight:700;color:var(--tk-blue);border:1.5px solid var(--tk-border);border-radius:6px;padding:6px;outline:none"
-          onkeydown="if(event.key==='Enter')guardarEdicion()">
-        <button class="btn btn-outline btn-sm" onclick="stepQty(1)" style="font-size:16px;padding:4px 12px">+</button>
-      </div>
-    </div>
-    <div style="margin-bottom:1.25rem">
-      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Ubicación</label>
-      <input type="text" id="edit-ubicacion" placeholder="Ej: Bodega A, Estante 3" 
-        style="width:100%;border:1.5px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none"
-        onkeydown="if(event.key==='Enter')guardarEdicion()">
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="btn btn-primary" onclick="guardarEdicion()"><i class="ti ti-check"></i> Guardar</button>
-      <button class="btn btn-outline" onclick="cerrarModalEditar()">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-</body></html>`);
+  </head><body>${c}</body></html>`);
   w.document.close();setTimeout(()=>w.print(),400);
 }
 
@@ -716,47 +793,51 @@ function formatFechaLarga(f){
   const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   const[y,m,d]=f.split('-');return`${parseInt(d)} de ${meses[parseInt(m)-1]} de ${y}`;
 }
-
-
 function stepQty(delta){
   const el=document.getElementById('edit-qty');
   el.value=Math.max(0,(parseInt(el.value)||0)+delta);
 }
 
+// ═══ MULTI-ESTADO DROPDOWN ═══════════════════════════════════════════════════
+function getEstadosFiltro(){
+  return [...document.querySelectorAll('#ms-dropdown input[type=checkbox]:checked')]
+         .map(cb => cb.value);
+}
+
+function onMsChange(){
+  const sel = getEstadosFiltro();
+  const btn = document.getElementById('ms-btn');
+  const lbl = document.getElementById('ms-label');
+  const nombres = {'ok':'Disponible','warn':'Stock bajo','zero':'Sin stock'};
+  if(sel.length === 0){
+    lbl.textContent = 'Todos los estados';
+    btn.classList.remove('active-filter');
+  } else {
+    lbl.textContent = sel.map(k => nombres[k]).join(' + ');
+    btn.classList.add('active-filter');
+  }
+  renderInventario();
+}
+
+function toggleMsDropdown(){
+  const btn = document.getElementById('ms-btn');
+  const dd  = document.getElementById('ms-dropdown');
+  const open = dd.classList.contains('open');
+  dd.classList.toggle('open', !open);
+  btn.classList.toggle('open', !open);
+}
+
+// Cerrar al hacer click fuera
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('ms-wrap');
+  if(wrap && !wrap.contains(e.target)){
+    document.getElementById('ms-dropdown').classList.remove('open');
+    document.getElementById('ms-btn').classList.remove('open');
+  }
+});
+
 // ═══ INIT ════════════════════════════════════════════════════════════════════
 cargarDatos();
 </script>
-
-<!-- MODAL EDITAR ÍTEM -->
-<div class="modal-bg" id="modal-editar">
-  <div class="modal" style="max-width:380px">
-    <div class="modal-header">
-      <span class="modal-title"><i class="ti ti-pencil"></i> Editar ítem</span>
-      <button class="close-btn" onclick="cerrarModalEditar()">✕</button>
-    </div>
-    <p id="edit-nombre" style="font-weight:600;color:var(--tk-blue);margin-bottom:1rem;font-size:13px"></p>
-    <input type="hidden" id="edit-idx">
-    <div style="margin-bottom:1rem">
-      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Cantidad en stock</label>
-      <div style="display:flex;align-items:center;gap:6px">
-        <button class="btn btn-outline btn-sm" onclick="stepQty(-1)" style="font-size:16px;padding:4px 12px">−</button>
-        <input type="number" id="edit-qty" min="0" style="flex:1;text-align:center;font-size:18px;font-weight:700;color:var(--tk-blue);border:1.5px solid var(--tk-border);border-radius:6px;padding:6px;outline:none"
-          onkeydown="if(event.key==='Enter')guardarEdicion()">
-        <button class="btn btn-outline btn-sm" onclick="stepQty(1)" style="font-size:16px;padding:4px 12px">+</button>
-      </div>
-    </div>
-    <div style="margin-bottom:1.25rem">
-      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Ubicación</label>
-      <input type="text" id="edit-ubicacion" placeholder="Ej: Bodega A, Estante 3" 
-        style="width:100%;border:1.5px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none"
-        onkeydown="if(event.key==='Enter')guardarEdicion()">
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="btn btn-primary" onclick="guardarEdicion()"><i class="ti ti-check"></i> Guardar</button>
-      <button class="btn btn-outline" onclick="cerrarModalEditar()">Cancelar</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
