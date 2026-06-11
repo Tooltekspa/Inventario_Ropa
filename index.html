@@ -105,6 +105,27 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
 .acta-doc table td{border:1px solid #555;padding:5px 10px}
 .acta-doc .firma-section{margin-top:2rem}
 .acta-doc .firma-line{border-top:1px solid #333;width:70%;margin:2rem auto 0;padding-top:4px;text-align:center;font-size:12px}
+/* ── Nómina ── */
+.nom-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center}
+.nom-filters input,.nom-filters select{border:1px solid var(--tk-border);border-radius:6px;padding:6px 10px;font-size:13px;outline:none;background:#fff}
+.nom-filters input{flex:1;min-width:160px}
+.nom-filters input:focus,.nom-filters select:focus{border-color:var(--tk-teal)}
+/* lista en tabla */
+.nom-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.nom-tbl th{background:var(--tk-blue);color:#fff;padding:7px 10px;text-align:left;font-weight:500;white-space:nowrap;font-size:12px}
+.nom-tbl td{padding:6px 10px;border-bottom:.5px solid var(--tk-border);vertical-align:middle}
+.nom-tbl tr:last-child td{border-bottom:none}
+.nom-tbl tr:hover td{background:var(--tk-bg)}
+.talla-chip{display:inline-block;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;white-space:nowrap}
+.tc-ok{background:#e8f5ee;color:var(--tk-success)}
+.tc-pend{background:#fdf4e8;color:var(--tk-warn)}
+/* mantener clases de tarjeta por si algo las referencia */
+.worker-grid{} .worker-card{}
+/* Modal trabajador */
+.modal-worker-header{background:var(--tk-bg);border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem}
+.talla-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+.talla-row label{font-size:12px;color:var(--tk-muted);min-width:120px}
+.talla-row input,.talla-row select{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none;flex:1;min-width:90px}
 </style>
 </head>
 <body>
@@ -124,6 +145,7 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
     <button class="tab active" onclick="showTab('inventario',this)"><i class="ti ti-archive"></i> Inventario</button>
     <button class="tab" onclick="showTab('entrega-epp',this)"><i class="ti ti-shield-check"></i> Entrega EPP</button>
     <button class="tab" onclick="showTab('entrega-uniforme',this)"><i class="ti ti-shirt"></i> Entrega Uniformes</button>
+    <button class="tab" onclick="showTab('nomina',this)"><i class="ti ti-users"></i> Nómina</button>
     <button class="tab" onclick="showTab('actas',this)"><i class="ti ti-file-description"></i> Actas Emitidas</button>
   </div>
 
@@ -290,11 +312,120 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
     </div>
   </div>
 
+  <!-- ═══ NÓMINA ═══ -->
+  <div class="panel" id="panel-nomina">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-users"></i> Nómina de trabajadores
+        <span id="nom-count-badge" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span>
+      </div>
+      <div class="nom-filters">
+        <input id="nom-buscar" type="text" placeholder="Buscar por nombre, RUT o cargo…" oninput="renderNomina()">
+        <select id="nom-tenida" onchange="renderNomina()">
+          <option value="">Todos los tipos</option>
+          <option value="Bodega">Bodega</option>
+          <option value="administrativo">Administrativo</option>
+        </select>
+        <select id="nom-sexo" onchange="renderNomina()">
+          <option value="">Ambos sexos</option>
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+        </select>
+        <select id="nom-cc" onchange="renderNomina()">
+          <option value="">Todos los centros de costo</option>
+          <option value="Gerencia de Operaciones">Ger. Operaciones</option>
+          <option value="Gerencia Comercial">Ger. Comercial</option>
+          <option value="Gerencia de Administracion y Finanzas">Ger. Adm. y Finanzas</option>
+          <option value="Gerencia General">Gerencia General</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto">
+        <div id="worker-grid"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══ ACTAS ═══ -->
   <div class="panel" id="panel-actas">
     <div class="card">
       <div class="card-title"><i class="ti ti-files"></i> Historial de actas emitidas</div>
       <div id="lista-actas"><div class="empty">No hay actas emitidas aún.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TRABAJADOR -->
+<div class="modal-bg" id="modal-worker">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header">
+      <span class="modal-title" id="mw-titulo"><i class="ti ti-user"></i> Perfil de trabajador</span>
+      <button class="close-btn" onclick="cerrarModalWorker()">✕</button>
+    </div>
+    <div id="mw-perfil"></div>
+    <hr style="border:none;border-top:.5px solid var(--tk-border);margin:.75rem 0">
+    <div class="card-title" style="margin-bottom:.5rem"><i class="ti ti-ruler-2"></i> Tallas &amp; dotación para acta</div>
+    <div id="mw-tallas"></div>
+    <div style="display:flex;gap:8px;margin-top:1rem;justify-content:flex-end;flex-wrap:wrap">
+      <button class="btn btn-success" id="mw-btn-uni" onclick="emitirDesdeWorker('Uniforme')">
+        <i class="ti ti-file-plus"></i> Emitir Acta Uniforme
+      </button>
+      <button class="btn btn-primary" id="mw-btn-epp" onclick="emitirDesdeWorker('EPP')">
+        <i class="ti ti-shield-check"></i> Emitir Acta EPP
+      </button>
+      <button class="btn btn-outline" onclick="cerrarModalWorker()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR TRABAJADOR -->
+<div class="modal-bg" id="modal-edit-worker">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span class="modal-title"><i class="ti ti-user-edit"></i> Editar trabajador</span>
+      <button class="close-btn" onclick="cerrarEditarWorker()">✕</button>
+    </div>
+    <input type="hidden" id="ew-rut-original">
+    <div class="form-row">
+      <label>Nombres</label>
+      <input id="ew-nombres" type="text" placeholder="Nombres">
+    </div>
+    <div class="form-row">
+      <label>Ap. Paterno</label>
+      <input id="ew-ap" type="text" placeholder="Apellido paterno">
+      <label>Ap. Materno</label>
+      <input id="ew-am" type="text" placeholder="Apellido materno">
+    </div>
+    <div class="form-row">
+      <label>RUT</label>
+      <input id="ew-rut" type="text" placeholder="ej: 12.345.678-9">
+      <label>Sexo</label>
+      <select id="ew-sexo">
+        <option value="M">Masculino</option>
+        <option value="F">Femenino</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Cargo</label>
+      <input id="ew-cargo" type="text" placeholder="Cargo" style="flex:2">
+    </div>
+    <div class="form-row">
+      <label>Tipo tenida</label>
+      <select id="ew-tenida">
+        <option value="Bodega">Bodega</option>
+        <option value="administrativo">Administrativo</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Centro costo</label>
+      <select id="ew-cc" style="flex:2">
+        <option value="Gerencia de Operaciones">Gerencia de Operaciones</option>
+        <option value="Gerencia Comercial">Gerencia Comercial</option>
+        <option value="Gerencia de Administracion y Finanzas">Gerencia de Administración y Finanzas</option>
+        <option value="Gerencia General">Gerencia General</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1.25rem;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="guardarEditarWorker()"><i class="ti ti-check"></i> Guardar cambios</button>
+      <button class="btn btn-outline" onclick="cerrarEditarWorker()">Cancelar</button>
     </div>
   </div>
 </div>
@@ -455,6 +586,7 @@ function showTab(t, btn) {
   if (t === 'inventario') renderInventario();
   if (t === 'entrega-epp') initEPP();
   if (t === 'entrega-uniforme') initUni();
+  if (t === 'nomina') renderNomina();
   if (t === 'actas') renderActas();
 }
 
@@ -796,6 +928,419 @@ function formatFechaLarga(f){
 function stepQty(delta){
   const el=document.getElementById('edit-qty');
   el.value=Math.max(0,(parseInt(el.value)||0)+delta);
+}
+
+// ═══ NÓMINA PRECARGADA ═══════════════════════════════════════════════════════
+// tallas: {camisas, poleras, softshell, parka, buzo, pantalon} — vacío = pendiente
+const T = ()=>({camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''});
+const NOMINA_BASE = [
+  {rut:'20048228-K',nombres:'Adip Isrrael',ap:'Gallegos',am:'Apablaza',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'17414451-6',nombres:'Adolfo Esteban',ap:'Vallejos',am:'Aguirre',sexo:'M',cargo:'Encargado(a) de Marketing',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'12872867-8',nombres:'Ana Violeta',ap:'Reyes',am:'Curiñanco',sexo:'F',cargo:'Auxiliar de Aseo',tenida:'Bodega',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'27935546-6',nombres:'Andres Mauricio',ap:'Barrera',am:'Claro',sexo:'M',cargo:'Analista de Control de Gestión y Procesos',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'22277327-K',nombres:'Angelo Cristofer',ap:'Vasquez',am:'Abarca',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'16911172-3',nombres:'Carlos Nicolás',ap:'Zúñiga',am:'Lizana',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'15608896-K',nombres:'Carolina Andrea',ap:'Ortiz',am:'Reyes',sexo:'F',cargo:'Secretaria',tenida:'administrativo',cc:'Gerencia General',t:T()},
+  {rut:'18928987-1',nombres:'Cesar Ignacio',ap:'Soto',am:'Pedraza',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'9153987-K',nombres:'Christian',ap:'Zegard',am:'Latrach',sexo:'M',cargo:'Gerente General',tenida:'administrativo',cc:'Gerencia General',t:T()},
+  {rut:'18665072-7',nombres:'David Ignacio',ap:'Muñoz',am:'Bruna',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'17803789-7',nombres:'Diego Eduardo',ap:'Cabrera',am:'Eyzaguirre',sexo:'M',cargo:'Asistente Administrativo Contable',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'10763806-7',nombres:'Eduardo Alejandro',ap:'Lillo',am:'Miranda',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'10827215-5',nombres:'Eric David',ap:'Cisternas',am:'Faundez',sexo:'M',cargo:'Gerente de Operaciones',tenida:'administrativo',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'14257849-2',nombres:'Erich David',ap:'Olate',am:'Valdes',sexo:'M',cargo:'Gerente Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'26066981-8',nombres:'Eudo Eduine',ap:'Parra',am:'Larreal',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'11166150-2',nombres:'Eugenia Patricia',ap:'Tognarelli',am:'Espinoza',sexo:'F',cargo:'Ejecutivo Back Office',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'16473711-K',nombres:'Francisco Javier',ap:'Cuevas',am:'Conejeros',sexo:'M',cargo:'Product Manager',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'17375907-K',nombres:'Francisco Javier',ap:'Puga',am:'Leviman',sexo:'M',cargo:'Encargado de Administración y Tesorería',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'19314218-4',nombres:'Geraldine Marlene',ap:'Santander',am:'Parra',sexo:'F',cargo:'Encargada de Facturacion',tenida:'administrativo',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'20054097-2',nombres:'Gianfranco Alexander',ap:'Flores',am:'Cordero',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'16338069-2',nombres:'Gunther Peter',ap:'Viertel',am:'Muñoz',sexo:'M',cargo:'Gerente General',tenida:'administrativo',cc:'Gerencia General',t:T()},
+  {rut:'12567161-6',nombres:'Gustavo Cesar Augusto',ap:'Rojas',am:'Hip',sexo:'M',cargo:'Analista de Crédito y Cobranza',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'10394635-2',nombres:'Hector Fabian',ap:'Reyes',am:'Lizama',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'12237134-4',nombres:'Hugo Enrique',ap:'Espinoza',am:'Cornejo',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'26275948-2',nombres:'Jesús Alejandro',ap:'Gil',am:'Juarez',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'10127531-0',nombres:'Joaquin Fernando',ap:'Reyes',am:'Salazar',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'21041970-5',nombres:'Joaquin Guillermo',ap:'Matus',am:'Galindo',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'9253007-8',nombres:'Jorge Eduardo',ap:'Valenzuela',am:'Gonzalez',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'10346511-7',nombres:'Jorge Hernan',ap:'Vergara',am:'Diaz',sexo:'M',cargo:'Contador(a)',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'11752719-0',nombres:'Jorge Luis',ap:'Washington',am:'Washington',sexo:'M',cargo:'Asistente de Logistica y Despacho',tenida:'administrativo',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'20708485-9',nombres:'Jorge Luis',ap:'Washington',am:'Cordova',sexo:'M',cargo:'Coordinador de Ventas',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'16690755-1',nombres:'Jose Alejandro',ap:'Oyarce',am:'Sepulveda',sexo:'M',cargo:'Gerente de Administración y Finanzas',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'11486652-0',nombres:'Jose Antonio',ap:'Traslaviña',am:'Pinto',sexo:'M',cargo:'Ejecutivo Comercial de Cuentas Claves',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'26110431-8',nombres:'Jose Aritobulo',ap:'Pino',am:'Prazuela',sexo:'M',cargo:'Encargado de Servicio Tecnico y Capacitacion',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'20961375-1',nombres:'Justyn Aaron',ap:'Seguel',am:'Cortes',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'12155399-6',nombres:'Leandro Eduardo',ap:'Navarrete',am:'Pizarro',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'18330930-7',nombres:'Leonardo Mauricio Antonio',ap:'Maldonado',am:'Alegria',sexo:'M',cargo:'Promovendedor',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'12191712-2',nombres:'Miguel Angel',ap:'Duran',am:'Sanhueza',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'14369887-4',nombres:'Nicsa Ana',ap:'Molina',am:'Fernandez',sexo:'F',cargo:'Asistente de Operaciones',tenida:'administrativo',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'12168317-2',nombres:'Pablo César',ap:'Castañeda',am:'Fuentes',sexo:'M',cargo:'Ejecutivo Comercial de Cuentas Claves',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'11336041-0',nombres:'Patricio Lenin',ap:'Gonzalez',am:'Araya',sexo:'M',cargo:'Asesor Técnico Comercial Industrial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'17040593-5',nombres:'Ricardo Ignacio',ap:'Bravo',am:'Tapia',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'25647191-4',nombres:'Ricardo Jose',ap:'Navarro',am:'Almarza',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'9906311-4',nombres:'Ricardo Juan',ap:'Thompson',am:'Ferrada',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'9400539-6',nombres:'Roberto Antonio',ap:'Riquelme',am:'Arce',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'19223334-8',nombres:'Roberto Felipe Nicolas',ap:'Riquelme',am:'Reyes',sexo:'M',cargo:'Jefe de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'18052771-0',nombres:'Rodrigo Adrián',ap:'Munita',am:'Fuentes',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'9095560-8',nombres:'Sandra Doris',ap:'Viertel',am:'Peschka',sexo:'F',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'18666862-6',nombres:'Sebastián Alfonso',ap:'Faure',am:'Solari',sexo:'M',cargo:'Promovendedor',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'20790096-6',nombres:'Sebastian Ignacio Esteban',ap:'Riquelme',am:'Reyes',sexo:'M',cargo:'Encargado de Inventario y Reposicion',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'14128464-9',nombres:'Solange Del Carmen',ap:'Lobos',am:'De la fuente',sexo:'F',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'15689934-8',nombres:'Teresa Leonor',ap:'Arredondo',am:'Plaza',sexo:'F',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'14171520-8',nombres:'Viviana Lucia De Lourdes',ap:'Rojas',am:'Trejo',sexo:'F',cargo:'Ejecutivo Back Office',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'18090899-4',nombres:'Yerko Antonio',ap:'Muñoz',am:'Castillo',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia Comercial',t:T()},
+];
+
+// Columnas de talla disponibles con sus etiquetas y a qué tipo aplica
+const TALLA_COLS = [
+  {key:'camisas',   label:'Camisas',    aplica:['administrativo']},
+  {key:'poleras',   label:'Poleras',    aplica:['Bodega','administrativo']},
+  {key:'softshell', label:'Softshell',  aplica:['administrativo']},
+  {key:'parka',     label:'Parka',      aplica:['Bodega','administrativo']},
+  {key:'buzo',      label:'Buzo',       aplica:['Bodega']},
+  {key:'pantalon',  label:'Pantalón',   aplica:['Bodega']},
+];
+
+function tallasParaTipo(tenida){
+  return TALLA_COLS.filter(c=>c.aplica.includes(tenida));
+}
+
+// ═══ REGLAS DE DOTACIÓN ══════════════════════════════════════════════════════
+// Cada regla: { sexo:'M'|'F'|'*', prendas:[{nombre,nota}] }
+const DOTACION = {
+  'Bodega': {
+    label: 'Personal de Bodega / Operaciones',
+    sexos: {
+      'M': [
+        {nombre:'Buzo de trabajo', nota:''},
+        {nombre:'Polera manga corta', nota:''},
+        {nombre:'Polerón / Polar', nota:''},
+        {nombre:'Zapatos de seguridad', nota:'con punta de acero'},
+      ],
+      'F': [
+        {nombre:'Buzo de trabajo', nota:'corte femenino'},
+        {nombre:'Polera manga corta', nota:''},
+        {nombre:'Polerón / Polar', nota:''},
+        {nombre:'Zapatos de seguridad', nota:'con punta de acero'},
+      ],
+    }
+  },
+  'administrativo': {
+    label: 'Personal Administrativo / Comercial',
+    sexos: {
+      'M': [
+        {nombre:'Camisa manga larga', nota:''},
+        {nombre:'Softshell / Chaqueta corporativa', nota:''},
+      ],
+      'F': [
+        {nombre:'Blusa / Camisa', nota:'corte femenino'},
+        {nombre:'Softshell / Chaqueta corporativa', nota:''},
+      ],
+    }
+  }
+};
+
+// Parka universal (todos los trabajadores)
+const DOTACION_UNIVERSAL = [
+  {nombre:'Parka corporativa TOOLTEK®', nota:'universal, talla única por sexo'},
+];
+
+function getDotacion(w){
+  const regla = DOTACION[w.tenida];
+  if(!regla) return DOTACION_UNIVERSAL;
+  const prendas = (regla.sexos[w.sexo] || regla.sexos['M']).map(p=>({...p}));
+  return [...prendas, ...DOTACION_UNIVERSAL];
+}
+
+// ═══ NÓMINA — RENDER ═════════════════════════════════════════════════════════
+function renderNomina(){
+  const txt  = (document.getElementById('nom-buscar').value||'').toLowerCase();
+  const ten  = document.getElementById('nom-tenida').value;
+  const sexo = document.getElementById('nom-sexo').value;
+  const cc   = document.getElementById('nom-cc').value;
+
+  const fil = NOMINA_BASE.filter(w=>{
+    const nombre = `${w.nombres} ${w.ap} ${w.am}`.toLowerCase();
+    const matchTxt  = !txt  || nombre.includes(txt) || w.rut.toLowerCase().includes(txt) || w.cargo.toLowerCase().includes(txt);
+    const matchTen  = !ten  || w.tenida === ten;
+    const matchSexo = !sexo || w.sexo === sexo;
+    const matchCC   = !cc   || w.cc === cc;
+    return matchTxt && matchTen && matchSexo && matchCC;
+  });
+
+  document.getElementById('nom-count-badge').textContent = `(${fil.length} de ${NOMINA_BASE.length})`;
+
+  const grid = document.getElementById('worker-grid');
+  if(!fil.length){
+    grid.innerHTML='<div class="empty">Sin resultados</div>';
+    return;
+  }
+
+  // Encabezados de tallas — todas las columnas posibles
+  const tallaCols = TALLA_COLS;
+
+  const filas = fil.map(w=>{
+    const nc       = `${w.nombres} ${w.ap} ${w.am}`;
+    const tipoTag  = w.tenida==='Bodega'
+      ? `<span class="tag tag-bodega">Bodega</span>`
+      : `<span class="tag tag-admin">Adm.</span>`;
+    const sexoTag  = w.sexo==='F'
+      ? `<span class="tag tag-f">♀</span>`
+      : `<span class="tag tag-m">♂</span>`;
+    const ccShort  = w.cc.replace('Gerencia de ','Ger. ').replace('Gerencia ','Ger. ');
+
+    // Celda de tallas: chips compactos
+    const cols = tallasParaTipo(w.tenida);
+    const tallaCeldas = tallaCols.map(c=>{
+      const aplica = c.aplica.includes(w.tenida);
+      if(!aplica) return `<td style="text-align:center;color:#ccc;font-size:11px">—</td>`;
+      const v = w.t[c.key];
+      return `<td style="text-align:center">
+        ${v
+          ? `<span class="talla-chip tc-ok">${v}</span>`
+          : `<span class="talla-chip tc-pend">—</span>`}
+      </td>`;
+    }).join('');
+
+    return `<tr>
+      <td style="white-space:nowrap">
+        <div style="font-weight:600;color:var(--tk-blue);font-size:13px">${nc}</div>
+        <div style="font-size:11px;color:var(--tk-muted)">${w.rut}</div>
+      </td>
+      <td style="font-size:12px">${w.cargo}</td>
+      <td style="white-space:nowrap">${tipoTag} ${sexoTag}</td>
+      <td style="font-size:11px;color:var(--tk-muted);white-space:nowrap">${ccShort}</td>
+      ${tallaCeldas}
+      <td style="white-space:nowrap">
+        <button class="btn btn-outline btn-sm" onclick="abrirModalWorker('${w.rut}')">
+          <i class="ti ti-ruler-2"></i> Tallas &amp; Acta
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="abrirEditarWorker('${w.rut}')" style="margin-left:3px">
+          <i class="ti ti-pencil"></i>
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarWorker('${w.rut}')" style="margin-left:3px">
+          <i class="ti ti-trash"></i>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  grid.innerHTML = `
+    <table class="nom-tbl">
+      <thead><tr>
+        <th>Trabajador</th>
+        <th>Cargo</th>
+        <th>Tipo / Sexo</th>
+        <th>Centro de costo</th>
+        ${tallaCols.map(c=>`<th style="text-align:center">${c.label}</th>`).join('')}
+        <th></th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+    </table>`;
+}
+
+// ═══ MODAL TRABAJADOR ════════════════════════════════════════════════════════
+let workerActivo = null;
+
+function nombreCompleto(w){ return `${w.nombres} ${w.ap} ${w.am}`; }
+
+function abrirModalWorker(rut){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  workerActivo = w;
+
+  const dotacion = getDotacion(w);
+  const cols     = tallasParaTipo(w.tenida);
+
+  document.getElementById('mw-titulo').innerHTML =
+    `<i class="ti ti-user"></i> ${nombreCompleto(w)}`;
+
+  document.getElementById('mw-perfil').innerHTML = `
+    <div class="modal-worker-header">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:1;min-width:180px">
+          <div style="font-size:11px;color:var(--tk-muted)">RUT</div>
+          <div style="font-weight:600;font-size:13px">${w.rut}</div>
+        </div>
+        <div style="flex:2;min-width:180px">
+          <div style="font-size:11px;color:var(--tk-muted)">Cargo</div>
+          <div style="font-weight:600;font-size:13px">${w.cargo}</div>
+        </div>
+        <div style="flex:1;min-width:130px">
+          <div style="font-size:11px;color:var(--tk-muted)">Centro de costo</div>
+          <div style="font-size:12px">${w.cc}</div>
+        </div>
+        <div style="flex:0 0 auto">
+          <span class="tag ${w.tenida==='Bodega'?'tag-bodega':'tag-admin'}">${w.tenida==='Bodega'?'Bodega':'Administrativo'}</span>
+          &nbsp;<span class="tag ${w.sexo==='F'?'tag-f':'tag-m'}">${w.sexo==='F'?'♀ F':'♂ M'}</span>
+        </div>
+      </div>
+    </div>`;
+
+  // ── Tabla de tallas por tipo de prenda (solo las que aplican) ──
+  const tallasCols = cols.map(c=>`
+    <div class="talla-row">
+      <label style="font-size:12px;color:var(--tk-muted);min-width:100px">${c.label}</label>
+      <input type="text" id="mwt-${c.key}"
+        placeholder="ej: M, L, 42, 44…"
+        value="${w.t[c.key]||''}"
+        style="flex:1;border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none"
+        onchange="guardarTallaLive('${rut}','${c.key}',this.value)">
+    </div>`).join('');
+
+  // ── Sección dotación con qty por prenda ──
+  const dotacionRows = dotacion.map((p,i)=>{
+    // intentar mapear la prenda a una columna de talla
+    const col = cols.find(c=>p.nombre.toLowerCase().includes(c.label.toLowerCase().split(' ')[0]));
+    const tallaVal = col ? (w.t[col.key]||'') : '';
+    return `
+    <div class="talla-row" style="background:#f9fbfd;padding:5px 8px;border-radius:6px;border:.5px solid var(--tk-border)">
+      <label style="font-size:12px;min-width:160px"><i class="ti ti-circle-check" style="color:var(--tk-teal)"></i> ${p.nombre}</label>
+      <input type="text" id="mw-talla-${i}" placeholder="Talla" value="${tallaVal}"
+        style="width:90px;border:1px solid var(--tk-border);border-radius:6px;padding:4px 8px;font-size:13px;outline:none">
+      <input type="number" id="mw-qty-${i}" placeholder="Cant." min="1" value="1"
+        style="width:65px;border:1px solid var(--tk-border);border-radius:6px;padding:4px 8px;font-size:13px;outline:none">
+    </div>`;
+  }).join('');
+
+  document.getElementById('mw-tallas').innerHTML = `
+    <div style="margin-bottom:.75rem">
+      <div style="font-size:11px;font-weight:600;color:var(--tk-blue);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">
+        <i class="ti ti-ruler-2"></i> Tallas del trabajador (se guardan en su perfil)
+      </div>
+      ${tallasCols}
+    </div>
+    <hr style="border:none;border-top:.5px solid var(--tk-border);margin:.6rem 0">
+    <div style="font-size:11px;font-weight:600;color:var(--tk-blue);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">
+      <i class="ti ti-package"></i> Ítems a incluir en el acta (ajusta cantidad si necesario)
+    </div>
+    ${dotacionRows}`;
+
+  document.getElementById('modal-worker').classList.add('open');
+}
+
+// ═══ ELIMINAR / EDITAR TRABAJADOR ════════════════════════════════════════════
+function eliminarWorker(rut){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  if(!confirm(`¿Eliminar a ${w.nombres} ${w.ap} ${w.am} (${rut})?`)) return;
+  const idx = NOMINA_BASE.findIndex(x=>x.rut===rut);
+  NOMINA_BASE.splice(idx,1);
+  renderNomina();
+}
+
+function abrirEditarWorker(rut){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  document.getElementById('ew-rut-original').value = rut;
+  document.getElementById('ew-nombres').value = w.nombres;
+  document.getElementById('ew-ap').value      = w.ap;
+  document.getElementById('ew-am').value      = w.am;
+  document.getElementById('ew-rut').value     = rut;
+  document.getElementById('ew-sexo').value    = w.sexo;
+  document.getElementById('ew-cargo').value   = w.cargo;
+  document.getElementById('ew-tenida').value  = w.tenida;
+  document.getElementById('ew-cc').value      = w.cc;
+  document.getElementById('modal-edit-worker').classList.add('open');
+  setTimeout(()=>document.getElementById('ew-nombres').focus(),100);
+}
+
+function guardarEditarWorker(){
+  const rutOrig = document.getElementById('ew-rut-original').value;
+  const w = NOMINA_BASE.find(x=>x.rut===rutOrig);
+  if(!w){ alert('Trabajador no encontrado.'); return; }
+  const nuevoRut = document.getElementById('ew-rut').value.trim();
+  if(!nuevoRut){ alert('El RUT no puede estar vacío.'); return; }
+  // Si cambió el RUT verificar que no exista otro con ese RUT
+  if(nuevoRut !== rutOrig && NOMINA_BASE.find(x=>x.rut===nuevoRut)){
+    alert('Ya existe un trabajador con ese RUT.');
+    return;
+  }
+  w.rut     = nuevoRut;
+  w.nombres = document.getElementById('ew-nombres').value.trim();
+  w.ap      = document.getElementById('ew-ap').value.trim();
+  w.am      = document.getElementById('ew-am').value.trim();
+  w.sexo    = document.getElementById('ew-sexo').value;
+  w.cargo   = document.getElementById('ew-cargo').value.trim();
+  w.tenida  = document.getElementById('ew-tenida').value;
+  w.cc      = document.getElementById('ew-cc').value;
+  cerrarEditarWorker();
+  renderNomina();
+}
+
+function cerrarEditarWorker(){
+  document.getElementById('modal-edit-worker').classList.remove('open');
+}
+
+
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(w) w.t[key] = val.trim();
+  // No necesita re-render completo; actualiza silenciosamente
+}
+
+function cerrarModalWorker(){
+  document.getElementById('modal-worker').classList.remove('open');
+  workerActivo=null;
+  // Refrescar tarjetas para mostrar tallas actualizadas
+  if(document.getElementById('panel-nomina').classList.contains('active')) renderNomina();
+}
+
+function emitirDesdeWorker(tipo){
+  const w = workerActivo;
+  if(!w) return;
+  const dotacion = getDotacion(w);
+  const fecha = hoy();
+
+  // Construir items con tallas ingresadas
+  const itemsConTalla = dotacion.map((p,i)=>({
+    prenda: p.nombre,
+    talla: (document.getElementById(`mw-talla-${i}`)||{}).value || '—',
+    qty: parseInt((document.getElementById(`mw-qty-${i}`)||{}).value)||1,
+  }));
+
+  if(tipo === 'Uniforme'){
+    // Pre-rellenar la pestaña Entrega Uniformes y cambiar de tab
+    document.getElementById('uni-nombre').value = nombreCompleto(w);
+    document.getElementById('uni-rut').value    = w.rut;
+    document.getElementById('uni-cargo').value  = w.cargo;
+    document.getElementById('uni-fecha').value  = fecha;
+
+    // Llenar items si hay inventario
+    itemsUni = [];
+    itemsConTalla.forEach(it=>{
+      // Buscar en inventario por nombre aproximado
+      const idx = inventario.findIndex(x=>
+        x.nombre.toLowerCase().includes(it.prenda.split(' ')[0].toLowerCase()) ||
+        it.prenda.toLowerCase().includes(x.nombre.toLowerCase().split(' ')[0])
+      );
+      itemsUni.push({invIdx: idx >= 0 ? idx : -1, qty: it.qty, fechaEntrega: fecha});
+    });
+
+    cerrarModalWorker();
+    // Cambiar a tab
+    const btnUni = document.querySelector('.tab:nth-child(3)');
+    showTab('entrega-uniforme', btnUni);
+    renderItemsUni();
+  } else {
+    // EPP
+    document.getElementById('epp-nombre').value = nombreCompleto(w);
+    document.getElementById('epp-rut').value    = w.rut;
+    document.getElementById('epp-cargo').value  = w.cargo;
+    document.getElementById('epp-fecha').value  = fecha;
+
+    itemsEPP = [];
+    itemsConTalla.forEach(it=>{
+      const idx = inventario.findIndex(x=>
+        x.nombre.toLowerCase().includes(it.prenda.split(' ')[0].toLowerCase()) ||
+        it.prenda.toLowerCase().includes(x.nombre.toLowerCase().split(' ')[0])
+      );
+      itemsEPP.push({invIdx: idx >= 0 ? idx : -1, qty: it.qty});
+    });
+
+    cerrarModalWorker();
+    const btnEpp = document.querySelector('.tab:nth-child(2)');
+    showTab('entrega-epp', btnEpp);
+    renderItemsEPP();
+  }
 }
 
 // ═══ MULTI-ESTADO DROPDOWN ═══════════════════════════════════════════════════
