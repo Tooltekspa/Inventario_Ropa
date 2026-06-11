@@ -563,7 +563,17 @@ async function cargarDatos(){
     const r = await apiGet({action:'getAll'});
     if(r && r.ok){
       inventario = r.inventario || [];
-      actas = r.actas || [];
+      actas      = r.actas      || [];
+      // Si Sheets devuelve nómina, reemplazar la precargada
+      if(r.nomina && r.nomina.length){
+        // Asegurar que cada trabajador tenga el objeto t completo
+        r.nomina.forEach(w=>{
+          if(!w.t) w.t={camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''};
+          const idx = NOMINA_BASE.findIndex(x=>x.rut===w.rut);
+          if(idx>=0) NOMINA_BASE[idx] = w;   // actualizar existente (preserva orden)
+          else NOMINA_BASE.push(w);           // nuevo trabajador agregado desde otra sesión
+        });
+      }
       setSync('ok','Sincronizado');
     }else{
       throw new Error((r && r.error) || 'Respuesta inválida');
@@ -1226,6 +1236,7 @@ function eliminarWorker(rut){
   const idx = NOMINA_BASE.findIndex(x=>x.rut===rut);
   NOMINA_BASE.splice(idx,1);
   renderNomina();
+  apiSync('deleteWorker',{rut});
 }
 
 function abrirEditarWorker(rut){
@@ -1250,7 +1261,6 @@ function guardarEditarWorker(){
   if(!w){ alert('Trabajador no encontrado.'); return; }
   const nuevoRut = document.getElementById('ew-rut').value.trim();
   if(!nuevoRut){ alert('El RUT no puede estar vacío.'); return; }
-  // Si cambió el RUT verificar que no exista otro con ese RUT
   if(nuevoRut !== rutOrig && NOMINA_BASE.find(x=>x.rut===nuevoRut)){
     alert('Ya existe un trabajador con ese RUT.');
     return;
@@ -1265,6 +1275,7 @@ function guardarEditarWorker(){
   w.cc      = document.getElementById('ew-cc').value;
   cerrarEditarWorker();
   renderNomina();
+  apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rutOrig});
 }
 
 function cerrarEditarWorker(){
@@ -1273,8 +1284,10 @@ function cerrarEditarWorker(){
 
 function guardarTallaLive(rut, key, val){
   const w = NOMINA_BASE.find(x=>x.rut===rut);
-  if(w) w.t[key] = val.trim();
-  // No necesita re-render completo; actualiza silenciosamente
+  if(!w) return;
+  w.t[key] = val.trim();
+  // Sincronizar talla con Sheets en segundo plano
+  apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rut});
 }
 
 function cerrarModalWorker(){
