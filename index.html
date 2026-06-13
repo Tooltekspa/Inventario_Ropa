@@ -540,7 +540,7 @@ async function apiGet(params){
   return res.json();
 }
 
-async function apiSync(action, params){
+async function apiSync(action, params, silent=false){
   if(!apiConfigurada()) return null;
   try{
     setSync('busy','Guardando…');
@@ -551,7 +551,7 @@ async function apiSync(action, params){
   }catch(err){
     console.error('Error de sincronización:', err);
     setSync('err','Sin conexión');
-    alert('⚠ No se pudo guardar en Google Sheets:\n' + err.message + '\n\nEl cambio quedó solo en esta sesión.');
+if(!silent)     alert('⚠ No se pudo guardar en Google Sheets:\n' + err.message + '\n\nEl cambio quedó solo en esta sesión.');
     return null;
   }
 }
@@ -1234,7 +1234,7 @@ function eliminarWorker(rut){
   const idx = NOMINA_BASE.findIndex(x=>x.rut===rut);
   NOMINA_BASE.splice(idx,1);
   renderNomina();
-  apiSync('deleteWorker',{rut});
+  apiSync('deleteWorker',{rut},true);
 }
 
 function abrirNuevoWorker(){
