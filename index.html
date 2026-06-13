@@ -550,7 +550,7 @@ async function apiSync(action, params, silent=false){
     return r;
   }catch(err){
     console.error('Error de sincronización:', err);
-    setSync('err','Sin conexión');
+   setSync('err','Sin conexión');
 if(!silent)     alert('⚠ No se pudo guardar en Google Sheets:\n' + err.message + '\n\nEl cambio quedó solo en esta sesión.');
     return null;
   }
@@ -569,15 +569,14 @@ async function cargarDatos(){
     if(r && r.ok){
       inventario = r.inventario || [];
       actas      = r.actas      || [];
-      // Si Sheets devuelve nómina, reemplazar la precargada
+              // Nómina viene 100% de Sheets — reemplazar completamente
       if(r.nomina && r.nomina.length){
-        // Asegurar que cada trabajador tenga el objeto t completo
-        r.nomina.forEach(w=>{
-          if(!w.t) w.t={camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''};
-          const idx = NOMINA_BASE.findIndex(x=>x.rut===w.rut);
-          if(idx>=0) NOMINA_BASE[idx] = w;   // actualizar existente (preserva orden)
-          else NOMINA_BASE.push(w);           // nuevo trabajador agregado desde otra sesión
-        });
+                  NOMINA_BASE.length = 0;
+                r.nomina.forEach(w=>{
+              if(!w.t) w.t={camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''};
+              NOMINA_BASE.push(w);
+  });
+      
       }
       setSync('ok','Sincronizado');
     }else{
