@@ -111,9 +111,9 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
 .nom-filters input{flex:1;min-width:160px}
 .nom-filters input:focus,.nom-filters select:focus{border-color:var(--tk-teal)}
 /* lista en tabla */
-.nom-tbl{width:100%;border-collapse:collapse;font-size:13px}
-.nom-tbl th{background:var(--tk-blue);color:#fff;padding:7px 10px;text-align:left;font-weight:500;white-space:nowrap;font-size:12px}
-.nom-tbl td{padding:6px 10px;border-bottom:.5px solid var(--tk-border);vertical-align:middle}
+.nom-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.nom-tbl th{background:var(--tk-blue);color:#fff;padding:6px 5px;text-align:left;font-weight:500;white-space:nowrap;font-size:10px}
+.nom-tbl td{padding:5px 5px;border-bottom:.5px solid var(--tk-border);vertical-align:middle}
 .nom-tbl tr:last-child td{border-bottom:none}
 .nom-tbl tr:hover td{background:var(--tk-bg)}
 .talla-chip{display:inline-block;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;white-space:nowrap}
@@ -318,25 +318,30 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
       <div class="card-title"><i class="ti ti-users"></i> Nómina de trabajadores
         <span id="nom-count-badge" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span>
       </div>
-      <div class="nom-filters">
-        <input id="nom-buscar" type="text" placeholder="Buscar por nombre, RUT o cargo…" oninput="renderNomina()">
-        <select id="nom-tenida" onchange="renderNomina()">
-          <option value="">Todos los tipos</option>
-          <option value="Bodega">Bodega</option>
-          <option value="administrativo">Administrativo</option>
-        </select>
-        <select id="nom-sexo" onchange="renderNomina()">
-          <option value="">Ambos sexos</option>
-          <option value="M">Masculino</option>
-          <option value="F">Femenino</option>
-        </select>
-        <select id="nom-cc" onchange="renderNomina()">
-          <option value="">Todos los centros de costo</option>
-          <option value="Gerencia de Operaciones">Ger. Operaciones</option>
-          <option value="Gerencia Comercial">Ger. Comercial</option>
-          <option value="Gerencia de Administracion y Finanzas">Ger. Adm. y Finanzas</option>
-          <option value="Gerencia General">Gerencia General</option>
-        </select>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:.75rem">
+        <div class="nom-filters" style="margin-bottom:0;flex:1">
+          <input id="nom-buscar" type="text" placeholder="Buscar por nombre, RUT o cargo…" oninput="renderNomina()">
+          <select id="nom-tenida" onchange="renderNomina()">
+            <option value="">Todos los tipos</option>
+            <option value="Bodega">Bodega</option>
+            <option value="administrativo">Administrativo</option>
+          </select>
+          <select id="nom-sexo" onchange="renderNomina()">
+            <option value="">Ambos sexos</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+          </select>
+          <select id="nom-cc" onchange="renderNomina()">
+            <option value="">Todos los centros de costo</option>
+            <option value="Gerencia de Operaciones">Ger. Operaciones</option>
+            <option value="Gerencia Comercial">Ger. Comercial</option>
+            <option value="Gerencia de Administracion y Finanzas">Ger. Adm. y Finanzas</option>
+            <option value="Gerencia General">Gerencia General</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="abrirNuevoWorker()" style="white-space:nowrap;align-self:flex-start">
+          <i class="ti ti-user-plus"></i> Agregar trabajador
+        </button>
       </div>
       <div style="overflow-x:auto">
         <div id="worker-grid"></div>
@@ -1089,60 +1094,53 @@ function renderNomina(){
   const tallaCols = TALLA_COLS;
 
   const filas = fil.map(w=>{
-    const nc       = `${w.nombres} ${w.ap} ${w.am}`;
+    const nc       = `${w.ap} ${w.am}, ${w.nombres}`;
     const tipoTag  = w.tenida==='Bodega'
-      ? `<span class="tag tag-bodega">Bodega</span>`
-      : `<span class="tag tag-admin">Adm.</span>`;
+      ? `<span class="tag tag-bodega" style="font-size:10px;padding:1px 5px">Bod.</span>`
+      : `<span class="tag tag-admin"  style="font-size:10px;padding:1px 5px">Adm.</span>`;
     const sexoTag  = w.sexo==='F'
-      ? `<span class="tag tag-f">♀</span>`
-      : `<span class="tag tag-m">♂</span>`;
-    const ccShort  = w.cc.replace('Gerencia de ','Ger. ').replace('Gerencia ','Ger. ');
+      ? `<span class="tag tag-f" style="font-size:10px;padding:1px 5px">♀</span>`
+      : `<span class="tag tag-m" style="font-size:10px;padding:1px 5px">♂</span>`;
+    const ccShort  = w.cc.replace('Gerencia de Administracion y Finanzas','G.Adm.Fin.')
+                         .replace('Gerencia de Operaciones','G.Oper.')
+                         .replace('Gerencia Comercial','G.Com.')
+                         .replace('Gerencia General','G.Gral.');
 
-    // Celda de tallas: chips compactos
-    const cols = tallasParaTipo(w.tenida);
-    const tallaCeldas = tallaCols.map(c=>{
-      const aplica = c.aplica.includes(w.tenida);
-      if(!aplica) return `<td style="text-align:center;color:#ccc;font-size:11px">—</td>`;
+    const tallaCeldas = TALLA_COLS.map(c=>{
+      if(!c.aplica.includes(w.tenida))
+        return `<td style="text-align:center;color:#ddd;font-size:10px;padding:4px 3px">—</td>`;
       const v = w.t[c.key];
-      return `<td style="text-align:center">
-        ${v
-          ? `<span class="talla-chip tc-ok">${v}</span>`
-          : `<span class="talla-chip tc-pend">—</span>`}
+      return `<td style="text-align:center;padding:4px 3px">
+        <span class="talla-chip ${v?'tc-ok':'tc-pend'}" style="font-size:10px;padding:1px 5px">${v||'—'}</span>
       </td>`;
     }).join('');
 
     return `<tr>
-      <td style="white-space:nowrap">
-        <div style="font-weight:600;color:var(--tk-blue);font-size:13px">${nc}</div>
-        <div style="font-size:11px;color:var(--tk-muted)">${w.rut}</div>
+      <td style="white-space:nowrap;padding:5px 6px">
+        <div style="font-weight:600;color:var(--tk-blue);font-size:11px;line-height:1.3">${nc}</div>
+        <div style="font-size:10px;color:var(--tk-muted)">${w.rut}</div>
       </td>
-      <td style="font-size:12px">${w.cargo}</td>
-      <td style="white-space:nowrap">${tipoTag} ${sexoTag}</td>
-      <td style="font-size:11px;color:var(--tk-muted);white-space:nowrap">${ccShort}</td>
+      <td style="font-size:10px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:5px 6px" title="${w.cargo}">${w.cargo}</td>
+      <td style="white-space:nowrap;padding:5px 4px">${tipoTag}&nbsp;${sexoTag}</td>
+      <td style="font-size:10px;color:var(--tk-muted);white-space:nowrap;padding:5px 6px">${ccShort}</td>
       ${tallaCeldas}
-      <td style="white-space:nowrap">
-        <button class="btn btn-outline btn-sm" onclick="abrirModalWorker('${w.rut}')">
-          <i class="ti ti-ruler-2"></i> Tallas &amp; Acta
-        </button>
-        <button class="btn btn-outline btn-sm" onclick="abrirEditarWorker('${w.rut}')" style="margin-left:3px">
-          <i class="ti ti-pencil"></i>
-        </button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarWorker('${w.rut}')" style="margin-left:3px">
-          <i class="ti ti-trash"></i>
-        </button>
+      <td style="white-space:nowrap;padding:5px 4px">
+        <button class="btn btn-outline btn-sm" onclick="abrirModalWorker('${w.rut}')" title="Tallas &amp; Acta" style="padding:3px 6px"><i class="ti ti-ruler-2"></i></button>
+        <button class="btn btn-outline btn-sm" onclick="abrirEditarWorker('${w.rut}')" title="Editar" style="padding:3px 6px;margin-left:2px"><i class="ti ti-pencil"></i></button>
+        <button class="btn btn-danger btn-sm"  onclick="eliminarWorker('${w.rut}')"    title="Eliminar" style="padding:3px 6px;margin-left:2px"><i class="ti ti-trash"></i></button>
       </td>
     </tr>`;
   }).join('');
 
   grid.innerHTML = `
-    <table class="nom-tbl">
+    <table class="nom-tbl" style="font-size:11px">
       <thead><tr>
-        <th>Trabajador</th>
-        <th>Cargo</th>
-        <th>Tipo / Sexo</th>
-        <th>Centro de costo</th>
-        ${tallaCols.map(c=>`<th style="text-align:center">${c.label}</th>`).join('')}
-        <th></th>
+        <th style="padding:6px 6px">Trabajador</th>
+        <th style="padding:6px 6px;max-width:130px">Cargo</th>
+        <th style="padding:6px 4px">Tipo</th>
+        <th style="padding:6px 6px">CC</th>
+        ${TALLA_COLS.map(c=>`<th style="text-align:center;padding:6px 3px;font-size:10px">${c.label}</th>`).join('')}
+        <th style="padding:6px 4px"></th>
       </tr></thead>
       <tbody>${filas}</tbody>
     </table>`;
@@ -1239,6 +1237,23 @@ function eliminarWorker(rut){
   apiSync('deleteWorker',{rut});
 }
 
+function abrirNuevoWorker(){
+  document.getElementById('ew-rut-original').value = '';
+  document.getElementById('ew-nombres').value = '';
+  document.getElementById('ew-ap').value      = '';
+  document.getElementById('ew-am').value      = '';
+  document.getElementById('ew-rut').value     = '';
+  document.getElementById('ew-sexo').value    = 'M';
+  document.getElementById('ew-cargo').value   = '';
+  document.getElementById('ew-tenida').value  = 'administrativo';
+  document.getElementById('ew-cc').value      = 'Gerencia Comercial';
+  // Cambiar título del modal
+  document.querySelector('#modal-edit-worker .modal-title').innerHTML =
+    '<i class="ti ti-user-plus"></i> Nuevo trabajador';
+  document.getElementById('modal-edit-worker').classList.add('open');
+  setTimeout(()=>document.getElementById('ew-nombres').focus(),100);
+}
+
 function abrirEditarWorker(rut){
   const w = NOMINA_BASE.find(x=>x.rut===rut);
   if(!w) return;
@@ -1251,31 +1266,55 @@ function abrirEditarWorker(rut){
   document.getElementById('ew-cargo').value   = w.cargo;
   document.getElementById('ew-tenida').value  = w.tenida;
   document.getElementById('ew-cc').value      = w.cc;
+  document.querySelector('#modal-edit-worker .modal-title').innerHTML =
+    '<i class="ti ti-user-edit"></i> Editar trabajador';
   document.getElementById('modal-edit-worker').classList.add('open');
   setTimeout(()=>document.getElementById('ew-nombres').focus(),100);
 }
 
 function guardarEditarWorker(){
-  const rutOrig = document.getElementById('ew-rut-original').value;
-  const w = NOMINA_BASE.find(x=>x.rut===rutOrig);
-  if(!w){ alert('Trabajador no encontrado.'); return; }
+  const rutOrig  = document.getElementById('ew-rut-original').value;
   const nuevoRut = document.getElementById('ew-rut').value.trim();
+  const esNuevo  = rutOrig === '';
+
   if(!nuevoRut){ alert('El RUT no puede estar vacío.'); return; }
-  if(nuevoRut !== rutOrig && NOMINA_BASE.find(x=>x.rut===nuevoRut)){
-    alert('Ya existe un trabajador con ese RUT.');
-    return;
+  if(NOMINA_BASE.find(x=>x.rut===nuevoRut && x.rut!==rutOrig)){
+    alert('Ya existe un trabajador con ese RUT.'); return;
   }
-  w.rut     = nuevoRut;
-  w.nombres = document.getElementById('ew-nombres').value.trim();
-  w.ap      = document.getElementById('ew-ap').value.trim();
-  w.am      = document.getElementById('ew-am').value.trim();
-  w.sexo    = document.getElementById('ew-sexo').value;
-  w.cargo   = document.getElementById('ew-cargo').value.trim();
-  w.tenida  = document.getElementById('ew-tenida').value;
-  w.cc      = document.getElementById('ew-cc').value;
-  cerrarEditarWorker();
-  renderNomina();
-  apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rutOrig});
+
+  if(esNuevo){
+    // Crear nuevo
+    const w = {
+      rut:    nuevoRut,
+      nombres: document.getElementById('ew-nombres').value.trim(),
+      ap:     document.getElementById('ew-ap').value.trim(),
+      am:     document.getElementById('ew-am').value.trim(),
+      sexo:   document.getElementById('ew-sexo').value,
+      cargo:  document.getElementById('ew-cargo').value.trim(),
+      tenida: document.getElementById('ew-tenida').value,
+      cc:     document.getElementById('ew-cc').value,
+      t:      {camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''}
+    };
+    NOMINA_BASE.push(w);
+    cerrarEditarWorker();
+    renderNomina();
+    apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: nuevoRut});
+  } else {
+    // Editar existente
+    const w = NOMINA_BASE.find(x=>x.rut===rutOrig);
+    if(!w){ alert('Trabajador no encontrado.'); return; }
+    w.rut     = nuevoRut;
+    w.nombres = document.getElementById('ew-nombres').value.trim();
+    w.ap      = document.getElementById('ew-ap').value.trim();
+    w.am      = document.getElementById('ew-am').value.trim();
+    w.sexo    = document.getElementById('ew-sexo').value;
+    w.cargo   = document.getElementById('ew-cargo').value.trim();
+    w.tenida  = document.getElementById('ew-tenida').value;
+    w.cc      = document.getElementById('ew-cc').value;
+    cerrarEditarWorker();
+    renderNomina();
+    apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rutOrig});
+  }
 }
 
 function cerrarEditarWorker(){
