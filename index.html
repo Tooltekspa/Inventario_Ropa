@@ -16,57 +16,116 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--tk-bg);color:v
 .app{max-width:1100px;margin:0 auto;padding:1rem}
 .header{background:var(--tk-blue);color:#fff;border-radius:10px;padding:1rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:18px;font-weight:600}
+.header span{font-size:11px;opacity:.75;font-style:italic}
 .badge-tooltek{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:2px 10px;font-size:11px;font-weight:600;letter-spacing:1px;display:inline-block;margin-bottom:4px}
-.sync-badge{display:inline-block;margin-top:4px;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600}
+.sync-badge{display:inline-block;margin-top:4px;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600;font-style:normal;opacity:1}
 .sync-ok{background:rgba(46,204,113,.25);color:#d8ffe9}
 .sync-busy{background:rgba(255,255,255,.18);color:#eaf6ff}
 .sync-err{background:rgba(231,76,60,.3);color:#ffd9d4}
 .spin{display:inline-block;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .tabs{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
-.tab{padding:7px 18px;border-radius:8px;border:1.5px solid var(--tk-border);background:#fff;color:var(--tk-muted);font-size:13px;font-weight:500;cursor:pointer}
+.tab{padding:7px 18px;border-radius:8px;border:1.5px solid var(--tk-border);background:#fff;color:var(--tk-muted);font-size:13px;font-weight:500;cursor:pointer;transition:.15s}
 .tab.active{background:var(--tk-teal);color:#fff;border-color:var(--tk-teal)}
+.tab:hover:not(.active){border-color:var(--tk-teal);color:var(--tk-teal)}
 .panel{display:none}.panel.active{display:block}
 .card{background:#fff;border:.5px solid var(--tk-border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem}
 .card-title{font-size:13px;font-weight:600;color:var(--tk-blue);margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
 .form-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.6rem;align-items:center}
-.form-row input,.form-row select{border:1px solid var(--tk-border);border-radius:6px;padding:6px 10px;font-size:13px;outline:none;background:#fff;flex:1;min-width:110px}
+.form-row input,.form-row select{border:1px solid var(--tk-border);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--tk-text);background:#fff;outline:none;flex:1;min-width:110px}
+.form-row input:focus,.form-row select:focus{border-color:var(--tk-teal);box-shadow:0 0 0 2px rgba(0,129,176,.1)}
 .form-row label{font-size:12px;color:var(--tk-muted);min-width:80px}
-.btn{padding:6px 14px;border-radius:6px;border:none;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
-.btn-primary{background:var(--tk-teal);color:#fff}.btn-outline{background:#fff;color:var(--tk-teal);border:1px solid var(--tk-teal)}.btn-danger{background:#fff;color:var(--tk-danger);border:1px solid var(--tk-danger)}.btn-success{background:var(--tk-success);color:#fff}.btn-sm{padding:4px 9px;font-size:12px}
+.btn{padding:6px 14px;border-radius:6px;border:none;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--tk-teal);color:#fff}.btn-primary:hover{background:var(--tk-blue)}
+.btn-danger{background:#fff;color:var(--tk-danger);border:1px solid var(--tk-danger)}.btn-danger:hover{background:#fdf0f0}
+.btn-success{background:var(--tk-success);color:#fff}.btn-success:hover{filter:brightness(1.1)}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-outline{background:#fff;color:var(--tk-teal);border:1px solid var(--tk-teal)}.btn-outline:hover{background:var(--tk-bg)}
 .search-bar{display:flex;gap:8px;margin-bottom:.75rem;flex-wrap:wrap}
-.search-bar input,.search-bar select{border:1px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none;background:#fff}
+.search-bar input{border:1px solid var(--tk-border);border-radius:6px;padding:7px 12px;font-size:13px;flex:1;min-width:160px;outline:none}
+.search-bar input:focus{border-color:var(--tk-teal)}
+.search-bar select{border:1px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none;background:#fff}
+/* Multi-estado dropdown */
+.ms-wrap{position:relative;display:inline-block}
+.ms-btn{border:1px solid var(--tk-border);border-radius:6px;padding:7px 10px 7px 12px;font-size:13px;background:#fff;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;color:var(--tk-text);user-select:none;min-width:160px}
+.ms-btn:hover{border-color:var(--tk-teal)}
+.ms-btn.active-filter{border-color:var(--tk-teal);background:#eef6fa;color:var(--tk-blue);font-weight:600}
+.ms-btn .chevron{margin-left:auto;font-size:10px;color:var(--tk-muted);transition:.15s}
+.ms-btn.open .chevron{transform:rotate(180deg)}
+.ms-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--tk-border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:50;min-width:180px;padding:6px 0}
+.ms-dropdown.open{display:block}
+.ms-option{display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;font-size:13px;color:var(--tk-text);transition:.1s}
+.ms-option:hover{background:var(--tk-bg)}
+.ms-option input[type=checkbox]{accent-color:var(--tk-teal);width:14px;height:14px;cursor:pointer;flex-shrink:0}
+.ms-option .pill{pointer-events:none}
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
 .tbl th{background:var(--tk-blue);color:#fff;padding:7px 10px;text-align:left;font-weight:500;white-space:nowrap}
 .tbl td{padding:6px 10px;border-bottom:.5px solid var(--tk-border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--tk-bg)}
 .pill{border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600;display:inline-block;white-space:nowrap}
 .pill-ok{background:#e8f5ee;color:var(--tk-success)}
 .pill-warn{background:#fff3e0;color:var(--tk-warn)}
 .pill-danger{background:#fdf0f0;color:var(--tk-danger)}
+.pill-cat{background:#e8f0fa;color:var(--tk-blue)}
 .qty-badge{display:inline-block;min-width:28px;text-align:center;background:var(--tk-light);color:var(--tk-blue);border-radius:4px;font-weight:600;font-size:12px;padding:1px 6px}
+.item-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+.item-row select,.item-row input[type=number]{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none}
+.item-row input[type=text]{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none;flex:1}
+.acta-card{background:#fff;border:.5px solid var(--tk-border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center}
+.acta-id{font-size:13px;font-weight:600;color:var(--tk-blue)}
+.acta-meta{font-size:12px;color:var(--tk-muted);margin-top:2px}
+.acta-tipo{font-size:11px;margin-top:2px}
 .empty{color:var(--tk-muted);font-size:13px;padding:.75rem;text-align:center;font-style:italic}
 .stats-row{display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
 .stat-box{background:#fff;border:.5px solid var(--tk-border);border-radius:8px;padding:.6rem 1rem;flex:1;min-width:110px;text-align:center}
 .stat-box .val{font-size:22px;font-weight:700;color:var(--tk-blue)}
 .stat-box .lbl{font-size:11px;color:var(--tk-muted);margin-top:2px}
-.nom-tbl,.pedido-table{width:100%;border-collapse:collapse;font-size:13px}
-.nom-tbl th,.pedido-table th{background:var(--tk-blue);color:#fff;padding:7px 10px;text-align:left;white-space:nowrap}
-.nom-tbl td,.pedido-table td{padding:6px 10px;border-bottom:.5px solid var(--tk-border);vertical-align:middle}
-.talla-chip{display:inline-block;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;white-space:nowrap}
-.tc-ok{background:#e8f5ee;color:var(--tk-success)}
-.tc-pend{background:#fdf4e8;color:var(--tk-warn)}
-.pedido-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:8px 10px;border:1px solid var(--tk-border);border-radius:8px;background:#fff;margin-bottom:6px}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
 .modal{background:#fff;border-radius:12px;padding:1.5rem;max-width:700px;width:95%;max-height:90vh;overflow-y:auto}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.modal-title{font-size:15px;font-weight:600;color:var(--tk-blue)}
 .close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--tk-muted)}
 code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;border-radius:3px}
+.section-sep{border:none;border-top:2px solid var(--tk-border);margin:1rem 0}
+/* Umbrales inline */
 .umbral-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:.55rem .75rem;background:var(--tk-bg);border-radius:8px;border:.5px solid var(--tk-border)}
 .umbral-row label{font-size:12px;color:var(--tk-muted);white-space:nowrap}
 .umbral-row input[type=number]{width:68px;border:1px solid var(--tk-border);border-radius:6px;padding:4px 8px;font-size:13px;font-weight:600;color:var(--tk-blue);text-align:center;outline:none}
-.item-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
-.item-row select,.item-row input[type=number]{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none}
+.umbral-row input[type=number]:focus{border-color:var(--tk-teal)}
+.umbral-legend{display:flex;gap:10px;font-size:11px;align-items:center;flex-wrap:wrap;margin-left:auto}
+/* Acta impresa */
+.acta-doc{font-family:'Times New Roman',serif;font-size:13px;line-height:1.7;color:#111;padding:.5rem}
+.acta-doc h2{font-size:16px;font-weight:700;text-align:center;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px}
+.acta-doc .subtitle{text-align:center;font-size:13px;margin-bottom:1rem}
+.acta-doc p{margin-bottom:.6rem;text-align:justify}
+.acta-doc table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:13px}
+.acta-doc table th{border:1px solid #333;padding:5px 10px;background:#e8e8e8;font-weight:700;text-align:center}
+.acta-doc table td{border:1px solid #555;padding:5px 10px}
+.acta-doc .firma-section{margin-top:2rem}
+.acta-doc .firma-line{border-top:1px solid #333;width:70%;margin:2rem auto 0;padding-top:4px;text-align:center;font-size:12px}
+/* ── Nómina ── */
+.nom-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center}
+.nom-filters input,.nom-filters select{border:1px solid var(--tk-border);border-radius:6px;padding:6px 10px;font-size:13px;outline:none;background:#fff}
+.nom-filters input{flex:1;min-width:160px}
+.nom-filters input:focus,.nom-filters select:focus{border-color:var(--tk-teal)}
+/* lista en tabla */
+.nom-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.nom-tbl th{background:var(--tk-blue);color:#fff;padding:6px 5px;text-align:left;font-weight:500;white-space:nowrap;font-size:10px}
+.nom-tbl td{padding:5px 5px;border-bottom:.5px solid var(--tk-border);vertical-align:middle}
+.nom-tbl tr:last-child td{border-bottom:none}
+.nom-tbl tr:hover td{background:var(--tk-bg)}
+.talla-chip{display:inline-block;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;white-space:nowrap}
+.tc-ok{background:#e8f5ee;color:var(--tk-success)}
+.tc-pend{background:#fdf4e8;color:var(--tk-warn)}
+/* mantener clases de tarjeta por si algo las referencia */
+.worker-grid{} .worker-card{}
+/* Modal trabajador */
+.modal-worker-header{background:var(--tk-bg);border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem}
+.talla-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+.talla-row label{font-size:12px;color:var(--tk-muted);min-width:120px}
+.talla-row input,.talla-row select{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none;flex:1;min-width:90px}
 </style>
 </head>
 <body>
@@ -83,21 +142,21 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('inventario',this)">Inventario</button>
-    <button class="tab" onclick="showTab('entrega-epp',this)">Entrega EPP</button>
-    <button class="tab" onclick="showTab('entrega-uniforme',this)">Entrega Uniformes</button>
-    <button class="tab" onclick="showTab('nomina',this)">Nómina</button>
-    <button class="tab" onclick="showTab('pedidos',this)">Pedidos</button>
-    <button class="tab" onclick="showTab('actas',this)">Actas Emitidas</button>
+    <button class="tab active" onclick="showTab('inventario',this)"><i class="ti ti-archive"></i> Inventario</button>
+    <button class="tab" onclick="showTab('entrega-epp',this)"><i class="ti ti-shield-check"></i> Entrega EPP</button>
+    <button class="tab" onclick="showTab('entrega-uniforme',this)"><i class="ti ti-shirt"></i> Entrega Uniformes</button>
+    <button class="tab" onclick="showTab('nomina',this)"><i class="ti ti-users"></i> Nómina</button>
+    <button class="tab" onclick="showTab('actas',this)"><i class="ti ti-file-description"></i> Actas Emitidas</button>
   </div>
 
+  <!-- ═══ INVENTARIO ═══ -->
   <div class="panel active" id="panel-inventario">
     <div class="stats-row" id="stats-row"></div>
     <div class="card">
-      <div class="card-title">Agregar ítem al inventario</div>
+      <div class="card-title"><i class="ti ti-plus-circle"></i> Agregar ítem al inventario</div>
       <div class="form-row">
-        <input id="inv-nombre" type="text" placeholder="Nombre del artículo">
-        <input id="inv-codigo" type="text" placeholder="Código">
+        <input id="inv-nombre" type="text" placeholder="Nombre del artículo" style="flex:2">
+        <input id="inv-codigo" type="text" placeholder="Código (ej: PPSH)">
         <input id="inv-barcode" type="text" placeholder="Código de barra">
       </div>
       <div class="form-row">
@@ -107,26 +166,40 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
           <option value="Herramienta">Herramienta</option>
           <option value="Otro">Otro</option>
         </select>
-        <input id="inv-tipo" type="text" placeholder="Tipo">
+        <input id="inv-tipo" type="text" placeholder="Tipo (ej: Pique, Polo)">
         <input id="inv-talla" type="text" placeholder="Talla">
-        <input id="inv-modelo" type="text" placeholder="Modelo">
+        <input id="inv-modelo" type="text" placeholder="Modelo (Hombre/Mujer/Unisex)">
       </div>
       <div class="form-row">
-        <input id="inv-qty" type="number" min="0" value="0" placeholder="Cantidad">
-        <input id="inv-ubicacion" type="text" placeholder="Ubicación">
-        <button class="btn btn-primary" onclick="agregarItem()">Agregar</button>
+        <input id="inv-qty" type="number" placeholder="Cantidad" min="0" value="0" style="flex:0 0 120px">
+        <input id="inv-ubicacion" type="text" placeholder="Ubicación (opcional)">
+        <button class="btn btn-primary" onclick="agregarItem()"><i class="ti ti-plus"></i> Agregar</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">Stock actual <span id="count-badge"></span></div>
+      <div class="card-title"><i class="ti ti-list"></i> Stock actual <span id="count-badge" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span></div>
+
+      <!-- ── Umbrales configurables ── -->
       <div class="umbral-row" style="margin-bottom:.75rem">
-        <label>Stock bajo ≤</label>
-        <input type="number" id="umbral-bajo" min="1" value="5" oninput="actualizarUmbrales()">
-        <label>Disponible ≥</label>
-        <input type="number" id="umbral-ok" min="1" value="6" oninput="actualizarUmbrales()">
+        <i class="ti ti-adjustments-horizontal" style="color:var(--tk-muted);font-size:15px"></i>
+        <label>Stock bajo si cantidad ≤</label>
+        <input type="number" id="umbral-bajo" min="1" max="999" value="5"
+               oninput="actualizarUmbrales()" title="Umbral stock bajo">
+        <label style="margin-left:4px">Disponible si cantidad ≥</label>
+        <input type="number" id="umbral-ok" min="1" max="999" value="6"
+               oninput="actualizarUmbrales()" title="Umbral disponible">
+        <div class="umbral-legend">
+          <span class="pill pill-ok">Disponible</span>
+          <span id="lbl-ok" style="color:var(--tk-muted)">≥ 6</span>
+          <span class="pill pill-warn">Stock bajo</span>
+          <span id="lbl-warn" style="color:var(--tk-muted)">1 – 5</span>
+          <span class="pill pill-danger">Sin stock</span>
+          <span style="color:var(--tk-muted)">0</span>
+        </div>
       </div>
+
       <div class="search-bar">
-        <input id="filtro-texto" type="text" placeholder="Buscar..." oninput="renderInventario()">
+        <input id="filtro-texto" type="text" placeholder="Buscar por nombre, código o código de barra..." oninput="renderInventario()">
         <select id="filtro-cat" onchange="renderInventario()">
           <option value="">Todas las categorías</option>
           <option value="Prenda">Prenda / Uniforme</option>
@@ -134,187 +207,1232 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
           <option value="Herramienta">Herramienta</option>
           <option value="Otro">Otro</option>
         </select>
+        <!-- Multi-estado -->
+        <div class="ms-wrap" id="ms-wrap">
+          <div class="ms-btn" id="ms-btn" onclick="toggleMsDropdown()">
+            <span id="ms-label">Todos los estados</span>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="ms-dropdown" id="ms-dropdown">
+            <label class="ms-option">
+              <input type="checkbox" value="ok"   onchange="onMsChange()">
+              <span class="pill pill-ok">Disponible</span>
+            </label>
+            <label class="ms-option">
+              <input type="checkbox" value="warn" onchange="onMsChange()">
+              <span class="pill pill-warn">Stock bajo</span>
+            </label>
+            <label class="ms-option">
+              <input type="checkbox" value="zero" onchange="onMsChange()">
+              <span class="pill pill-danger">Sin stock</span>
+            </label>
+          </div>
+        </div>
       </div>
       <div style="overflow-x:auto">
         <table class="tbl">
-          <thead><tr><th>Código</th><th>Cód. Barra</th><th>Artículo</th><th>Tipo</th><th>Talla</th><th>Modelo</th><th>Ubic.</th><th>Stock</th><th>Estado</th><th></th></tr></thead>
+          <thead><tr>
+            <th>Código</th><th>Cód. Barra</th><th>Artículo</th>
+            <th>Tipo</th><th>Talla</th><th>Modelo</th>
+            <th>Ubic.</th><th>Stock</th><th>Estado</th><th></th>
+          </tr></thead>
           <tbody id="tbody-inv"></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <div class="panel" id="panel-pedidos">
-    <div class="card">
-      <div class="card-title">Pedidos sugeridos</div>
-      <div class="pedido-row" style="background:var(--tk-bg)">
-        <strong>Reglas:</strong>
-        <span>Bodega: 5 prendas por persona según talla</span>
-        <span>Administrativa: 5 camisas y 5 poleras</span>
-        <span>Softshell y Parka: 1 por persona</span>
-        <span>Mínimo stock: 1 por persona según talla</span>
-      </div>
-      <div class="form-row" style="margin-bottom:.75rem">
-        <button class="btn btn-primary" onclick="renderPedidos()">Calcular pedidos</button>
-      </div>
-      <div id="resumen-pedidos" class="stats-row"></div>
-      <div style="overflow-x:auto">
-        <table class="pedido-table">
-          <thead><tr><th>Item</th><th>Cantidad en Stock</th><th>Requerido</th></tr></thead>
-          <tbody id="lista-pedidos"><tr><td colspan="3" class="empty">Presiona "Calcular pedidos".</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
+  <!-- ═══ ENTREGA EPP ═══ -->
   <div class="panel" id="panel-entrega-epp">
-    <div class="card"><div class="card-title">Datos del receptor — EPP</div>
-      <div class="form-row"><label>Nombre</label><input id="epp-nombre" type="text"></div>
-      <div class="form-row"><label>RUT / ID</label><input id="epp-rut" type="text"><label>Cargo</label><input id="epp-cargo" type="text"></div>
-      <div class="form-row"><label>Área / Faena</label><input id="epp-area" type="text"><label>Fecha</label><input id="epp-fecha" type="date"></div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user-check"></i> Datos del receptor — EPP</div>
+      <div class="form-row">
+        <label>Nombre</label>
+        <input id="epp-nombre" type="text" placeholder="Nombre completo del trabajador">
+      </div>
+      <div class="form-row">
+        <label>RUT / ID</label>
+        <input id="epp-rut" type="text" placeholder="RUT o identificación">
+        <label>Cargo</label>
+        <input id="epp-cargo" type="text" placeholder="Cargo">
+      </div>
+      <div class="form-row">
+        <label>Área / Faena</label>
+        <input id="epp-area" type="text" placeholder="Área o faena">
+        <label>Fecha</label>
+        <input id="epp-fecha" type="date">
+      </div>
     </div>
-    <div class="card"><div class="card-title">Ítems EPP a entregar</div><div id="items-epp"></div><button class="btn btn-outline btn-sm" onclick="addItemEPP()">Agregar ítem</button></div>
-    <div class="card"><div class="form-row"><label>Observaciones</label><input id="epp-obs" type="text"></div><button class="btn btn-success" onclick="emitirActaEPP()" style="width:100%">Emitir Acta de Entrega EPP</button></div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-package"></i> Ítems EPP a entregar</div>
+      <div id="items-epp"></div>
+      <button class="btn btn-outline btn-sm" onclick="addItemEPP()" style="margin-top:6px"><i class="ti ti-plus"></i> Agregar ítem</button>
+    </div>
+    <div class="card" style="background:var(--tk-bg)">
+      <div class="form-row">
+        <label>Observaciones</label>
+        <input id="epp-obs" type="text" placeholder="Observaciones opcionales">
+      </div>
+      <button class="btn btn-success" onclick="emitirActaEPP()" style="margin-top:.5rem;width:100%;padding:10px;justify-content:center">
+        <i class="ti ti-file-plus"></i> Emitir Acta de Entrega EPP
+      </button>
+    </div>
   </div>
 
+  <!-- ═══ ENTREGA UNIFORMES ═══ -->
   <div class="panel" id="panel-entrega-uniforme">
-    <div class="card"><div class="card-title">Datos del trabajador — Acta de Entrega de Uniforme</div>
-      <div class="form-row"><label>Nombre</label><input id="uni-nombre" type="text"></div>
-      <div class="form-row"><label>RUT</label><input id="uni-rut" type="text"><label>Cargo</label><input id="uni-cargo" type="text"></div>
-      <div class="form-row"><label>Fecha</label><input id="uni-fecha" type="date"><label>Ciudad</label><input id="uni-ciudad" type="text" value="Santiago"></div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user-check"></i> Datos del trabajador — Acta de Entrega de Uniforme</div>
+      <div class="form-row">
+        <label>Nombre</label>
+        <input id="uni-nombre" type="text" placeholder="Nombre completo">
+      </div>
+      <div class="form-row">
+        <label>RUT</label>
+        <input id="uni-rut" type="text" placeholder="RUT (ej: 16.043.654-9)">
+        <label>Cargo</label>
+        <input id="uni-cargo" type="text" placeholder="Cargo">
+      </div>
+      <div class="form-row">
+        <label>Fecha</label>
+        <input id="uni-fecha" type="date">
+        <label>Ciudad</label>
+        <input id="uni-ciudad" type="text" placeholder="Ciudad" value="Santiago">
+      </div>
     </div>
-    <div class="card"><div class="card-title">Prendas de uniforme a entregar</div><div id="items-uni"></div><button class="btn btn-outline btn-sm" onclick="addItemUni()">Agregar prenda</button></div>
-    <div class="card"><button class="btn btn-success" onclick="emitirActaUni()" style="width:100%">Emitir Acta de Entrega de Uniforme</button></div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-shirt"></i> Prendas de uniforme a entregar</div>
+      <div id="items-uni"></div>
+      <button class="btn btn-outline btn-sm" onclick="addItemUni()" style="margin-top:6px"><i class="ti ti-plus"></i> Agregar prenda</button>
+    </div>
+    <div class="card" style="background:var(--tk-bg)">
+      <button class="btn btn-success" onclick="emitirActaUni()" style="width:100%;padding:10px;justify-content:center">
+        <i class="ti ti-file-plus"></i> Emitir Acta de Entrega de Uniforme
+      </button>
+    </div>
   </div>
 
+  <!-- ═══ NÓMINA ═══ -->
   <div class="panel" id="panel-nomina">
     <div class="card">
-      <div class="card-title">Nómina de trabajadores <span id="nom-count-badge"></span></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem">
-        <input id="nom-buscar" type="text" placeholder="Buscar..." oninput="renderNomina()">
-        <select id="nom-tenida" onchange="renderNomina()">
-          <option value="">Todos los tipos</option><option value="Bodega">Bodega</option><option value="administrativo">Administrativo</option>
-        </select>
-        <select id="nom-sexo" onchange="renderNomina()">
-          <option value="">Ambos sexos</option><option value="M">Masculino</option><option value="F">Femenino</option>
-        </select>
-        <select id="nom-cc" onchange="renderNomina()">
-          <option value="">Todos los centros de costo</option><option value="Gerencia de Operaciones">Ger. Operaciones</option><option value="Gerencia Comercial">Ger. Comercial</option><option value="Gerencia de Administracion y Finanzas">Ger. Adm. y Finanzas</option><option value="Gerencia General">Gerencia General</option>
-        </select>
-        <button class="btn btn-primary" onclick="abrirNuevoWorker()">Agregar trabajador</button>
+      <div class="card-title"><i class="ti ti-users"></i> Nómina de trabajadores
+        <span id="nom-count-badge" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span>
       </div>
-      <div style="overflow-x:auto"><div id="worker-grid"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:.75rem">
+        <div class="nom-filters" style="margin-bottom:0;flex:1">
+          <input id="nom-buscar" type="text" placeholder="Buscar por nombre, RUT o cargo…" oninput="renderNomina()">
+          <select id="nom-tenida" onchange="renderNomina()">
+            <option value="">Todos los tipos</option>
+            <option value="Bodega">Bodega</option>
+            <option value="administrativo">Administrativo</option>
+          </select>
+          <select id="nom-sexo" onchange="renderNomina()">
+            <option value="">Ambos sexos</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+          </select>
+          <select id="nom-cc" onchange="renderNomina()">
+            <option value="">Todos los centros de costo</option>
+            <option value="Gerencia de Operaciones">Ger. Operaciones</option>
+            <option value="Gerencia Comercial">Ger. Comercial</option>
+            <option value="Gerencia de Administracion y Finanzas">Ger. Adm. y Finanzas</option>
+            <option value="Gerencia General">Gerencia General</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="abrirNuevoWorker()" style="white-space:nowrap;align-self:flex-start">
+          <i class="ti ti-user-plus"></i> Agregar trabajador
+        </button>
+      </div>
+      <div style="overflow-x:auto">
+        <div id="worker-grid"></div>
+      </div>
     </div>
   </div>
 
+  <!-- ═══ ACTAS ═══ -->
   <div class="panel" id="panel-actas">
     <div class="card">
-      <div class="card-title">Historial de actas emitidas</div>
+      <div class="card-title"><i class="ti ti-files"></i> Historial de actas emitidas</div>
       <div id="lista-actas"><div class="empty">No hay actas emitidas aún.</div></div>
     </div>
   </div>
 </div>
 
-<div class="modal-bg" id="modal-worker"><div class="modal"><div class="modal-header"><span class="modal-title" id="mw-titulo">Perfil de trabajador</span><button class="close-btn" onclick="cerrarModalWorker()">✕</button></div><div id="mw-perfil"></div><div id="mw-tallas"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn btn-success" onclick="emitirDesdeWorker('Uniforme')">Emitir Acta Uniforme</button><button class="btn btn-primary" onclick="emitirDesdeWorker('EPP')">Emitir Acta EPP</button><button class="btn btn-outline" onclick="cerrarModalWorker()">Cerrar</button></div></div></div>
-<div class="modal-bg" id="modal-edit-worker"><div class="modal"><div class="modal-header"><span class="modal-title">Editar trabajador</span><button class="close-btn" onclick="cerrarEditarWorker()">✕</button></div><input type="hidden" id="ew-rut-original"><div class="form-row"><label>Nombres</label><input id="ew-nombres" type="text"></div><div class="form-row"><label>Ap. Paterno</label><input id="ew-ap" type="text"><label>Ap. Materno</label><input id="ew-am" type="text"></div><div class="form-row"><label>RUT</label><input id="ew-rut" type="text"><label>Sexo</label><select id="ew-sexo"><option value="M">Masculino</option><option value="F">Femenino</option></select></div><div class="form-row"><label>Cargo</label><input id="ew-cargo" type="text"></div><div class="form-row"><label>Tipo tenida</label><select id="ew-tenida"><option value="Bodega">Bodega</option><option value="administrativo">Administrativo</option></select></div><div class="form-row"><label>Centro costo</label><select id="ew-cc"><option value="Gerencia de Operaciones">Gerencia de Operaciones</option><option value="Gerencia Comercial">Gerencia Comercial</option><option value="Gerencia de Administracion y Finanzas">Gerencia de Administración y Finanzas</option><option value="Gerencia General">Gerencia General</option></select></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-primary" onclick="guardarEditarWorker()">Guardar cambios</button><button class="btn btn-outline" onclick="cerrarEditarWorker()">Cancelar</button></div></div></div>
-<div class="modal-bg" id="modal-acta"><div class="modal"><div class="modal-header"><span class="modal-title" id="modal-titulo">Vista previa — Acta</span><button class="close-btn" onclick="cerrarModal()">✕</button></div><div id="modal-content"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn btn-primary" onclick="imprimirActa()">Imprimir / PDF</button><button class="btn btn-outline" onclick="cerrarModal()">Cerrar</button></div></div></div>
-<div class="modal-bg" id="modal-editar"><div class="modal" style="max-width:380px"><div class="modal-header"><span class="modal-title">Editar ítem</span><button class="close-btn" onclick="cerrarModalEditar()">✕</button></div><p id="edit-nombre" style="font-weight:600;color:var(--tk-blue);margin-bottom:1rem"></p><input type="hidden" id="edit-idx"><div style="margin-bottom:1rem"><label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Cantidad en stock</label><input type="number" id="edit-qty" min="0" style="width:100%"><label style="font-size:12px;color:var(--tk-muted);display:block;margin:10px 0 4px">Ubicación</label><input type="text" id="edit-ubicacion" style="width:100%"></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-primary" onclick="guardarEdicion()">Guardar</button><button class="btn btn-outline" onclick="cerrarModalEditar()">Cancelar</button></div></div></div>
+<!-- MODAL TRABAJADOR -->
+<div class="modal-bg" id="modal-worker">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header">
+      <span class="modal-title" id="mw-titulo"><i class="ti ti-user"></i> Perfil de trabajador</span>
+      <button class="close-btn" onclick="cerrarModalWorker()">✕</button>
+    </div>
+    <div id="mw-perfil"></div>
+    <hr style="border:none;border-top:.5px solid var(--tk-border);margin:.75rem 0">
+    <div class="card-title" style="margin-bottom:.5rem"><i class="ti ti-ruler-2"></i> Tallas &amp; dotación para acta</div>
+    <div id="mw-tallas"></div>
+    <div style="display:flex;gap:8px;margin-top:1rem;justify-content:flex-end;flex-wrap:wrap">
+      <button class="btn btn-success" id="mw-btn-uni" onclick="emitirDesdeWorker('Uniforme')">
+        <i class="ti ti-file-plus"></i> Emitir Acta Uniforme
+      </button>
+      <button class="btn btn-primary" id="mw-btn-epp" onclick="emitirDesdeWorker('EPP')">
+        <i class="ti ti-shield-check"></i> Emitir Acta EPP
+      </button>
+      <button class="btn btn-outline" onclick="cerrarModalWorker()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR TRABAJADOR -->
+<div class="modal-bg" id="modal-edit-worker">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span class="modal-title"><i class="ti ti-user-edit"></i> Editar trabajador</span>
+      <button class="close-btn" onclick="cerrarEditarWorker()">✕</button>
+    </div>
+    <input type="hidden" id="ew-rut-original">
+    <div class="form-row">
+      <label>Nombres</label>
+      <input id="ew-nombres" type="text" placeholder="Nombres">
+    </div>
+    <div class="form-row">
+      <label>Ap. Paterno</label>
+      <input id="ew-ap" type="text" placeholder="Apellido paterno">
+      <label>Ap. Materno</label>
+      <input id="ew-am" type="text" placeholder="Apellido materno">
+    </div>
+    <div class="form-row">
+      <label>RUT</label>
+      <input id="ew-rut" type="text" placeholder="ej: 12.345.678-9">
+      <label>Sexo</label>
+      <select id="ew-sexo">
+        <option value="M">Masculino</option>
+        <option value="F">Femenino</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Cargo</label>
+      <input id="ew-cargo" type="text" placeholder="Cargo" style="flex:2">
+    </div>
+    <div class="form-row">
+      <label>Tipo tenida</label>
+      <select id="ew-tenida">
+        <option value="Bodega">Bodega</option>
+        <option value="administrativo">Administrativo</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Centro costo</label>
+      <select id="ew-cc" style="flex:2">
+        <option value="Gerencia de Operaciones">Gerencia de Operaciones</option>
+        <option value="Gerencia Comercial">Gerencia Comercial</option>
+        <option value="Gerencia de Administracion y Finanzas">Gerencia de Administración y Finanzas</option>
+        <option value="Gerencia General">Gerencia General</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1.25rem;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="guardarEditarWorker()"><i class="ti ti-check"></i> Guardar cambios</button>
+      <button class="btn btn-outline" onclick="cerrarEditarWorker()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ACTA -->
+<div class="modal-bg" id="modal-acta">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-titulo">Vista previa — Acta</span>
+      <button class="close-btn" onclick="cerrarModal()">✕</button>
+    </div>
+    <div id="modal-content"></div>
+    <div style="display:flex;gap:8px;margin-top:1rem;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="imprimirActa()"><i class="ti ti-printer"></i> Imprimir / PDF</button>
+      <button class="btn btn-outline" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ÍTEM -->
+<div class="modal-bg" id="modal-editar">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <span class="modal-title"><i class="ti ti-pencil"></i> Editar ítem</span>
+      <button class="close-btn" onclick="cerrarModalEditar()">✕</button>
+    </div>
+    <p id="edit-nombre" style="font-weight:600;color:var(--tk-blue);margin-bottom:1rem;font-size:13px"></p>
+    <input type="hidden" id="edit-idx">
+    <div style="margin-bottom:1rem">
+      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Cantidad en stock</label>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="stepQty(-1)" style="font-size:16px;padding:4px 12px">−</button>
+        <input type="number" id="edit-qty" min="0" style="flex:1;text-align:center;font-size:18px;font-weight:700;color:var(--tk-blue);border:1.5px solid var(--tk-border);border-radius:6px;padding:6px;outline:none"
+          onkeydown="if(event.key==='Enter')guardarEdicion()">
+        <button class="btn btn-outline btn-sm" onclick="stepQty(1)" style="font-size:16px;padding:4px 12px">+</button>
+      </div>
+    </div>
+    <div style="margin-bottom:1.25rem">
+      <label style="font-size:12px;color:var(--tk-muted);display:block;margin-bottom:4px">Ubicación</label>
+      <input type="text" id="edit-ubicacion" placeholder="Ej: Bodega A, Estante 3"
+        style="width:100%;border:1.5px solid var(--tk-border);border-radius:6px;padding:7px 10px;font-size:13px;outline:none"
+        onkeydown="if(event.key==='Enter')guardarEdicion()">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="guardarEdicion()"><i class="ti ti-check"></i> Guardar</button>
+      <button class="btn btn-outline" onclick="cerrarModalEditar()">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <script>
+// ═══ CONFIGURACIÓN API ═══════════════════════════════════════════════════════
 const API_URL = 'https://script.google.com/macros/s/AKfycbwpFDKIKmRq_wc-H8b2N7nCeuoLPBYz6_athqh7ElGOkw2FNNgoAVqZF1c7Y_Zv7Buk/exec';
-let inventario=[], actas=[], itemsEPP=[], itemsUni=[], workerActivo=null, umbralBajo=5;
-const T = ()=>({camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:'',zapatos:''});
-const NOMINA_BASE = [
-  {rut:'20048228-K',nombres:'Adip Isrrael',ap:'Gallegos',am:'Apablaza',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
-  {rut:'17414451-6',nombres:'Adolfo Esteban',ap:'Vallejos',am:'Aguirre',sexo:'M',cargo:'Encargado(a) de Marketing',tenida:'administrativo',cc:'Gerencia Comercial',t:T()}
-];
 
-function hoy(){return new Date().toISOString().split('T')[0];}
-function formatFecha(f){if(!f)return'—';const[y,m,d]=f.split('-');return`${d}/${m}/${y}`;}
-function apiConfigurada(){ return API_URL && API_URL.startsWith('https://'); }
-async function apiGet(params){ const qs=new URLSearchParams(params).toString(); const res=await fetch(API_URL+'?'+qs); if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); }
-async function apiSync(action, params, silent=false){ if(!apiConfigurada()) return null; try{ setSync('busy','Guardando…'); const r=await apiGet(Object.assign({action},params||{})); setSync('ok','Sincronizado'); return r; }catch(err){ setSync('err','Sin conexión'); if(!silent) alert('No se pudo sincronizar: '+err.message); return null; } }
-function setSync(e,t){ const el=document.getElementById('sync-badge'); if(!el) return; el.className='sync-badge sync-'+e; el.innerHTML=(e==='busy'?'<i class="ti ti-loader-2 spin"></i> ':e==='ok'?'<i class="ti ti-cloud-check"></i> ':'<i class="ti ti-cloud-off"></i> ')+t; }
-function estadoItem(q){ if(q===0) return {cls:'pill-danger',txt:'Sin stock',key:'zero'}; if(q<=umbralBajo) return {cls:'pill-warn',txt:'Stock bajo',key:'warn'}; return {cls:'pill-ok',txt:'Disponible',key:'ok'}; }
-function showTab(t,btn){ document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active')); document.getElementById('panel-'+t).classList.add('active'); btn.classList.add('active'); if(t==='inventario') renderInventario(); if(t==='entrega-epp') initEPP(); if(t==='entrega-uniforme') initUni(); if(t==='nomina') renderNomina(); if(t==='actas') renderActas(); if(t==='pedidos') renderPedidos(); }
-function renderStats(){ const total=inventario.length, conStock=inventario.filter(i=>i.qty>0).length, sinStock=inventario.filter(i=>i.qty===0).length, stockBajo=inventario.filter(i=>i.qty>0&&i.qty<=umbralBajo).length, totalUnidades=inventario.reduce((s,i)=>s+i.qty,0); document.getElementById('stats-row').innerHTML=`<div class="stat-box"><div class="val">${total}</div><div class="lbl">Artículos</div></div><div class="stat-box"><div class="val" style="color:var(--tk-success)">${conStock}</div><div class="lbl">Con stock</div></div><div class="stat-box"><div class="val" style="color:var(--tk-warn)">${stockBajo}</div><div class="lbl">Stock bajo</div></div><div class="stat-box"><div class="val" style="color:var(--tk-danger)">${sinStock}</div><div class="lbl">Sin stock</div></div><div class="stat-box"><div class="val">${totalUnidades}</div><div class="lbl">Unidades totales</div></div><div class="stat-box"><div class="val" style="color:var(--tk-teal)">${actas.length}</div><div class="lbl">Actas emitidas</div></div>`;}
-function actualizarUmbrales(){ const bajo=parseInt(document.getElementById('umbral-bajo').value)||1; const ok=parseInt(document.getElementById('umbral-ok').value)||bajo+1; umbralBajo=bajo; if(ok<=bajo) document.getElementById('umbral-ok').value=bajo+1; renderInventario(); renderPedidos(); }
+// ═══ ESTADO ══════════════════════════════════════════════════════════════════
+let inventario = [];
+let actas = [];
+let itemsEPP = [];
+let itemsUni = [];
 
-function renderInventario(){ renderStats(); const txt=(document.getElementById('filtro-texto').value||'').toLowerCase(); const cat=document.getElementById('filtro-cat').value; const fil=inventario.filter(it=>{ const t=!txt||it.nombre.toLowerCase().includes(txt)||it.id.toLowerCase().includes(txt)||(it.barcode||'').toLowerCase().includes(txt); const c=!cat||it.cat===cat; return t&&c; }); document.getElementById('count-badge').textContent=`(${fil.length} de ${inventario.length})`; const tb=document.getElementById('tbody-inv'); if(!fil.length){tb.innerHTML='<tr><td colspan="10" class="empty">Sin resultados</td></tr>';return;} tb.innerHTML=fil.map(it=>{ const i=inventario.indexOf(it), e=estadoItem(it.qty); return `<tr><td><code>${it.id}</code></td><td>${it.barcode||'—'}</td><td>${it.nombre}</td><td>${it.tipo||'—'}</td><td>${it.talla||'—'}</td><td>${it.modelo||'—'}</td><td>${it.ubicacion||'—'}</td><td><span class="qty-badge">${it.qty}</span></td><td><span class="pill ${e.cls}">${e.txt}</span></td><td style="white-space:nowrap"><button class="btn btn-sm btn-outline" onclick="abrirEditar(${i})">Editar</button><button class="btn btn-sm btn-danger" onclick="eliminarItem(${i})" style="margin-left:3px">X</button></td></tr>`; }).join(''); }
-function agregarItem(){ const n=document.getElementById('inv-nombre').value.trim(), c=document.getElementById('inv-codigo').value.trim().toUpperCase(); if(!n||!c){alert('Ingresa nombre y código.');return;} if(inventario.find(x=>x.id===c)){alert('Código ya existe.');return;} const item={id:c,barcode:document.getElementById('inv-barcode').value.trim(),nombre:n,cat:document.getElementById('inv-cat').value,tipo:document.getElementById('inv-tipo').value.trim(),talla:document.getElementById('inv-talla').value.trim(),modelo:document.getElementById('inv-modelo').value.trim(),qty:parseInt(document.getElementById('inv-qty').value)||0,ubicacion:document.getElementById('inv-ubicacion').value.trim()}; inventario.push(item); ['inv-nombre','inv-codigo','inv-barcode','inv-tipo','inv-talla','inv-modelo','inv-ubicacion'].forEach(id=>document.getElementById(id).value=''); document.getElementById('inv-qty').value=0; renderInventario(); apiSync('saveItem',{data:JSON.stringify(item)}); }
-function abrirEditar(i){ const it=inventario[i]; document.getElementById('edit-idx').value=i; document.getElementById('edit-qty').value=it.qty; document.getElementById('edit-ubicacion').value=it.ubicacion||''; document.getElementById('edit-nombre').textContent=it.nombre; document.getElementById('modal-editar').classList.add('open'); }
-function guardarEdicion(){ const i=parseInt(document.getElementById('edit-idx').value); const qty=parseInt(document.getElementById('edit-qty').value); const ubi=document.getElementById('edit-ubicacion').value.trim(); if(isNaN(qty)||qty<0){alert('Cantidad inválida.');return;} inventario[i].qty=qty; inventario[i].ubicacion=ubi; cerrarModalEditar(); renderInventario(); apiSync('updateStock',{id:inventario[i].id,qty,ubicacion:ubi}); }
-function cerrarModalEditar(){document.getElementById('modal-editar').classList.remove('open');}
-function eliminarItem(i){ if(!confirm(`¿Eliminar "${inventario[i].nombre}"?`))return; const id=inventario[i].id; inventario.splice(i,1); renderInventario(); apiSync('deleteItem',{id}); }
+// ═══ UMBRALES (configurables por el usuario) ══════════════════════════════════
+let umbralBajo = 5;   // qty <= umbralBajo → "Stock bajo"
+                      // qty > umbralBajo   → "Disponible"
 
-function initEPP(){ if(!document.getElementById('epp-fecha').value) document.getElementById('epp-fecha').value=hoy(); if(!itemsEPP.length) addItemEPP(); else renderItemsEPP(); }
-function addItemEPP(){ itemsEPP.push({invIdx:-1,qty:1}); renderItemsEPP(); }
-function renderItemsEPP(){ const opts=inventario.map((it,i)=>`<option value="${i}">[${it.id}] ${it.nombre} — Stock: ${it.qty}</option>`).join(''); document.getElementById('items-epp').innerHTML=itemsEPP.map((itm,i)=>`<div class="item-row"><select onchange="setItemEPP(${i},this.value)" style="flex:3"><option value="-1">— Seleccionar artículo —</option>${opts}</select><input type="number" min="1" value="${itm.qty}" style="width:75px" onchange="setQtyEPP(${i},this.value)"><button class="btn btn-danger btn-sm" onclick="removeItemEPP(${i})">X</button></div>`).join(''); }
-function setItemEPP(i,v){ itemsEPP[i].invIdx=parseInt(v); } function setQtyEPP(i,v){ itemsEPP[i].qty=Math.max(1,parseInt(v)||1); } function removeItemEPP(i){ itemsEPP.splice(i,1); renderItemsEPP(); }
-function emitirActaEPP(){ const nombre=document.getElementById('epp-nombre').value.trim(), rut=document.getElementById('epp-rut').value.trim(), cargo=document.getElementById('epp-cargo').value.trim(), area=document.getElementById('epp-area').value.trim(), fecha=document.getElementById('epp-fecha').value, obs=document.getElementById('epp-obs').value.trim(); if(!nombre||!rut){alert('Ingresa nombre y RUT.');return;} if(!fecha){alert('Indica la fecha.');return;} const validos=itemsEPP.filter(it=>it.invIdx>=0); if(!validos.length){alert('Agrega al menos un artículo.');return;} if(validos.some(it=>it.qty>inventario[it.invIdx].qty)){alert('Stock insuficiente.');return;} if(!confirm('¿Confirmar emisión del acta EPP y descontar stock?'))return; const acta={tipo:'EPP',nombre,rut,cargo,area,ciudad:'',fecha,obs,items:validos.map(it=>({codigo:inventario[it.invIdx].id,barcode:inventario[it.invIdx].barcode,nombre:inventario[it.invIdx].nombre,talla:inventario[it.invIdx].talla,modelo:inventario[it.invIdx].modelo,qty:it.qty})),emision:new Date().toLocaleString('es-CL')}; emitirActa(acta,validos,()=>{itemsEPP=[];['epp-nombre','epp-rut','epp-cargo','epp-area','epp-obs'].forEach(id=>document.getElementById(id).value='');}); }
+function actualizarUmbrales(){
+  const bajo = parseInt(document.getElementById('umbral-bajo').value) || 1;
+  const ok   = parseInt(document.getElementById('umbral-ok').value)   || bajo + 1;
 
-function initUni(){ if(!document.getElementById('uni-fecha').value) document.getElementById('uni-fecha').value=hoy(); if(!itemsUni.length) addItemUni(); else renderItemsUni(); }
-function addItemUni(){ itemsUni.push({invIdx:-1,qty:1,fechaEntrega:hoy()}); renderItemsUni(); }
-function renderItemsUni(){ const opts=inventario.map((it,i)=>`<option value="${i}">[${it.id}] ${it.nombre} — Stock: ${it.qty}</option>`).join(''); document.getElementById('items-uni').innerHTML=itemsUni.map((itm,i)=>`<div class="item-row"><select onchange="setItemUni(${i},this.value)" style="flex:3;min-width:180px"><option value="-1">— Seleccionar prenda —</option>${opts}</select><input type="number" min="1" value="${itm.qty}" style="width:70px" onchange="setQtyUni(${i},this.value)"><input type="date" value="${itm.fechaEntrega}" style="width:140px" onchange="setFechaUni(${i},this.value)"><button class="btn btn-danger btn-sm" onclick="removeItemUni(${i})">X</button></div>`).join(''); }
-function setItemUni(i,v){ itemsUni[i].invIdx=parseInt(v); } function setQtyUni(i,v){ itemsUni[i].qty=Math.max(1,parseInt(v)||1); } function setFechaUni(i,v){ itemsUni[i].fechaEntrega=v; } function removeItemUni(i){ itemsUni.splice(i,1); renderItemsUni(); }
-function emitirActaUni(){ const nombre=document.getElementById('uni-nombre').value.trim(), rut=document.getElementById('uni-rut').value.trim(), cargo=document.getElementById('uni-cargo').value.trim(), fecha=document.getElementById('uni-fecha').value, ciudad=document.getElementById('uni-ciudad').value.trim()||'Santiago'; if(!nombre||!rut){alert('Ingresa nombre y RUT.');return;} if(!fecha){alert('Indica la fecha.');return;} const validos=itemsUni.filter(it=>it.invIdx>=0); if(!validos.length){alert('Agrega al menos una prenda.');return;} if(validos.some(it=>it.qty>inventario[it.invIdx].qty)){alert('Stock insuficiente.');return;} if(!confirm('¿Confirmar emisión del acta de uniforme y descontar stock?'))return; const acta={tipo:'Uniforme',nombre,rut,cargo,area:'',ciudad,fecha,obs:'',items:validos.map(it=>({codigo:inventario[it.invIdx].id,nombre:inventario[it.invIdx].nombre,talla:inventario[it.invIdx].talla,qty:it.qty,fechaEntrega:it.fechaEntrega})),emision:new Date().toLocaleString('es-CL')}; emitirActa(acta,validos,()=>{itemsUni=[];['uni-nombre','uni-rut','uni-cargo'].forEach(id=>document.getElementById(id).value='');}); }
+  // Sincronizar: bajo siempre = ok - 1  (evita solapamientos)
+  umbralBajo = bajo;
 
-async function emitirActa(acta, validos, limpiar){ if(apiConfigurada()){ const r=await apiSync('addActa',{data:JSON.stringify(acta)}); if(!r||!r.ok) return; acta.num=r.num; inventario=r.inventario||inventario; }else{ validos.forEach(it=>inventario[it.invIdx].qty-=it.qty); const max=actas.reduce((m,a)=>Math.max(m,parseInt(a.num)||0),0); acta.num=String(max+1).padStart(4,'0'); } actas.unshift(acta); limpiar(); renderInventario(); renderActas(); mostrarActa(acta); }
+  // Ajustar el campo "Disponible" para que siempre sea bajo+1
+  const elOk = document.getElementById('umbral-ok');
+  if(ok <= bajo){
+    elOk.value = bajo + 1;
+  }
 
-function renderActas(){ const c=document.getElementById('lista-actas'); if(!actas.length){c.innerHTML='<div class="empty">No hay actas emitidas aún.</div>';return;} c.innerHTML=actas.map(a=>`<div class="card" style="margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:600;color:var(--tk-blue)">Acta N° ${a.num}</div><div style="font-size:12px;color:var(--tk-muted)">${a.nombre} — ${a.items.length} ítem(s) — ${formatFecha(a.fecha)}</div></div><button class="btn btn-outline btn-sm" onclick='verActa("${a.num}")'>Ver</button></div>`).join(''); }
-function verActa(num){ const a=actas.find(x=>x.num===num); if(a)mostrarActa(a); }
-function mostrarActa(acta){ document.getElementById('modal-titulo').textContent=acta.tipo==='Uniforme'?'Acta de Entrega de Uniforme':'Acta de Entrega EPP'; document.getElementById('modal-content').innerHTML=acta.tipo==='Uniforme'?generarActaUniforme(acta):generarActaEPP(acta); document.getElementById('modal-acta').classList.add('open'); }
-function cerrarModal(){document.getElementById('modal-acta').classList.remove('open');}
-function generarActaUniforme(a){ const filas=a.items.map(it=>`<tr><td style="text-align:center">${it.qty}</td><td>${it.nombre}${it.talla?' — Talla '+it.talla:''}</td><td style="text-align:center">${it.talla||'—'}</td><td style="text-align:center">${formatFecha(it.fechaEntrega)}</td></tr>`).join(''); return `<div class="card" style="border:none;box-shadow:none"><h2 style="text-align:center;font-size:16px;margin-bottom:.5rem">Acta Entrega de Uniforme</h2><p style="text-align:center;margin-bottom:1rem">${a.ciudad}, ${formatFecha(a.fecha)}</p><table class="pedido-table"><thead><tr><th>Cantidad</th><th>Descripción</th><th>Talla</th><th>Fecha entrega</th></tr></thead><tbody>${filas}</tbody></table><p><strong>Nombre:</strong> ${a.nombre}</p><p><strong>Cargo:</strong> ${a.cargo||'—'}</p><p><strong>RUT:</strong> ${a.rut}</p></div>`; }
-function generarActaEPP(a){ const filas=a.items.map(it=>`<tr><td>${it.codigo}</td><td>${it.barcode||'—'}</td><td>${it.nombre}</td><td>${it.talla||'—'}</td><td>${it.modelo||'—'}</td><td style="text-align:center">${it.qty}</td></tr>`).join(''); return `<div class="card" style="border:none;box-shadow:none"><h2 style="text-align:center;font-size:16px;margin-bottom:.5rem">Acta de Entrega de EPP</h2><p style="text-align:center;margin-bottom:1rem">N° ${a.num} — ${a.emision}</p><p><strong>Nombre:</strong> ${a.nombre} | <strong>RUT:</strong> ${a.rut} | <strong>Cargo:</strong> ${a.cargo||'—'}</p><table class="pedido-table"><thead><tr><th>Código</th><th>Cód. Barra</th><th>Artículo</th><th>Talla</th><th>Modelo</th><th>Cant.</th></tr></thead><tbody>${filas}</tbody></table>${a.obs?`<p><strong>Obs:</strong> ${a.obs}</p>`:''}</div>`; }
-function imprimirActa(){ const c=document.getElementById('modal-content').innerHTML; const w=window.open('','_blank'); w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Acta</title><style>body{font-family:Segoe UI,sans-serif;padding:2rem}table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:6px}.pedido-table th{background:#25638f;color:#fff}</style></head><body>${c}</body></html>`); w.document.close(); setTimeout(()=>w.print(),300); }
+  // Actualizar leyenda
+  document.getElementById('lbl-ok').textContent   = '≥ ' + (umbralBajo + 1);
+  document.getElementById('lbl-warn').textContent  = umbralBajo > 1 ? '1 – ' + umbralBajo : '1';
 
-function renderNomina(){ const txt=(document.getElementById('nom-buscar').value||'').toLowerCase(), ten=document.getElementById('nom-tenida').value, sexo=document.getElementById('nom-sexo').value, cc=document.getElementById('nom-cc').value; const fil=NOMINA_BASE.filter(w=>{ const nombre=`${w.nombres} ${w.ap} ${w.am}`.toLowerCase(); return (!txt||nombre.includes(txt)||w.rut.toLowerCase().includes(txt)||w.cargo.toLowerCase().includes(txt)) && (!ten||w.tenida===ten) && (!sexo||w.sexo===sexo) && (!cc||w.cc===cc); }); document.getElementById('nom-count-badge').textContent=`(${fil.length} de ${NOMINA_BASE.length})`; const cols=['camisas','poleras','softshell','parka','buzo','pantalon','zapatos']; const labels={camisas:'Camisas',poleras:'Poleras',softshell:'Softshell',parka:'Parka',buzo:'Buzo',pantalon:'Pantalón',zapatos:'Zapatos'}; const aplica={camisas:['administrativo'],poleras:['Bodega','administrativo'],softshell:['administrativo'],parka:['Bodega','administrativo'],buzo:['Bodega'],pantalon:['Bodega'],zapatos:['Bodega','administrativo']}; document.getElementById('worker-grid').innerHTML=`<table class="nom-tbl"><thead><tr><th>Trabajador</th><th>Cargo</th><th>Tipo</th><th>CC</th>${cols.map(k=>`<th style="text-align:center">${labels[k]}</th>`).join('')}<th></th></tr></thead><tbody>${fil.map(w=>{ const nc=`${w.ap} ${w.am}, ${w.nombres}`; const tallaCeldas=cols.map(k=>!aplica[k].includes(w.tenida)?'<td style="text-align:center;color:#ddd">—</td>':`<td style="text-align:center"><span class="talla-chip ${w.t[k]?'tc-ok':'tc-pend'}">${w.t[k]||'—'}</span></td>`).join(''); return `<tr><td><div style="font-weight:600;color:var(--tk-blue)">${nc}</div><div style="font-size:10px;color:var(--tk-muted)">${w.rut}</div></td><td style="font-size:10px">${w.cargo}</td><td>${w.tenida}</td><td style="font-size:10px">${w.cc}</td>${tallaCeldas}<td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="abrirEditarWorker('${w.rut}')">Editar</button><button class="btn btn-danger btn-sm" onclick="eliminarWorker('${w.rut}')">X</button></td></tr>`; }).join('')||'<tr><td colspan="12" class="empty">Sin resultados</td></tr>'}</tbody></table>`; }
-
-function abrirEditarWorker(rut){ const w=NOMINA_BASE.find(x=>x.rut===rut); if(!w)return; document.getElementById('ew-rut-original').value=rut; document.getElementById('ew-nombres').value=w.nombres; document.getElementById('ew-ap').value=w.ap; document.getElementById('ew-am').value=w.am; document.getElementById('ew-rut').value=w.rut; document.getElementById('ew-sexo').value=w.sexo; document.getElementById('ew-cargo').value=w.cargo; document.getElementById('ew-tenida').value=w.tenida; document.getElementById('ew-cc').value=w.cc; document.getElementById('modal-edit-worker').classList.add('open'); }
-function abrirNuevoWorker(){ document.getElementById('ew-rut-original').value=''; document.getElementById('ew-nombres').value=''; document.getElementById('ew-ap').value=''; document.getElementById('ew-am').value=''; document.getElementById('ew-rut').value=''; document.getElementById('ew-sexo').value='M'; document.getElementById('ew-cargo').value=''; document.getElementById('ew-tenida').value='administrativo'; document.getElementById('ew-cc').value='Gerencia Comercial'; document.getElementById('modal-edit-worker').classList.add('open'); }
-function cerrarEditarWorker(){document.getElementById('modal-edit-worker').classList.remove('open');}
-function guardarEditarWorker(){ const rutOrig=document.getElementById('ew-rut-original').value; const nuevoRut=document.getElementById('ew-rut').value.trim(); if(!nuevoRut){alert('El RUT no puede estar vacío.');return;} const data={rut:nuevoRut,nombres:document.getElementById('ew-nombres').value.trim(),ap:document.getElementById('ew-ap').value.trim(),am:document.getElementById('ew-am').value.trim(),sexo:document.getElementById('ew-sexo').value,cargo:document.getElementById('ew-cargo').value.trim(),tenida:document.getElementById('ew-tenida').value,cc:document.getElementById('ew-cc').value,t:T()}; if(rutOrig){ const idx=NOMINA_BASE.findIndex(x=>x.rut===rutOrig); if(idx>=0){ data.t=NOMINA_BASE[idx].t||T(); NOMINA_BASE[idx]=data; } } else NOMINA_BASE.push(data); cerrarEditarWorker(); renderNomina(); apiSync('saveWorker',{data:JSON.stringify(data),rutOriginal:rutOrig||nuevoRut}); }
-function eliminarWorker(rut){ if(!confirm('¿Eliminar trabajador?')) return; const idx=NOMINA_BASE.findIndex(x=>x.rut===rut); if(idx>=0) NOMINA_BASE.splice(idx,1); renderNomina(); apiSync('deleteWorker',{rut},true); }
-function guardarTallaLive(rut,key,val){ const w=NOMINA_BASE.find(x=>x.rut===rut); if(!w) return; w.t[key]=val.trim(); apiSync('saveWorker',{data:JSON.stringify(w),rutOriginal:rut},true); renderPedidos(); }
-let workerActivo=null;
-function nombreCompleto(w){ return `${w.nombres} ${w.ap} ${w.am}`; }
-function getDotacion(w){ if(w.tenida==='Bodega') return [{nombre:'Buzo de trabajo'},{nombre:'Polera manga corta'},{nombre:'Polerón / Polar'},{nombre:'Zapatos de seguridad'},{nombre:'Parka corporativa TOOLTEK®'}]; return [{nombre:'Camisa manga larga'},{nombre:'Softshell / Chaqueta corporativa'},{nombre:'Parka corporativa TOOLTEK®'}]; }
-function abrirModalWorker(rut){ const w=NOMINA_BASE.find(x=>x.rut===rut); if(!w)return; workerActivo=w; const cols=['camisas','poleras','softshell','parka','buzo','pantalon','zapatos'].filter(k=>({camisas:['administrativo'],poleras:['Bodega','administrativo'],softshell:['administrativo'],parka:['Bodega','administrativo'],buzo:['Bodega'],pantalon:['Bodega'],zapatos:['Bodega','administrativo']})[k].includes(w.tenida)); document.getElementById('mw-titulo').textContent=nombreCompleto(w); document.getElementById('mw-perfil').innerHTML=`<div class="card" style="background:var(--tk-bg)"><div><strong>RUT:</strong> ${w.rut}</div><div><strong>Cargo:</strong> ${w.cargo}</div><div><strong>Centro costo:</strong> ${w.cc}</div></div>`; document.getElementById('mw-tallas').innerHTML=cols.map(k=>`<div class="form-row"><label>${k.charAt(0).toUpperCase()+k.slice(1)}</label><input type="text" value="${w.t[k]||''}" onchange="guardarTallaLive('${w.rut}','${k}',this.value)"></div>`).join(''); document.getElementById('modal-worker').classList.add('open'); }
-function cerrarModalWorker(){document.getElementById('modal-worker').classList.remove('open'); workerActivo=null;}
-function emitirDesdeWorker(tipo){ const w=workerActivo; if(!w) return; if(tipo==='Uniforme'){ document.getElementById('uni-nombre').value=nombreCompleto(w); document.getElementById('uni-rut').value=w.rut; document.getElementById('uni-cargo').value=w.cargo; document.getElementById('uni-fecha').value=hoy(); showTab('entrega-uniforme',document.querySelector('.tab:nth-child(3)')); } else { document.getElementById('epp-nombre').value=nombreCompleto(w); document.getElementById('epp-rut').value=w.rut; document.getElementById('epp-cargo').value=w.cargo; document.getElementById('epp-fecha').value=hoy(); showTab('entrega-epp',document.querySelector('.tab:nth-child(2)')); } cerrarModalWorker(); }
-
-function getStockByName(name){ const key=(name||'').toLowerCase(); return inventario.filter(i=>(i.nombre||'').toLowerCase().includes(key)).reduce((s,i)=>s+i.qty,0); }
-function renderPedidos(){ const rows=[ {item:'Camisas',stock:getStockByName('camisa'),requerido:NOMINA_BASE.filter(w=>w.tenida==='administrativo').length*5}, {item:'Poleras',stock:getStockByName('polera'),requerido:NOMINA_BASE.filter(w=>w.tenida==='Bodega').length*5}, {item:'Softshell',stock:getStockByName('softshell'),requerido:NOMINA_BASE.filter(w=>w.tenida==='administrativo').length*1}, {item:'Parka',stock:getStockByName('parka'),requerido:NOMINA_BASE.length*1}, {item:'Zapatos de seguridad',stock:getStockByName('zapato'),requerido:NOMINA_BASE.length*1} ]; document.getElementById('lista-pedidos').innerHTML=rows.map(r=>`<tr><td>${r.item}</td><td>${r.stock}</td><td>${r.requerido}</td></tr>`).join(''); document.getElementById('resumen-pedidos').innerHTML=`<div class="stat-box"><div class="val">${rows.length}</div><div class="lbl">Ítems</div></div><div class="stat-box"><div class="val">${rows.reduce((a,b)=>a+b.stock,0)}</div><div class="lbl">Stock total</div></div><div class="stat-box"><div class="val">${rows.reduce((a,b)=>a+b.requerido,0)}</div><div class="lbl">Requerido total</div></div>`; }
-function renderActas(){ const c=document.getElementById('lista-actas'); if(!actas.length){ c.innerHTML='<div class="empty">No hay actas emitidas aún.</div>'; return; } c.innerHTML=actas.map(a=>`<div class="card" style="margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:600;color:var(--tk-blue)">Acta N° ${a.num}</div><div style="font-size:12px;color:var(--tk-muted)">${a.nombre} — ${a.items.length} ítem(s) — ${formatFecha(a.fecha)}</div></div><button class="btn btn-outline btn-sm" onclick='verActa("${a.num}")'>Ver</button></div>`).join(''); }
-function verActa(num){const a=actas.find(x=>x.num===num); if(a) mostrarActa(a);}
-function mostrarActa(acta){ document.getElementById('modal-titulo').textContent=acta.tipo==='Uniforme'?'Acta de Entrega de Uniforme':'Acta de Entrega EPP'; document.getElementById('modal-content').innerHTML=acta.tipo==='Uniforme'?generarActaUniforme(acta):generarActaEPP(acta); document.getElementById('modal-acta').classList.add('open'); }
-function generarActaUniforme(a){ const filas=a.items.map(it=>`<tr><td style="text-align:center">${it.qty}</td><td>${it.nombre}${it.talla?' — Talla '+it.talla:''}</td><td style="text-align:center">${it.talla||'—'}</td><td style="text-align:center">${formatFecha(it.fechaEntrega)}</td></tr>`).join(''); return `<div class="card" style="border:none;box-shadow:none"><h2 style="text-align:center;font-size:16px;margin-bottom:.5rem">Acta Entrega de Uniforme</h2><p style="text-align:center;margin-bottom:1rem">${a.ciudad}, ${formatFecha(a.fecha)}</p><table class="pedido-table"><thead><tr><th>Cantidad</th><th>Descripción</th><th>Talla</th><th>Fecha entrega</th></tr></thead><tbody>${filas}</tbody></table><p><strong>Nombre:</strong> ${a.nombre}</p><p><strong>Cargo:</strong> ${a.cargo||'—'}</p><p><strong>RUT:</strong> ${a.rut}</p></div>`; }
-function generarActaEPP(a){ const filas=a.items.map(it=>`<tr><td>${it.codigo}</td><td>${it.barcode||'—'}</td><td>${it.nombre}</td><td>${it.talla||'—'}</td><td>${it.modelo||'—'}</td><td style="text-align:center">${it.qty}</td></tr>`).join(''); return `<div class="card" style="border:none;box-shadow:none"><h2 style="text-align:center;font-size:16px;margin-bottom:.5rem">Acta de Entrega de EPP</h2><p style="text-align:center;margin-bottom:1rem">N° ${a.num} — ${a.emision}</p><p><strong>Nombre:</strong> ${a.nombre} | <strong>RUT:</strong> ${a.rut} | <strong>Cargo:</strong> ${a.cargo||'—'}</p><table class="pedido-table"><thead><tr><th>Código</th><th>Cód. Barra</th><th>Artículo</th><th>Talla</th><th>Modelo</th><th>Cant.</th></tr></thead><tbody>${filas}</tbody></table>${a.obs?`<p><strong>Obs:</strong> ${a.obs}</p>`:''}</div>`; }
-function imprimirActa(){ const c=document.getElementById('modal-content').innerHTML; const w=window.open('','_blank'); w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Acta</title><style>body{font-family:Segoe UI,sans-serif;padding:2rem}table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:6px}.pedido-table th{background:#25638f;color:#fff}</style></head><body>${c}</body></html>`); w.document.close(); setTimeout(()=>w.print(),300); }
-
-async function cargarDatos(){
-  if(!apiConfigurada()){ setSync('err','Sin conexión a Sheets'); renderInventario(); renderActas(); renderNomina(); return; }
-  try{
-    setSync('busy','Cargando…');
-    const r=await apiGet({action:'getAll'});
-    if(r&&r.ok){
-      inventario=r.inventario||[];
-      actas=r.actas||[];
-      if(r.nomina&&r.nomina.length){
-        NOMINA_BASE.length=0;
-        r.nomina.forEach(w=>{ if(!w.t) w.t=T(); NOMINA_BASE.push(w); });
-      }
-      setSync('ok','Sincronizado');
-    }
-  }catch(err){ setSync('err','Sin conexión'); }
-  renderInventario(); renderActas(); renderNomina(); renderPedidos();
+  renderInventario();
 }
 
-document.addEventListener('click',e=>{
-  const wrap=document.getElementById('ms-wrap');
-  if(wrap&&!wrap.contains(e.target)){}
+function estadoItem(qty){
+  if(qty === 0)          return {cls:'pill-danger', txt:'Sin stock',   key:'zero'};
+  if(qty <= umbralBajo)  return {cls:'pill-warn',   txt:'Stock bajo',  key:'warn'};
+  return                        {cls:'pill-ok',     txt:'Disponible',  key:'ok'};
+}
+
+// ═══ CAPA API ════════════════════════════════════════════════════════════════
+function apiConfigurada(){ return API_URL && API_URL.startsWith('https://'); }
+
+function setSync(estado, texto){
+  const el = document.getElementById('sync-badge');
+  if(!el) return;
+  el.className = 'sync-badge sync-' + estado;
+  el.innerHTML = (estado==='busy' ? '<i class="ti ti-loader-2 spin"></i> ' :
+                  estado==='ok'   ? '<i class="ti ti-cloud-check"></i> '   :
+                                    '<i class="ti ti-cloud-off"></i> ')    + texto;
+}
+
+async function apiGet(params){
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(API_URL + '?' + qs, { method:'GET' });
+  if(!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+async function apiSync(action, params){
+  if(!apiConfigurada()) return null;
+  try{
+    setSync('busy','Guardando…');
+    const r = await apiGet(Object.assign({action}, params||{}));
+    if(r && r.ok===false) throw new Error(r.error||'Error en servidor');
+    setSync('ok','Sincronizado');
+    return r;
+  }catch(err){
+    console.error('Error de sincronización:', err);
+    setSync('err','Sin conexión');
+    alert('⚠ No se pudo guardar en Google Sheets:\n' + err.message + '\n\nEl cambio quedó solo en esta sesión.');
+    return null;
+  }
+}
+
+async function cargarDatos(){
+  if(!apiConfigurada()){
+    setSync('err','Sin conexión a Sheets');
+    alert('Configura API_URL en el código para conectar con Google Sheets.\nLa app funcionará en modo local (los datos se perderán al recargar).');
+    renderInventario();
+    return;
+  }
+  try{
+    setSync('busy','Cargando…');
+    const r = await apiGet({action:'getAll'});
+    if(r && r.ok){
+      inventario = r.inventario || [];
+      actas      = r.actas      || [];
+      // Si Sheets devuelve nómina, reemplazar la precargada
+      if(r.nomina && r.nomina.length){
+        // Asegurar que cada trabajador tenga el objeto t completo
+        r.nomina.forEach(w=>{
+          if(!w.t) w.t={camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''};
+          const idx = NOMINA_BASE.findIndex(x=>x.rut===w.rut);
+          if(idx>=0) NOMINA_BASE[idx] = w;   // actualizar existente (preserva orden)
+          else NOMINA_BASE.push(w);           // nuevo trabajador agregado desde otra sesión
+        });
+      }
+      setSync('ok','Sincronizado');
+    }else{
+      throw new Error((r && r.error) || 'Respuesta inválida');
+    }
+  }catch(err){
+    console.error('Error al cargar:', err);
+    setSync('err','Sin conexión');
+    alert('⚠ No se pudieron cargar los datos desde Google Sheets:\n' + err.message);
+  }
+  renderInventario();
+  renderActas();
+}
+
+// ═══ NAVEGACIÓN ══════════════════════════════════════════════════════════════
+function showTab(t, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + t).classList.add('active');
+  btn.classList.add('active');
+  if (t === 'inventario') renderInventario();
+  if (t === 'entrega-epp') initEPP();
+  if (t === 'entrega-uniforme') initUni();
+  if (t === 'nomina') renderNomina();
+  if (t === 'actas') renderActas();
+}
+
+// ═══ ESTADÍSTICAS ════════════════════════════════════════════════════════════
+function renderStats() {
+  const total         = inventario.length;
+  const conStock      = inventario.filter(i => i.qty > 0).length;
+  const sinStock      = inventario.filter(i => i.qty === 0).length;
+  const stockBajo     = inventario.filter(i => i.qty > 0 && i.qty <= umbralBajo).length;
+  const totalUnidades = inventario.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-box"><div class="val">${total}</div><div class="lbl">Artículos</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-success)">${conStock}</div><div class="lbl">Con stock</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-warn)">${stockBajo}</div><div class="lbl">Stock bajo</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-danger)">${sinStock}</div><div class="lbl">Sin stock</div></div>
+    <div class="stat-box"><div class="val">${totalUnidades}</div><div class="lbl">Unidades totales</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-teal)">${actas.length}</div><div class="lbl">Actas emitidas</div></div>`;
+}
+
+// ═══ INVENTARIO ══════════════════════════════════════════════════════════════
+function renderInventario() {
+  renderStats();
+  const txt = (document.getElementById('filtro-texto').value || '').toLowerCase();
+  const cat = document.getElementById('filtro-cat').value;
+  const estados = getEstadosFiltro();
+  const filtrado = inventario.filter(it => {
+    const matchTxt = !txt || it.nombre.toLowerCase().includes(txt) ||
+      it.id.toLowerCase().includes(txt) || (it.barcode||'').toLowerCase().includes(txt);
+    const matchCat = !cat || it.cat === cat;
+    const e = estadoItem(it.qty);
+    const matchEst = estados.length === 0 || estados.includes(e.key);
+    return matchTxt && matchCat && matchEst;
+  });
+  document.getElementById('count-badge').textContent = `(${filtrado.length} de ${inventario.length})`;
+  const tb = document.getElementById('tbody-inv');
+  if (!filtrado.length) { tb.innerHTML='<tr><td colspan="10" class="empty">Sin resultados</td></tr>'; return; }
+  tb.innerHTML = filtrado.map(it => {
+    const i = inventario.indexOf(it);
+    const e = estadoItem(it.qty);
+    return `<tr>
+      <td><code>${it.id}</code></td>
+      <td style="font-size:11px;color:var(--tk-muted)">${it.barcode||'—'}</td>
+      <td>${it.nombre}</td><td>${it.tipo||'—'}</td><td>${it.talla||'—'}</td><td>${it.modelo||'—'}</td>
+      <td style="font-size:11px">${it.ubicacion||'—'}</td>
+      <td><span class="qty-badge">${it.qty}</span></td>
+      <td><span class="pill ${e.cls}">${e.txt}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm btn-outline" onclick="abrirEditar(${i})"><i class="ti ti-pencil"></i> Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarItem(${i})" style="margin-left:3px"><i class="ti ti-trash"></i></button>
+      </td></tr>`;
+  }).join('');
+}
+
+function agregarItem() {
+  const n=document.getElementById('inv-nombre').value.trim();
+  const c=document.getElementById('inv-codigo').value.trim().toUpperCase();
+  if(!n||!c){alert('Ingresa nombre y código.');return;}
+  if(inventario.find(x=>x.id===c)){alert('Código ya existe.');return;}
+  const item={id:c,barcode:document.getElementById('inv-barcode').value.trim(),nombre:n,
+    cat:document.getElementById('inv-cat').value,tipo:document.getElementById('inv-tipo').value.trim(),
+    talla:document.getElementById('inv-talla').value.trim(),modelo:document.getElementById('inv-modelo').value.trim(),
+    qty:parseInt(document.getElementById('inv-qty').value)||0,
+    ubicacion:document.getElementById('inv-ubicacion').value.trim()};
+  inventario.push(item);
+  ['inv-nombre','inv-codigo','inv-barcode','inv-tipo','inv-talla','inv-modelo','inv-ubicacion'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inv-qty').value=0;
+  renderInventario();
+  apiSync('saveItem',{data:JSON.stringify(item)});
+}
+
+function abrirEditar(i){
+  const it=inventario[i];
+  document.getElementById('edit-idx').value=i;
+  document.getElementById('edit-qty').value=it.qty;
+  document.getElementById('edit-ubicacion').value=it.ubicacion||'';
+  document.getElementById('edit-nombre').textContent=it.nombre;
+  document.getElementById('modal-editar').classList.add('open');
+  setTimeout(()=>document.getElementById('edit-qty').focus(),100);
+}
+function guardarEdicion(){
+  const i=parseInt(document.getElementById('edit-idx').value);
+  const qty=parseInt(document.getElementById('edit-qty').value);
+  const ubi=document.getElementById('edit-ubicacion').value.trim();
+  if(isNaN(qty)||qty<0){alert('Cantidad inválida.');return;}
+  inventario[i].qty=qty;
+  inventario[i].ubicacion=ubi;
+  cerrarModalEditar();
+  renderInventario();
+  apiSync('updateStock',{id:inventario[i].id,qty:qty,ubicacion:ubi});
+}
+function cerrarModalEditar(){document.getElementById('modal-editar').classList.remove('open');}
+function eliminarItem(i){
+  if(!confirm(`¿Eliminar "${inventario[i].nombre}"?`))return;
+  const id=inventario[i].id;
+  inventario.splice(i,1);renderInventario();
+  apiSync('deleteItem',{id:id});
+}
+
+// ═══ EPP ═════════════════════════════════════════════════════════════════════
+function initEPP(){
+  if(!document.getElementById('epp-fecha').value) document.getElementById('epp-fecha').value=hoy();
+  if(!itemsEPP.length) addItemEPP(); else renderItemsEPP();
+}
+function addItemEPP(){itemsEPP.push({invIdx:-1,qty:1});renderItemsEPP();}
+function renderItemsEPP(){
+  const opts=inventario.map((it,i)=>`<option value="${i}">[${it.id}] ${it.nombre} — Stock: ${it.qty}</option>`).join('');
+  document.getElementById('items-epp').innerHTML=itemsEPP.map((itm,i)=>`
+    <div class="item-row">
+      <select onchange="setItemEPP(${i},this.value)" style="flex:3">
+        <option value="-1">— Seleccionar artículo —</option>${opts}
+      </select>
+      <input type="number" min="1" value="${itm.qty}" style="width:75px" onchange="setQtyEPP(${i},this.value)">
+      <button class="btn btn-danger btn-sm" onclick="removeItemEPP(${i})"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+}
+function setItemEPP(i,v){itemsEPP[i].invIdx=parseInt(v);}
+function setQtyEPP(i,v){itemsEPP[i].qty=Math.max(1,parseInt(v)||1);}
+function removeItemEPP(i){itemsEPP.splice(i,1);renderItemsEPP();}
+
+function emitirActaEPP(){
+  const nombre=document.getElementById('epp-nombre').value.trim();
+  const rut=document.getElementById('epp-rut').value.trim();
+  const cargo=document.getElementById('epp-cargo').value.trim();
+  const area=document.getElementById('epp-area').value.trim();
+  const fecha=document.getElementById('epp-fecha').value;
+  const obs=document.getElementById('epp-obs').value.trim();
+  if(!nombre||!rut){alert('Ingresa nombre y RUT.');return;}
+  if(!fecha){alert('Indica la fecha.');return;}
+  const validos=itemsEPP.filter(it=>it.invIdx>=0);
+  if(!validos.length){alert('Agrega al menos un artículo.');return;}
+  const errores=validos.filter(it=>it.qty>inventario[it.invIdx].qty)
+    .map(it=>`Stock insuficiente: "${inventario[it.invIdx].nombre}" (disp: ${inventario[it.invIdx].qty})`);
+  if(errores.length){alert(errores.join('\n'));return;}
+  if(!confirm('¿Confirmar emisión del acta EPP y descontar stock?'))return;
+  const acta={tipo:'EPP',nombre,rut,cargo,area,ciudad:'',fecha,obs,
+    items:validos.map(it=>({codigo:inventario[it.invIdx].id,barcode:inventario[it.invIdx].barcode,
+      nombre:inventario[it.invIdx].nombre,talla:inventario[it.invIdx].talla,modelo:inventario[it.invIdx].modelo,qty:it.qty})),
+    emision:new Date().toLocaleString('es-CL')};
+  emitirActa(acta, validos, ()=>{
+    itemsEPP=[];
+    ['epp-nombre','epp-rut','epp-cargo','epp-area','epp-obs'].forEach(id=>document.getElementById(id).value='');
+  });
+}
+
+async function emitirActa(acta, validos, limpiar){
+  if(apiConfigurada()){
+    const r = await apiSync('addActa',{data:JSON.stringify(acta)});
+    if(!r || !r.ok) return;
+    acta.num = r.num;
+    inventario = r.inventario;
+  }else{
+    validos.forEach(it=>{inventario[it.invIdx].qty-=it.qty;});
+    const max = actas.reduce((m,a)=>Math.max(m,parseInt(a.num)||0),0);
+    acta.num = String(max+1).padStart(4,'0');
+  }
+  actas.unshift(acta);
+  limpiar();
+  renderInventario();
+  mostrarActa(acta);
+}
+
+// ═══ UNIFORMES ════════════════════════════════════════════════════════════════
+function initUni(){
+  if(!document.getElementById('uni-fecha').value) document.getElementById('uni-fecha').value=hoy();
+  if(!itemsUni.length) addItemUni(); else renderItemsUni();
+}
+function addItemUni(){itemsUni.push({invIdx:-1,qty:1,fechaEntrega:hoy()});renderItemsUni();}
+function renderItemsUni(){
+  const opts=inventario.map((it,i)=>`<option value="${i}">[${it.id}] ${it.nombre} — Stock: ${it.qty}</option>`).join('');
+  document.getElementById('items-uni').innerHTML=itemsUni.map((itm,i)=>`
+    <div class="item-row" style="background:#f9fbfd;padding:6px;border-radius:6px;border:.5px solid var(--tk-border)">
+      <select onchange="setItemUni(${i},this.value)" style="flex:3;min-width:180px">
+        <option value="-1">— Seleccionar prenda —</option>${opts}
+      </select>
+      <input type="number" min="1" value="${itm.qty}" style="width:70px" onchange="setQtyUni(${i},this.value)" placeholder="Cant.">
+      <input type="date" value="${itm.fechaEntrega}" style="width:140px" onchange="setFechaUni(${i},this.value)">
+      <button class="btn btn-danger btn-sm" onclick="removeItemUni(${i})"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+}
+function setItemUni(i,v){itemsUni[i].invIdx=parseInt(v);}
+function setQtyUni(i,v){itemsUni[i].qty=Math.max(1,parseInt(v)||1);}
+function setFechaUni(i,v){itemsUni[i].fechaEntrega=v;}
+function removeItemUni(i){itemsUni.splice(i,1);renderItemsUni();}
+
+function emitirActaUni(){
+  const nombre=document.getElementById('uni-nombre').value.trim();
+  const rut=document.getElementById('uni-rut').value.trim();
+  const cargo=document.getElementById('uni-cargo').value.trim();
+  const fecha=document.getElementById('uni-fecha').value;
+  const ciudad=document.getElementById('uni-ciudad').value.trim()||'Santiago';
+  if(!nombre||!rut){alert('Ingresa nombre y RUT.');return;}
+  if(!fecha){alert('Indica la fecha.');return;}
+  const validos=itemsUni.filter(it=>it.invIdx>=0);
+  if(!validos.length){alert('Agrega al menos una prenda.');return;}
+  const errores=validos.filter(it=>it.qty>inventario[it.invIdx].qty)
+    .map(it=>`Stock insuficiente: "${inventario[it.invIdx].nombre}" (disp: ${inventario[it.invIdx].qty})`);
+  if(errores.length){alert(errores.join('\n'));return;}
+  if(!confirm('¿Confirmar emisión del acta de uniforme y descontar stock?'))return;
+  const acta={tipo:'Uniforme',nombre,rut,cargo,area:'',ciudad,fecha,obs:'',
+    items:validos.map(it=>({codigo:inventario[it.invIdx].id,
+      nombre:inventario[it.invIdx].nombre,talla:inventario[it.invIdx].talla,
+      qty:it.qty,fechaEntrega:it.fechaEntrega})),
+    emision:new Date().toLocaleString('es-CL')};
+  emitirActa(acta, validos, ()=>{
+    itemsUni=[];
+    ['uni-nombre','uni-rut','uni-cargo'].forEach(id=>document.getElementById(id).value='');
+  });
+}
+
+// ═══ ACTAS ════════════════════════════════════════════════════════════════════
+function renderActas(){
+  const c=document.getElementById('lista-actas');
+  if(!actas.length){c.innerHTML='<div class="empty">No hay actas emitidas aún.</div>';return;}
+  c.innerHTML=actas.map(a=>`
+    <div class="acta-card">
+      <div>
+        <div class="acta-id">Acta N° ${a.num}</div>
+        <div class="acta-meta">${a.nombre} — ${a.items.length} ítem(s) — ${formatFecha(a.fecha)}</div>
+        <div class="acta-tipo"><span class="pill ${a.tipo==='Uniforme'?'pill-ok':'pill-cat'}">${a.tipo}</span></div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick='verActa("${a.num}")'><i class="ti ti-eye"></i> Ver</button>
+    </div>`).join('');
+}
+
+function verActa(num){const a=actas.find(x=>x.num===num);if(a)mostrarActa(a);}
+
+// ═══ MODAL ════════════════════════════════════════════════════════════════════
+function mostrarActa(acta){
+  document.getElementById('modal-titulo').textContent =
+    acta.tipo==='Uniforme' ? 'Acta de Entrega de Uniforme' : 'Acta de Entrega EPP';
+  document.getElementById('modal-content').innerHTML =
+    acta.tipo==='Uniforme' ? generarActaUniforme(acta) : generarActaEPP(acta);
+  document.getElementById('modal-acta').classList.add('open');
+}
+function cerrarModal(){document.getElementById('modal-acta').classList.remove('open');}
+
+function generarActaUniforme(a){
+  const filasFecha = a.items.map(it=>`
+    <tr>
+      <td style="text-align:center">${it.qty}</td>
+      <td>${it.nombre}${it.talla?' — Talla '+it.talla:''}</td>
+      <td style="text-align:center">${it.talla||'—'}</td>
+      <td style="text-align:center">${formatFecha(it.fechaEntrega)}</td>
+    </tr>`).join('');
+  return `<div class="acta-doc">
+    <h2>Acta Entrega de Uniforme</h2>
+    <p class="subtitle">${a.ciudad}, ${formatFechaLarga(a.fecha)}</p>
+    <p>Por medio de la presente acta, se le hace entrega de las siguientes piezas de ropa para uniforme:</p>
+    <table>
+      <thead><tr>
+        <th style="width:80px">Cantidad</th>
+        <th>Descripción</th>
+        <th style="width:80px">Talla</th>
+        <th style="width:120px">Fecha de entrega</th>
+      </tr></thead>
+      <tbody>${filasFecha}</tbody>
+    </table>
+    <p>El trabajador manifiesta que:</p>
+    <p>La dotación que aquí se entrega es y será de la empresa en todo momento, en caso de terminación del contrato de trabajo o entrega de una nueva dotación, se compromete a hacer la devolución de forma inmediata. Además, se compromete a mantener los mismos limpios y en buen estado por un periodo mínimo a 12 meses. En caso de daño de la dotación o parte de ella, el trabajador debe devolverla a la empresa.</p>
+    <p>Conforme a lo señalado anteriormente, recibo conforme:</p>
+    <p><strong>Nombre:</strong> ${a.nombre}</p>
+    <p><strong>Cargo:</strong> ${a.cargo||'—'}</p>
+    <p><strong>Rut</strong> ${a.rut}</p>
+    <div class="firma-section">
+      <div class="firma-line">Firma: _________________________________________________________________</div>
+    </div>
+    <div style="margin-top:1.5rem;border-top:1px solid #0081b0;padding-top:6px;font-size:10px;color:#5a7a8e;text-align:center;font-style:italic">
+      TOOLTEK® — Herramientas para construir el futuro &nbsp;|&nbsp; Acta N° ${a.num} &nbsp;|&nbsp; Emitida: ${a.emision}
+    </div>
+  </div>`;
+}
+
+function generarActaEPP(a){
+  const filas=a.items.map(it=>`<tr>
+    <td><code style="font-size:11px">${it.codigo}</code></td>
+    <td style="font-size:11px;color:#5a7a8e">${it.barcode||'—'}</td>
+    <td>${it.nombre}</td><td>${it.talla||'—'}</td><td>${it.modelo||'—'}</td>
+    <td style="text-align:center;font-weight:600">${it.qty}</td>
+  </tr>`).join('');
+  return `<div style="font-size:13px;line-height:1.6">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:#0081b0;letter-spacing:1px">TOOLTEK®</div>
+        <h2 style="font-size:16px;color:#25638f;margin-top:2px">Acta de Entrega de EPP</h2>
+        <div style="font-size:12px;color:#5a7a8e">N° ${a.num} &nbsp;|&nbsp; Emitida: ${a.emision}</div>
+      </div>
+      <div style="text-align:right;font-size:12px;color:#5a7a8e">
+        <div><strong>Fecha:</strong> ${formatFecha(a.fecha)}</div>
+        <div><strong>Área:</strong> ${a.area||'—'}</div>
+      </div>
+    </div>
+    <div style="background:#f4f8fb;border-radius:8px;padding:.6rem 1rem;margin-bottom:1rem;font-size:13px">
+      <strong>Nombre:</strong> ${a.nombre} &nbsp;|&nbsp; <strong>RUT:</strong> ${a.rut} &nbsp;|&nbsp; <strong>Cargo:</strong> ${a.cargo||'—'}
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1rem">
+      <thead><tr style="background:#25638f;color:#fff">
+        <th style="padding:6px 10px">Código</th><th style="padding:6px 10px">Cód. Barra</th>
+        <th style="padding:6px 10px">Artículo</th><th style="padding:6px 10px">Talla</th>
+        <th style="padding:6px 10px">Modelo</th><th style="padding:6px 10px;text-align:center">Cant.</th>
+      </tr></thead><tbody>${filas}</tbody>
+    </table>
+    ${a.obs?`<div style="font-size:12px;margin-bottom:.75rem"><strong>Obs:</strong> ${a.obs}</div>`:''}
+    <p style="font-size:11px;color:#5a7a8e;margin-bottom:1.5rem">El trabajador declara haber recibido los artículos en conformidad y en buen estado, comprometiéndose a su uso correcto y devolución cuando corresponda.</p>
+    <div style="display:flex;gap:3rem;margin-top:1.5rem">
+      <div style="flex:1;border-top:1.5px solid #bbb;padding-top:6px;font-size:11px;color:#5a7a8e;text-align:center">
+        Firma Receptor<br><strong style="font-size:12px;color:#1a2e3b">${a.nombre}</strong><br>RUT: ${a.rut}
+      </div>
+      <div style="flex:1;border-top:1.5px solid #bbb;padding-top:6px;font-size:11px;color:#5a7a8e;text-align:center">
+        Firma Responsable Entrega<br>&nbsp;<br>&nbsp;
+      </div>
+    </div>
+    <div style="margin-top:1.25rem;border-top:2px solid #0081b0;padding-top:6px;font-size:10px;color:#5a7a8e;text-align:center;font-style:italic">
+      TOOLTEK® — Herramientas para construir el futuro
+    </div>
+  </div>`;
+}
+
+function imprimirActa(){
+  const c=document.getElementById('modal-content').innerHTML;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Acta TOOLTEK®</title>
+  <style>body{font-family:'Times New Roman',serif;padding:2cm;font-size:13px;color:#111;max-width:800px;margin:0 auto}
+  h2{text-align:center;font-size:16px;text-transform:uppercase;margin-bottom:.5rem}
+  table{width:100%;border-collapse:collapse}th{border:1px solid #333;padding:5px 10px;background:#e8e8e8;font-weight:700;text-align:center}
+  td{border:1px solid #555;padding:5px 10px}p{margin-bottom:.6rem;text-align:justify}
+  code{font-size:11px}@media print{@page{margin:2cm}}</style>
+  </head><body>${c}</body></html>`);
+  w.document.close();setTimeout(()=>w.print(),400);
+}
+
+// ═══ UTILIDADES ══════════════════════════════════════════════════════════════
+function hoy(){return new Date().toISOString().split('T')[0];}
+function formatFecha(f){if(!f)return'—';const[y,m,d]=f.split('-');return`${d}/${m}/${y}`;}
+function formatFechaLarga(f){
+  if(!f)return'—';
+  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const[y,m,d]=f.split('-');return`${parseInt(d)} de ${meses[parseInt(m)-1]} de ${y}`;
+}
+function stepQty(delta){
+  const el=document.getElementById('edit-qty');
+  el.value=Math.max(0,(parseInt(el.value)||0)+delta);
+}
+
+// ═══ NÓMINA PRECARGADA ═══════════════════════════════════════════════════════
+// tallas: {camisas, poleras, softshell, parka, buzo, pantalon} — vacío = pendiente
+const T = ()=>({camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''});
+const NOMINA_BASE = [
+  {rut:'20048228-K',nombres:'Adip Isrrael',ap:'Gallegos',am:'Apablaza',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'17414451-6',nombres:'Adolfo Esteban',ap:'Vallejos',am:'Aguirre',sexo:'M',cargo:'Encargado(a) de Marketing',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'12872867-8',nombres:'Ana Violeta',ap:'Reyes',am:'Curiñanco',sexo:'F',cargo:'Auxiliar de Aseo',tenida:'Bodega',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'27935546-6',nombres:'Andres Mauricio',ap:'Barrera',am:'Claro',sexo:'M',cargo:'Analista de Control de Gestión y Procesos',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'22277327-K',nombres:'Angelo Cristofer',ap:'Vasquez',am:'Abarca',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'16911172-3',nombres:'Carlos Nicolás',ap:'Zúñiga',am:'Lizana',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'15608896-K',nombres:'Carolina Andrea',ap:'Ortiz',am:'Reyes',sexo:'F',cargo:'Secretaria',tenida:'administrativo',cc:'Gerencia General',t:T()},
+  {rut:'18928987-1',nombres:'Cesar Ignacio',ap:'Soto',am:'Pedraza',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'9153987-K',nombres:'Christian',ap:'Zegard',am:'Latrach',sexo:'M',cargo:'Gerente General',tenida:'administrativo',cc:'Gerencia General',t:T()},
+  {rut:'18665072-7',nombres:'David Ignacio',ap:'Muñoz',am:'Bruna',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'17803789-7',nombres:'Diego Eduardo',ap:'Cabrera',am:'Eyzaguirre',sexo:'M',cargo:'Asistente Administrativo Contable',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'10763806-7',nombres:'Eduardo Alejandro',ap:'Lillo',am:'Miranda',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'10827215-5',nombres:'Eric David',ap:'Cisternas',am:'Faundez',sexo:'M',cargo:'Gerente de Operaciones',tenida:'administrativo',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'14257849-2',nombres:'Erich David',ap:'Olate',am:'Valdes',sexo:'M',cargo:'Gerente Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'26066981-8',nombres:'Eudo Eduine',ap:'Parra',am:'Larreal',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'11166150-2',nombres:'Eugenia Patricia',ap:'Tognarelli',am:'Espinoza',sexo:'F',cargo:'Ejecutivo Back Office',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'16473711-K',nombres:'Francisco Javier',ap:'Cuevas',am:'Conejeros',sexo:'M',cargo:'Product Manager',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'17375907-K',nombres:'Francisco Javier',ap:'Puga',am:'Leviman',sexo:'M',cargo:'Encargado de Administración y Tesorería',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'19314218-4',nombres:'Geraldine Marlene',ap:'Santander',am:'Parra',sexo:'F',cargo:'Encargada de Facturacion',tenida:'administrativo',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'20054097-2',nombres:'Gianfranco Alexander',ap:'Flores',am:'Cordero',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'16338069-2',nombres:'Gunther Peter',ap:'Viertel',am:'Muñoz',sexo:'M',cargo:'Gerente General',tenida:'administrativo',cc:'Gerencia General',t:T()},
+  {rut:'12567161-6',nombres:'Gustavo Cesar Augusto',ap:'Rojas',am:'Hip',sexo:'M',cargo:'Analista de Crédito y Cobranza',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'10394635-2',nombres:'Hector Fabian',ap:'Reyes',am:'Lizama',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'12237134-4',nombres:'Hugo Enrique',ap:'Espinoza',am:'Cornejo',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'26275948-2',nombres:'Jesús Alejandro',ap:'Gil',am:'Juarez',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'10127531-0',nombres:'Joaquin Fernando',ap:'Reyes',am:'Salazar',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'21041970-5',nombres:'Joaquin Guillermo',ap:'Matus',am:'Galindo',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'9253007-8',nombres:'Jorge Eduardo',ap:'Valenzuela',am:'Gonzalez',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'10346511-7',nombres:'Jorge Hernan',ap:'Vergara',am:'Diaz',sexo:'M',cargo:'Contador(a)',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'11752719-0',nombres:'Jorge Luis',ap:'Washington',am:'Washington',sexo:'M',cargo:'Asistente de Logistica y Despacho',tenida:'administrativo',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'20708485-9',nombres:'Jorge Luis',ap:'Washington',am:'Cordova',sexo:'M',cargo:'Coordinador de Ventas',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'16690755-1',nombres:'Jose Alejandro',ap:'Oyarce',am:'Sepulveda',sexo:'M',cargo:'Gerente de Administración y Finanzas',tenida:'administrativo',cc:'Gerencia de Administracion y Finanzas',t:T()},
+  {rut:'11486652-0',nombres:'Jose Antonio',ap:'Traslaviña',am:'Pinto',sexo:'M',cargo:'Ejecutivo Comercial de Cuentas Claves',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'26110431-8',nombres:'Jose Aritobulo',ap:'Pino',am:'Prazuela',sexo:'M',cargo:'Encargado de Servicio Tecnico y Capacitacion',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'20961375-1',nombres:'Justyn Aaron',ap:'Seguel',am:'Cortes',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'12155399-6',nombres:'Leandro Eduardo',ap:'Navarrete',am:'Pizarro',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'18330930-7',nombres:'Leonardo Mauricio Antonio',ap:'Maldonado',am:'Alegria',sexo:'M',cargo:'Promovendedor',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'12191712-2',nombres:'Miguel Angel',ap:'Duran',am:'Sanhueza',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'14369887-4',nombres:'Nicsa Ana',ap:'Molina',am:'Fernandez',sexo:'F',cargo:'Asistente de Operaciones',tenida:'administrativo',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'12168317-2',nombres:'Pablo César',ap:'Castañeda',am:'Fuentes',sexo:'M',cargo:'Ejecutivo Comercial de Cuentas Claves',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'11336041-0',nombres:'Patricio Lenin',ap:'Gonzalez',am:'Araya',sexo:'M',cargo:'Asesor Técnico Comercial Industrial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'17040593-5',nombres:'Ricardo Ignacio',ap:'Bravo',am:'Tapia',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'25647191-4',nombres:'Ricardo Jose',ap:'Navarro',am:'Almarza',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'9906311-4',nombres:'Ricardo Juan',ap:'Thompson',am:'Ferrada',sexo:'M',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'9400539-6',nombres:'Roberto Antonio',ap:'Riquelme',am:'Arce',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'19223334-8',nombres:'Roberto Felipe Nicolas',ap:'Riquelme',am:'Reyes',sexo:'M',cargo:'Jefe de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'18052771-0',nombres:'Rodrigo Adrián',ap:'Munita',am:'Fuentes',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'9095560-8',nombres:'Sandra Doris',ap:'Viertel',am:'Peschka',sexo:'F',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'18666862-6',nombres:'Sebastián Alfonso',ap:'Faure',am:'Solari',sexo:'M',cargo:'Promovendedor',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'20790096-6',nombres:'Sebastian Ignacio Esteban',ap:'Riquelme',am:'Reyes',sexo:'M',cargo:'Encargado de Inventario y Reposicion',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
+  {rut:'14128464-9',nombres:'Solange Del Carmen',ap:'Lobos',am:'De la fuente',sexo:'F',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'15689934-8',nombres:'Teresa Leonor',ap:'Arredondo',am:'Plaza',sexo:'F',cargo:'Asesor Técnico Comercial',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'14171520-8',nombres:'Viviana Lucia De Lourdes',ap:'Rojas',am:'Trejo',sexo:'F',cargo:'Ejecutivo Back Office',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
+  {rut:'18090899-4',nombres:'Yerko Antonio',ap:'Muñoz',am:'Castillo',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia Comercial',t:T()},
+];
+
+// Columnas de talla disponibles con sus etiquetas y a qué tipo aplica
+const TALLA_COLS = [
+  {key:'camisas',   label:'Camisas',    aplica:['administrativo']},
+  {key:'poleras',   label:'Poleras',    aplica:['Bodega','administrativo']},
+  {key:'softshell', label:'Softshell',  aplica:['administrativo']},
+  {key:'parka',     label:'Parka',      aplica:['Bodega','administrativo']},
+  {key:'buzo',      label:'Buzo',       aplica:['Bodega']},
+  {key:'pantalon',  label:'Pantalón',   aplica:['Bodega']},
+];
+
+function tallasParaTipo(tenida){
+  return TALLA_COLS.filter(c=>c.aplica.includes(tenida));
+}
+
+// ═══ REGLAS DE DOTACIÓN ══════════════════════════════════════════════════════
+// Cada regla: { sexo:'M'|'F'|'*', prendas:[{nombre,nota}] }
+const DOTACION = {
+  'Bodega': {
+    label: 'Personal de Bodega / Operaciones',
+    sexos: {
+      'M': [
+        {nombre:'Buzo de trabajo', nota:''},
+        {nombre:'Polera manga corta', nota:''},
+        {nombre:'Polerón / Polar', nota:''},
+        {nombre:'Zapatos de seguridad', nota:'con punta de acero'},
+      ],
+      'F': [
+        {nombre:'Buzo de trabajo', nota:'corte femenino'},
+        {nombre:'Polera manga corta', nota:''},
+        {nombre:'Polerón / Polar', nota:''},
+        {nombre:'Zapatos de seguridad', nota:'con punta de acero'},
+      ],
+    }
+  },
+  'administrativo': {
+    label: 'Personal Administrativo / Comercial',
+    sexos: {
+      'M': [
+        {nombre:'Camisa manga larga', nota:''},
+        {nombre:'Softshell / Chaqueta corporativa', nota:''},
+      ],
+      'F': [
+        {nombre:'Blusa / Camisa', nota:'corte femenino'},
+        {nombre:'Softshell / Chaqueta corporativa', nota:''},
+      ],
+    }
+  }
+};
+
+// Parka universal (todos los trabajadores)
+const DOTACION_UNIVERSAL = [
+  {nombre:'Parka corporativa TOOLTEK®', nota:'universal, talla única por sexo'},
+];
+
+function getDotacion(w){
+  const regla = DOTACION[w.tenida];
+  if(!regla) return DOTACION_UNIVERSAL;
+  const prendas = (regla.sexos[w.sexo] || regla.sexos['M']).map(p=>({...p}));
+  return [...prendas, ...DOTACION_UNIVERSAL];
+}
+
+// ═══ NÓMINA — RENDER ═════════════════════════════════════════════════════════
+function renderNomina(){
+  const txt  = (document.getElementById('nom-buscar').value||'').toLowerCase();
+  const ten  = document.getElementById('nom-tenida').value;
+  const sexo = document.getElementById('nom-sexo').value;
+  const cc   = document.getElementById('nom-cc').value;
+
+  const fil = NOMINA_BASE.filter(w=>{
+    const nombre = `${w.nombres} ${w.ap} ${w.am}`.toLowerCase();
+    const matchTxt  = !txt  || nombre.includes(txt) || w.rut.toLowerCase().includes(txt) || w.cargo.toLowerCase().includes(txt);
+    const matchTen  = !ten  || w.tenida === ten;
+    const matchSexo = !sexo || w.sexo === sexo;
+    const matchCC   = !cc   || w.cc === cc;
+    return matchTxt && matchTen && matchSexo && matchCC;
+  });
+
+  document.getElementById('nom-count-badge').textContent = `(${fil.length} de ${NOMINA_BASE.length})`;
+
+  const grid = document.getElementById('worker-grid');
+  if(!fil.length){
+    grid.innerHTML='<div class="empty">Sin resultados</div>';
+    return;
+  }
+
+  // Encabezados de tallas — todas las columnas posibles
+  const tallaCols = TALLA_COLS;
+
+  const filas = fil.map(w=>{
+    const nc       = `${w.ap} ${w.am}, ${w.nombres}`;
+    const tipoTag  = w.tenida==='Bodega'
+      ? `<span class="tag tag-bodega" style="font-size:10px;padding:1px 5px">Bod.</span>`
+      : `<span class="tag tag-admin"  style="font-size:10px;padding:1px 5px">Adm.</span>`;
+    const sexoTag  = w.sexo==='F'
+      ? `<span class="tag tag-f" style="font-size:10px;padding:1px 5px">♀</span>`
+      : `<span class="tag tag-m" style="font-size:10px;padding:1px 5px">♂</span>`;
+    const ccShort  = w.cc.replace('Gerencia de Administracion y Finanzas','G.Adm.Fin.')
+                         .replace('Gerencia de Operaciones','G.Oper.')
+                         .replace('Gerencia Comercial','G.Com.')
+                         .replace('Gerencia General','G.Gral.');
+
+    const tallaCeldas = TALLA_COLS.map(c=>{
+      if(!c.aplica.includes(w.tenida))
+        return `<td style="text-align:center;color:#ddd;font-size:10px;padding:4px 3px">—</td>`;
+      const v = w.t[c.key];
+      return `<td style="text-align:center;padding:4px 3px">
+        <span class="talla-chip ${v?'tc-ok':'tc-pend'}" style="font-size:10px;padding:1px 5px">${v||'—'}</span>
+      </td>`;
+    }).join('');
+
+    return `<tr>
+      <td style="white-space:nowrap;padding:5px 6px">
+        <div style="font-weight:600;color:var(--tk-blue);font-size:11px;line-height:1.3">${nc}</div>
+        <div style="font-size:10px;color:var(--tk-muted)">${w.rut}</div>
+      </td>
+      <td style="font-size:10px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:5px 6px" title="${w.cargo}">${w.cargo}</td>
+      <td style="white-space:nowrap;padding:5px 4px">${tipoTag}&nbsp;${sexoTag}</td>
+      <td style="font-size:10px;color:var(--tk-muted);white-space:nowrap;padding:5px 6px">${ccShort}</td>
+      ${tallaCeldas}
+      <td style="white-space:nowrap;padding:5px 4px">
+        <button class="btn btn-outline btn-sm" onclick="abrirEditarWorker('${w.rut}')" title="Editar" style="padding:3px 6px"><i class="ti ti-pencil"></i></button>
+        <button class="btn btn-danger btn-sm"  onclick="eliminarWorker('${w.rut}')"    title="Eliminar" style="padding:3px 6px;margin-left:2px"><i class="ti ti-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  grid.innerHTML = `
+    <table class="nom-tbl" style="font-size:11px">
+      <thead><tr>
+        <th style="padding:6px 6px">Trabajador</th>
+        <th style="padding:6px 6px;max-width:130px">Cargo</th>
+        <th style="padding:6px 4px">Tipo</th>
+        <th style="padding:6px 6px">CC</th>
+        ${TALLA_COLS.map(c=>`<th style="text-align:center;padding:6px 3px;font-size:10px">${c.label}</th>`).join('')}
+        <th style="padding:6px 4px"></th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+    </table>`;
+}
+
+// ═══ MODAL TRABAJADOR ════════════════════════════════════════════════════════
+let workerActivo = null;
+
+function nombreCompleto(w){ return `${w.nombres} ${w.ap} ${w.am}`; }
+
+function abrirModalWorker(rut){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  workerActivo = w;
+
+  const dotacion = getDotacion(w);
+  const cols     = tallasParaTipo(w.tenida);
+
+  document.getElementById('mw-titulo').innerHTML =
+    `<i class="ti ti-user"></i> ${nombreCompleto(w)}`;
+
+  document.getElementById('mw-perfil').innerHTML = `
+    <div class="modal-worker-header">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:1;min-width:180px">
+          <div style="font-size:11px;color:var(--tk-muted)">RUT</div>
+          <div style="font-weight:600;font-size:13px">${w.rut}</div>
+        </div>
+        <div style="flex:2;min-width:180px">
+          <div style="font-size:11px;color:var(--tk-muted)">Cargo</div>
+          <div style="font-weight:600;font-size:13px">${w.cargo}</div>
+        </div>
+        <div style="flex:1;min-width:130px">
+          <div style="font-size:11px;color:var(--tk-muted)">Centro de costo</div>
+          <div style="font-size:12px">${w.cc}</div>
+        </div>
+        <div style="flex:0 0 auto">
+          <span class="tag ${w.tenida==='Bodega'?'tag-bodega':'tag-admin'}">${w.tenida==='Bodega'?'Bodega':'Administrativo'}</span>
+          &nbsp;<span class="tag ${w.sexo==='F'?'tag-f':'tag-m'}">${w.sexo==='F'?'♀ F':'♂ M'}</span>
+        </div>
+      </div>
+    </div>`;
+
+  // ── Tabla de tallas por tipo de prenda (solo las que aplican) ──
+  const tallasCols = cols.map(c=>`
+    <div class="talla-row">
+      <label style="font-size:12px;color:var(--tk-muted);min-width:100px">${c.label}</label>
+      <input type="text" id="mwt-${c.key}"
+        placeholder="ej: M, L, 42, 44…"
+        value="${w.t[c.key]||''}"
+        style="flex:1;border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none"
+        onchange="guardarTallaLive('${rut}','${c.key}',this.value)">
+    </div>`).join('');
+
+  // ── Sección dotación con qty por prenda ──
+  const dotacionRows = dotacion.map((p,i)=>{
+    // intentar mapear la prenda a una columna de talla
+    const col = cols.find(c=>p.nombre.toLowerCase().includes(c.label.toLowerCase().split(' ')[0]));
+    const tallaVal = col ? (w.t[col.key]||'') : '';
+    return `
+    <div class="talla-row" style="background:#f9fbfd;padding:5px 8px;border-radius:6px;border:.5px solid var(--tk-border)">
+      <label style="font-size:12px;min-width:160px"><i class="ti ti-circle-check" style="color:var(--tk-teal)"></i> ${p.nombre}</label>
+      <input type="text" id="mw-talla-${i}" placeholder="Talla" value="${tallaVal}"
+        style="width:90px;border:1px solid var(--tk-border);border-radius:6px;padding:4px 8px;font-size:13px;outline:none">
+      <input type="number" id="mw-qty-${i}" placeholder="Cant." min="1" value="1"
+        style="width:65px;border:1px solid var(--tk-border);border-radius:6px;padding:4px 8px;font-size:13px;outline:none">
+    </div>`;
+  }).join('');
+
+  document.getElementById('mw-tallas').innerHTML = `
+    <div style="margin-bottom:.75rem">
+      <div style="font-size:11px;font-weight:600;color:var(--tk-blue);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">
+        <i class="ti ti-ruler-2"></i> Tallas del trabajador (se guardan en su perfil)
+      </div>
+      ${tallasCols}
+    </div>
+    <hr style="border:none;border-top:.5px solid var(--tk-border);margin:.6rem 0">
+    <div style="font-size:11px;font-weight:600;color:var(--tk-blue);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">
+      <i class="ti ti-package"></i> Ítems a incluir en el acta (ajusta cantidad si necesario)
+    </div>
+    ${dotacionRows}`;
+
+  document.getElementById('modal-worker').classList.add('open');
+}
+
+// ═══ ELIMINAR / EDITAR TRABAJADOR ════════════════════════════════════════════
+function eliminarWorker(rut){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  if(!confirm(`¿Eliminar a ${w.nombres} ${w.ap} ${w.am} (${rut})?`)) return;
+  const idx = NOMINA_BASE.findIndex(x=>x.rut===rut);
+  NOMINA_BASE.splice(idx,1);
+  renderNomina();
+  apiSync('deleteWorker',{rut});
+}
+
+function abrirNuevoWorker(){
+  document.getElementById('ew-rut-original').value = '';
+  document.getElementById('ew-nombres').value = '';
+  document.getElementById('ew-ap').value      = '';
+  document.getElementById('ew-am').value      = '';
+  document.getElementById('ew-rut').value     = '';
+  document.getElementById('ew-sexo').value    = 'M';
+  document.getElementById('ew-cargo').value   = '';
+  document.getElementById('ew-tenida').value  = 'administrativo';
+  document.getElementById('ew-cc').value      = 'Gerencia Comercial';
+  // Cambiar título del modal
+  document.querySelector('#modal-edit-worker .modal-title').innerHTML =
+    '<i class="ti ti-user-plus"></i> Nuevo trabajador';
+  document.getElementById('modal-edit-worker').classList.add('open');
+  setTimeout(()=>document.getElementById('ew-nombres').focus(),100);
+}
+
+function abrirEditarWorker(rut){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  document.getElementById('ew-rut-original').value = rut;
+  document.getElementById('ew-nombres').value = w.nombres;
+  document.getElementById('ew-ap').value      = w.ap;
+  document.getElementById('ew-am').value      = w.am;
+  document.getElementById('ew-rut').value     = rut;
+  document.getElementById('ew-sexo').value    = w.sexo;
+  document.getElementById('ew-cargo').value   = w.cargo;
+  document.getElementById('ew-tenida').value  = w.tenida;
+  document.getElementById('ew-cc').value      = w.cc;
+  document.querySelector('#modal-edit-worker .modal-title').innerHTML =
+    '<i class="ti ti-user-edit"></i> Editar trabajador';
+  document.getElementById('modal-edit-worker').classList.add('open');
+  setTimeout(()=>document.getElementById('ew-nombres').focus(),100);
+}
+
+function guardarEditarWorker(){
+  const rutOrig  = document.getElementById('ew-rut-original').value;
+  const nuevoRut = document.getElementById('ew-rut').value.trim();
+  const esNuevo  = rutOrig === '';
+
+  if(!nuevoRut){ alert('El RUT no puede estar vacío.'); return; }
+  if(NOMINA_BASE.find(x=>x.rut===nuevoRut && x.rut!==rutOrig)){
+    alert('Ya existe un trabajador con ese RUT.'); return;
+  }
+
+  if(esNuevo){
+    // Crear nuevo
+    const w = {
+      rut:    nuevoRut,
+      nombres: document.getElementById('ew-nombres').value.trim(),
+      ap:     document.getElementById('ew-ap').value.trim(),
+      am:     document.getElementById('ew-am').value.trim(),
+      sexo:   document.getElementById('ew-sexo').value,
+      cargo:  document.getElementById('ew-cargo').value.trim(),
+      tenida: document.getElementById('ew-tenida').value,
+      cc:     document.getElementById('ew-cc').value,
+      t:      {camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''}
+    };
+    NOMINA_BASE.push(w);
+    cerrarEditarWorker();
+    renderNomina();
+    apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: nuevoRut});
+  } else {
+    // Editar existente
+    const w = NOMINA_BASE.find(x=>x.rut===rutOrig);
+    if(!w){ alert('Trabajador no encontrado.'); return; }
+    w.rut     = nuevoRut;
+    w.nombres = document.getElementById('ew-nombres').value.trim();
+    w.ap      = document.getElementById('ew-ap').value.trim();
+    w.am      = document.getElementById('ew-am').value.trim();
+    w.sexo    = document.getElementById('ew-sexo').value;
+    w.cargo   = document.getElementById('ew-cargo').value.trim();
+    w.tenida  = document.getElementById('ew-tenida').value;
+    w.cc      = document.getElementById('ew-cc').value;
+    cerrarEditarWorker();
+    renderNomina();
+    apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rutOrig});
+  }
+}
+
+function cerrarEditarWorker(){
+  document.getElementById('modal-edit-worker').classList.remove('open');
+}
+
+function guardarTallaLive(rut, key, val){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  w.t[key] = val.trim();
+  // Sincronizar talla con Sheets en segundo plano
+  apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rut});
+}
+
+function cerrarModalWorker(){
+  document.getElementById('modal-worker').classList.remove('open');
+  workerActivo=null;
+  // Refrescar tarjetas para mostrar tallas actualizadas
+  if(document.getElementById('panel-nomina').classList.contains('active')) renderNomina();
+}
+
+function emitirDesdeWorker(tipo){
+  const w = workerActivo;
+  if(!w) return;
+  const dotacion = getDotacion(w);
+  const fecha = hoy();
+
+  // Construir items con tallas ingresadas
+  const itemsConTalla = dotacion.map((p,i)=>({
+    prenda: p.nombre,
+    talla: (document.getElementById(`mw-talla-${i}`)||{}).value || '—',
+    qty: parseInt((document.getElementById(`mw-qty-${i}`)||{}).value)||1,
+  }));
+
+  if(tipo === 'Uniforme'){
+    // Pre-rellenar la pestaña Entrega Uniformes y cambiar de tab
+    document.getElementById('uni-nombre').value = nombreCompleto(w);
+    document.getElementById('uni-rut').value    = w.rut;
+    document.getElementById('uni-cargo').value  = w.cargo;
+    document.getElementById('uni-fecha').value  = fecha;
+
+    // Llenar items si hay inventario
+    itemsUni = [];
+    itemsConTalla.forEach(it=>{
+      // Buscar en inventario por nombre aproximado
+      const idx = inventario.findIndex(x=>
+        x.nombre.toLowerCase().includes(it.prenda.split(' ')[0].toLowerCase()) ||
+        it.prenda.toLowerCase().includes(x.nombre.toLowerCase().split(' ')[0])
+      );
+      itemsUni.push({invIdx: idx >= 0 ? idx : -1, qty: it.qty, fechaEntrega: fecha});
+    });
+
+    cerrarModalWorker();
+    // Cambiar a tab
+    const btnUni = document.querySelector('.tab:nth-child(3)');
+    showTab('entrega-uniforme', btnUni);
+    renderItemsUni();
+  } else {
+    // EPP
+    document.getElementById('epp-nombre').value = nombreCompleto(w);
+    document.getElementById('epp-rut').value    = w.rut;
+    document.getElementById('epp-cargo').value  = w.cargo;
+    document.getElementById('epp-fecha').value  = fecha;
+
+    itemsEPP = [];
+    itemsConTalla.forEach(it=>{
+      const idx = inventario.findIndex(x=>
+        x.nombre.toLowerCase().includes(it.prenda.split(' ')[0].toLowerCase()) ||
+        it.prenda.toLowerCase().includes(x.nombre.toLowerCase().split(' ')[0])
+      );
+      itemsEPP.push({invIdx: idx >= 0 ? idx : -1, qty: it.qty});
+    });
+
+    cerrarModalWorker();
+    const btnEpp = document.querySelector('.tab:nth-child(2)');
+    showTab('entrega-epp', btnEpp);
+    renderItemsEPP();
+  }
+}
+
+// ═══ MULTI-ESTADO DROPDOWN ═══════════════════════════════════════════════════
+function getEstadosFiltro(){
+  return [...document.querySelectorAll('#ms-dropdown input[type=checkbox]:checked')]
+         .map(cb => cb.value);
+}
+
+function onMsChange(){
+  const sel = getEstadosFiltro();
+  const btn = document.getElementById('ms-btn');
+  const lbl = document.getElementById('ms-label');
+  const nombres = {'ok':'Disponible','warn':'Stock bajo','zero':'Sin stock'};
+  if(sel.length === 0){
+    lbl.textContent = 'Todos los estados';
+    btn.classList.remove('active-filter');
+  } else {
+    lbl.textContent = sel.map(k => nombres[k]).join(' + ');
+    btn.classList.add('active-filter');
+  }
+  renderInventario();
+}
+
+function toggleMsDropdown(){
+  const btn = document.getElementById('ms-btn');
+  const dd  = document.getElementById('ms-dropdown');
+  const open = dd.classList.contains('open');
+  dd.classList.toggle('open', !open);
+  btn.classList.toggle('open', !open);
+}
+
+// Cerrar al hacer click fuera
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('ms-wrap');
+  if(wrap && !wrap.contains(e.target)){
+    document.getElementById('ms-dropdown').classList.remove('open');
+    document.getElementById('ms-btn').classList.remove('open');
+  }
 });
+
+// ═══ INIT ════════════════════════════════════════════════════════════════════
 cargarDatos();
 </script>
 </body>
