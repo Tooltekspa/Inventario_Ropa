@@ -126,6 +126,12 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
 .talla-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
 .talla-row label{font-size:12px;color:var(--tk-muted);min-width:120px}
 .talla-row input,.talla-row select{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none;flex:1;min-width:90px}
+/* ── Pedidos ── */
+.ped-badge{border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;display:inline-block;min-width:36px;text-align:center}
+.ped-ok  {background:#e8f5ee;color:var(--tk-success)}
+.ped-warn{background:#fff3e0;color:var(--tk-warn)}
+.ped-cero{background:#fdf0f0;color:var(--tk-danger)}
+.ped-num {font-size:15px;font-weight:700;color:var(--tk-danger)}
 </style>
 </head>
 <body>
@@ -146,6 +152,7 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
     <button class="tab" onclick="showTab('entrega-epp',this)"><i class="ti ti-shield-check"></i> Entrega EPP</button>
     <button class="tab" onclick="showTab('entrega-uniforme',this)"><i class="ti ti-shirt"></i> Entrega Uniformes</button>
     <button class="tab" onclick="showTab('nomina',this)"><i class="ti ti-users"></i> Nómina</button>
+    <button class="tab" onclick="showTab('pedidos',this)"><i class="ti ti-shopping-cart"></i> Pedidos</button>
     <button class="tab" onclick="showTab('actas',this)"><i class="ti ti-file-description"></i> Actas Emitidas</button>
   </div>
 
@@ -345,6 +352,49 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
       </div>
       <div style="overflow-x:auto">
         <div id="worker-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PEDIDOS ═══ -->
+  <div class="panel" id="panel-pedidos">
+    <div class="stats-row" id="ped-stats-row"></div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-shopping-cart"></i> Pedidos sugeridos
+        <span id="ped-count" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span>
+        <span style="margin-left:auto;display:flex;gap:6px">
+          <button class="btn btn-outline btn-sm" onclick="renderPedidos()"><i class="ti ti-refresh"></i> Recalcular</button>
+          <button class="btn btn-primary btn-sm" onclick="imprimirPedidos()"><i class="ti ti-printer"></i> Imprimir</button>
+        </span>
+      </div>
+      <!-- Filtros -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
+        <select id="ped-filtro-tipo" onchange="renderPedidos()" style="border:1px solid var(--tk-border);border-radius:6px;padding:6px 10px;font-size:12px;outline:none;background:#fff">
+          <option value="">Todos los tipos</option>
+          <option value="Bodega">Bodega</option>
+          <option value="administrativo">Administrativo</option>
+        </select>
+        <select id="ped-filtro-estado" onchange="renderPedidos()" style="border:1px solid var(--tk-border);border-radius:6px;padding:6px 10px;font-size:12px;outline:none;background:#fff">
+          <option value="deficit">Solo con déficit</option>
+          <option value="todos">Mostrar todos</option>
+        </select>
+        <label style="font-size:12px;color:var(--tk-muted);margin-left:4px">Solo trabajadores con talla registrada</label>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="tbl" id="tbl-pedidos">
+          <thead><tr>
+            <th>Prenda</th>
+            <th>Talla</th>
+            <th style="text-align:center">Tipo</th>
+            <th style="text-align:center">Trabajadores</th>
+            <th style="text-align:center">Dotación<br><span style="font-weight:400;font-size:10px">(×cant/persona)</span></th>
+            <th style="text-align:center">Mínimo<br><span style="font-weight:400;font-size:10px">(×1 reserva)</span></th>
+            <th style="text-align:center">Total<br><span style="font-weight:400;font-size:10px">requerido</span></th>
+            <th style="text-align:center">Stock<br><span style="font-weight:400;font-size:10px">actual</span></th>
+            <th style="text-align:center;font-weight:700">A pedir</th>
+          </tr></thead>
+          <tbody id="tbody-pedidos"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -590,6 +640,7 @@ async function cargarDatos(){
   }
   renderInventario();
   renderActas();
+  renderPedidos();
 }
 
 // ═══ NAVEGACIÓN ══════════════════════════════════════════════════════════════
@@ -602,6 +653,7 @@ function showTab(t, btn) {
   if (t === 'entrega-epp') initEPP();
   if (t === 'entrega-uniforme') initUni();
   if (t === 'nomina') renderNomina();
+  if (t === 'pedidos') renderPedidos();
   if (t === 'actas') renderActas();
 }
 
@@ -1392,6 +1444,164 @@ function emitirDesdeWorker(tipo){
     showTab('entrega-epp', btnEpp);
     renderItemsEPP();
   }
+}
+
+// ═══ PEDIDOS ══════════════════════════════════════════════════════════════════
+/*
+  Reglas de dotación por trabajador CON talla registrada:
+  ┌──────────────┬──────────┬───────────────┐
+  │ Prenda       │ Bodega   │ Administrativo│
+  ├──────────────┼──────────┼───────────────┤
+  │ Poleras      │ 5        │ 5             │
+  │ Camisas      │ —        │ 5             │
+  │ Buzo         │ 5        │ —             │
+  │ Pantalón     │ 5        │ —             │
+  │ Softshell    │ —        │ 1             │
+  │ Parka        │ 1        │ 1             │
+  └──────────────┴──────────┴───────────────┘
+  Mínimo en stock adicional: 1 unidad por trabajador con esa talla (reserva).
+  Total requerido = (trabajadores × dotación) + (trabajadores × 1 reserva)
+  A pedir = MAX(0, total requerido − stock actual)
+*/
+
+const REGLAS_PEDIDO = [
+  // {tallaKey, nombreInv, cantBodega, cantAdmin}
+  {tallaKey:'poleras',   tipo:'Bodega',         cant:5, prendaTipo:'Polera',    sexoKey:'modelo'},
+  {tallaKey:'poleras',   tipo:'administrativo',  cant:5, prendaTipo:'Polera',    sexoKey:'modelo'},
+  {tallaKey:'camisas',   tipo:'administrativo',  cant:5, prendaTipo:'Camisa',    sexoKey:'modelo'},
+  {tallaKey:'buzo',      tipo:'Bodega',          cant:5, prendaTipo:'Buzo',      sexoKey:'modelo'},
+  {tallaKey:'pantalon',  tipo:'Bodega',          cant:5, prendaTipo:'Pantalon',  sexoKey:'modelo'},
+  {tallaKey:'softshell', tipo:'administrativo',  cant:1, prendaTipo:'Softshell', sexoKey:'modelo'},
+  {tallaKey:'parka',     tipo:'Bodega',          cant:1, prendaTipo:'Parka',     sexoKey:'modelo'},
+  {tallaKey:'parka',     tipo:'administrativo',  cant:1, prendaTipo:'Parka',     sexoKey:'modelo'},
+];
+
+// Mapeo de nombre de prenda (tipo inventario) → label visible
+const PRENDA_LABEL = {
+  'Polera':'Poleras','Camisa':'Camisas','Buzo':'Buzo / Overol',
+  'Pantalon':'Pantalón','Softshell':'Softshell','Parka':'Parka'
+};
+
+function renderPedidos(){
+  const filtroTipo   = document.getElementById('ped-filtro-tipo')   ? document.getElementById('ped-filtro-tipo').value   : '';
+  const filtroEstado = document.getElementById('ped-filtro-estado')  ? document.getElementById('ped-filtro-estado').value  : 'deficit';
+
+  // ── 1. Construir mapa: {tipo+tallaKey+talla+sexo} → count de trabajadores
+  const conteo = {}; // key: "tipo|tallaKey|talla|sexo" → {cant, workers:[]}
+  NOMINA_BASE.forEach(w=>{
+    if(!w.t) return;
+    REGLAS_PEDIDO.forEach(r=>{
+      if(r.tipo !== w.tenida) return;
+      const talla = (w.t[r.tallaKey]||'').trim().toUpperCase();
+      if(!talla) return; // sin talla registrada → no cuenta
+      const sexo = w.sexo === 'F' ? 'Mujer' : 'Hombre';
+      const key = `${r.tipo}|${r.tallaKey}|${talla}|${sexo}`;
+      if(!conteo[key]) conteo[key] = {tipo:r.tipo, tallaKey:r.tallaKey, talla, sexo, prendaTipo:r.prendaTipo, cant:r.cant, workers:0};
+      conteo[key].workers++;
+    });
+  });
+
+  // ── 2. Para cada entrada calcular stock actual vs requerido
+  const filas = Object.values(conteo).map(c=>{
+    const dotacion = c.workers * c.cant;        // trabajadores × cant/persona
+    const minimo   = c.workers * 1;             // reserva 1×persona
+    const total    = dotacion + minimo;
+
+    // Buscar stock en inventario (coincidencia por tipo+talla+sexo)
+    const stockActual = inventario
+      .filter(it=>{
+        const matchTipo  = (it.tipo||'').toLowerCase().includes(c.prendaTipo.toLowerCase()) ||
+                           (it.nombre||'').toLowerCase().includes(c.prendaTipo.toLowerCase());
+        const matchTalla = (it.talla||'').toUpperCase() === c.talla;
+        const matchSexo  = !it.modelo || it.modelo === 'Unisex' ||
+                           (it.modelo||'').toLowerCase().includes(c.sexo.toLowerCase());
+        return matchTipo && matchTalla && matchSexo;
+      })
+      .reduce((s,it)=>s+it.qty, 0);
+
+    const aPedir = Math.max(0, total - stockActual);
+    return {...c, dotacion, minimo, total, stockActual, aPedir};
+  });
+
+  // ── 3. Filtros UI
+  const filtradas = filas.filter(f=>{
+    if(filtroTipo && f.tipo !== filtroTipo) return false;
+    if(filtroEstado === 'deficit' && f.aPedir === 0) return false;
+    return true;
+  }).sort((a,b)=> b.aPedir-a.aPedir || a.prendaTipo.localeCompare(b.prendaTipo) || a.talla.localeCompare(b.talla));
+
+  // ── 4. Stats resumen
+  const totalPedir = filtradas.reduce((s,f)=>s+f.aPedir,0);
+  const itemsConDef = filas.filter(f=>f.aPedir>0).length;
+  document.getElementById('ped-count').textContent = `${filtradas.length} líneas`;
+  document.getElementById('ped-stats-row').innerHTML = `
+    <div class="stat-box"><div class="val">${NOMINA_BASE.filter(w=>w.tenida==='Bodega').length}</div><div class="lbl">Personal Bodega</div></div>
+    <div class="stat-box"><div class="val">${NOMINA_BASE.filter(w=>w.tenida==='administrativo').length}</div><div class="lbl">Personal Adm.</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-danger)">${itemsConDef}</div><div class="lbl">Ítems con déficit</div></div>
+    <div class="stat-box"><div class="val" style="color:var(--tk-danger)">${totalPedir}</div><div class="lbl">Unidades a pedir</div></div>`;
+
+  // ── 5. Tabla
+  const tb = document.getElementById('tbody-pedidos');
+  if(!filtradas.length){
+    tb.innerHTML=`<tr><td colspan="9" class="empty">${filtroEstado==='deficit'?'No hay déficit detectado — stock suficiente para toda la nómina.':'No hay datos. Registra tallas en la Nómina.'}</td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = filtradas.map(f=>{
+    const label = PRENDA_LABEL[f.prendaTipo] || f.prendaTipo;
+    const tipoTag = f.tipo==='Bodega'
+      ? `<span class="tag tag-bodega" style="font-size:10px;padding:1px 6px">Bodega</span>`
+      : `<span class="tag tag-admin"  style="font-size:10px;padding:1px 6px">Adm.</span>`;
+    const sexoIcon = f.sexo==='Mujer' ? '♀' : '♂';
+    const aPedirClass = f.aPedir===0 ? 'ped-badge ped-ok' : 'ped-badge ped-cero';
+
+    // Estado stock
+    let stockBadge;
+    if(f.stockActual===0)           stockBadge = `<span class="ped-badge ped-cero">${f.stockActual}</span>`;
+    else if(f.stockActual<f.total)  stockBadge = `<span class="ped-badge ped-warn">${f.stockActual}</span>`;
+    else                            stockBadge = `<span class="ped-badge ped-ok">${f.stockActual}</span>`;
+
+    return `<tr>
+      <td style="font-weight:600;font-size:13px">${label} <span style="font-size:11px;color:var(--tk-muted)">${sexoIcon}</span></td>
+      <td><span class="qty-badge">${f.talla}</span></td>
+      <td style="text-align:center">${tipoTag}</td>
+      <td style="text-align:center;font-size:13px">${f.workers}</td>
+      <td style="text-align:center;color:var(--tk-muted);font-size:12px">${f.dotacion} <span style="font-size:10px">(${f.workers}×${f.cant})</span></td>
+      <td style="text-align:center;color:var(--tk-muted);font-size:12px">${f.minimo}</td>
+      <td style="text-align:center;font-weight:600">${f.total}</td>
+      <td style="text-align:center">${stockBadge}</td>
+      <td style="text-align:center"><span class="${aPedirClass}" style="font-size:${f.aPedir>0?'15':'13'}px">${f.aPedir===0?'OK':f.aPedir}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function imprimirPedidos(){
+  const tabla = document.getElementById('tbl-pedidos');
+  if(!tabla) return;
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+  <title>Pedido TOOLTEK®</title>
+  <style>
+    body{font-family:'Segoe UI',sans-serif;padding:1.5cm;font-size:12px;color:#111;max-width:900px;margin:0 auto}
+    h2{font-size:16px;font-weight:700;margin-bottom:4px}
+    .sub{font-size:11px;color:#5a7a8e;margin-bottom:1rem}
+    table{width:100%;border-collapse:collapse}
+    th{background:#25638f;color:#fff;padding:6px 8px;text-align:left;font-size:11px}
+    td{border-bottom:1px solid #d0e4ef;padding:5px 8px;font-size:12px}
+    .num{font-weight:700;color:#c0392b}
+    @media print{@page{margin:1.5cm}}
+  </style></head><body>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#0081b0;letter-spacing:1px;margin-bottom:2px">TOOLTEK®</div>
+      <h2>Lista de Pedido — Uniformes & EPP</h2>
+      <div class="sub">Generado: ${new Date().toLocaleString('es-CL')} &nbsp;|&nbsp; Solo ítems con déficit</div>
+    </div>
+  </div>
+  ${tabla.outerHTML}
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(),400);
 }
 
 // ═══ MULTI-ESTADO DROPDOWN ═══════════════════════════════════════════════════
