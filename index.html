@@ -126,6 +126,17 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
 .talla-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
 .talla-row label{font-size:12px;color:var(--tk-muted);min-width:120px}
 .talla-row input,.talla-row select{border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none;flex:1;min-width:90px}
+/* ─── PEDIDOS ─── */
+#panel-pedidos .tag-pedir{display:inline-block;background:#c0392b;color:#fff;border-radius:12px;padding:2px 10px;font-weight:700;font-size:13px;min-width:36px;text-align:center}
+#panel-pedidos .tag-ok{display:inline-block;background:#1a7a4a;color:#fff;border-radius:12px;padding:2px 10px;font-weight:700;font-size:13px;min-width:36px;text-align:center}
+#panel-pedidos .tag-warn{display:inline-block;background:#b06a00;color:#fff;border-radius:12px;padding:2px 10px;font-weight:700;font-size:13px;min-width:36px;text-align:center}
+#panel-pedidos tbody tr:nth-child(even){background:#f7fafd}
+#panel-pedidos tbody tr:hover{background:#e8f2fa}
+#panel-pedidos td{padding:7px 12px;border-bottom:1px solid var(--tk-border);vertical-align:middle}
+#panel-pedidos .ped-stat-box{background:#fff;border:1px solid var(--tk-border);border-radius:8px;padding:10px 16px;text-align:center;min-width:100px;flex:1}
+#panel-pedidos .ped-stat-box .val{font-size:22px;font-weight:700;color:var(--tk-blue)}
+#panel-pedidos .ped-stat-box .lbl{font-size:11px;color:var(--tk-muted)}
+@media print{.tabs,.app>.card:first-child,#panel-inventario,#panel-entrega-epp,#panel-entrega-uniforme,#panel-nomina,#panel-actas,#ped-leyenda,#ped-filtro-tenida,.btn,.modal-bg{display:none!important}#panel-pedidos{display:block!important}#panel-pedidos .card{box-shadow:none;border:1px solid #ccc}}
 </style>
 </head>
 <body>
@@ -147,6 +158,7 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
     <button class="tab" onclick="showTab('entrega-uniforme',this)"><i class="ti ti-shirt"></i> Entrega Uniformes</button>
     <button class="tab" onclick="showTab('nomina',this)"><i class="ti ti-users"></i> Nómina</button>
     <button class="tab" onclick="showTab('actas',this)"><i class="ti ti-file-description"></i> Actas Emitidas</button>
+    <button class="tab" onclick="showTab('pedidos',this)"><i class="ti ti-shopping-cart"></i> Pedidos</button>
   </div>
 
   <!-- ═══ INVENTARIO ═══ -->
@@ -355,6 +367,52 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
       <div class="card-title"><i class="ti ti-files"></i> Historial de actas emitidas</div>
       <div id="lista-actas"><div class="empty">No hay actas emitidas aún.</div></div>
     </div>
+
+
+  <!-- ═══ PEDIDOS ═══ -->
+  <div class="panel" id="panel-pedidos">
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span><i class="ti ti-shopping-cart"></i> Pedidos sugeridos por dotación</span>
+        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+          <select id="ped-filtro-tenida" onchange="renderPedidos()" style="border:1px solid var(--tk-border);border-radius:6px;padding:4px 10px;font-size:13px;background:#fff;color:var(--tk-text)">
+            <option value="">Todas las tenidas</option>
+            <option value="Bodega">Bodega</option>
+            <option value="administrativo">Administrativo</option>
+          </select>
+          <button class="btn btn-sm btn-outline" onclick="renderPedidos()" style="display:flex;align-items:center;gap:5px"><i class="ti ti-refresh"></i> Recalcular</button>
+          <button class="btn btn-sm" onclick="imprimirPedidos()" style="display:flex;align-items:center;gap:5px;background:var(--tk-blue);color:#fff"><i class="ti ti-printer"></i> Imprimir</button>
+        </div>
+      </div>
+      <div id="ped-leyenda" style="background:#f0f7ff;border:1px solid var(--tk-border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--tk-muted);line-height:1.8">
+        <strong style="color:var(--tk-blue)"><i class="ti ti-info-circle"></i> Reglas de cálculo:</strong>
+        &nbsp;Bodega → polera/buzo/jogger: <strong>5 c/u por persona</strong> &middot; parka: <strong>1 por persona</strong> &nbsp;|&nbsp;
+        Administrativo → camisa/polera: <strong>5 c/u por persona</strong> &middot; softshell/parka: <strong>1 por persona</strong>
+        &nbsp;|&nbsp; Mínimo en stock: <strong>1 por persona en esa talla</strong>
+      </div>
+      <div id="ped-stats" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
+      <div id="ped-sin-tallas"></div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13px" id="ped-tabla">
+          <thead>
+            <tr style="background:var(--tk-blue);color:#fff">
+              <th style="padding:8px 12px;text-align:left;border-radius:6px 0 0 0">Prenda / Tipo</th>
+              <th style="padding:8px 12px;text-align:center">Talla</th>
+              <th style="padding:8px 12px;text-align:center">Modelo</th>
+              <th style="padding:8px 12px;text-align:center">Tenida</th>
+              <th style="padding:8px 12px;text-align:center">Stock actual</th>
+              <th style="padding:8px 12px;text-align:center">Stock objetivo<br><span style="font-weight:400;font-size:11px">(5 ó 1 × personas)</span></th>
+              <th style="padding:8px 12px;text-align:center">Mínimo<br><span style="font-weight:400;font-size:11px">(1 × persona/talla)</span></th>
+              <th style="padding:8px 12px;text-align:center;border-radius:0 6px 0 0"><strong>A pedir</strong></th>
+            </tr>
+          </thead>
+          <tbody id="tbody-pedidos"><tr><td colspan="8" class="empty">Cargando…</td></tr></tbody>
+        </table>
+      </div>
+      <div id="ped-empty" style="display:none" class="empty"><i class="ti ti-mood-happy"></i> ¡Stock suficiente para todas las tallas registradas!</div>
+    </div>
+  </div>
+
   </div>
 </div>
 
@@ -602,6 +660,7 @@ function showTab(t, btn) {
   if (t === 'entrega-uniforme') initUni();
   if (t === 'nomina') renderNomina();
   if (t === 'actas') renderActas();
+  if (t === 'pedidos') renderPedidos();
 }
 
 // ═══ ESTADÍSTICAS ════════════════════════════════════════════════════════════
@@ -1430,6 +1489,137 @@ document.addEventListener('click', e => {
     document.getElementById('ms-btn').classList.remove('open');
   }
 });
+
+
+
+// ═══ PEDIDOS ════════════════════════════════════════════════════════════════════
+function renderPedidos(){
+  const filtroTenida = document.getElementById('ped-filtro-tenida').value;
+  const tbody   = document.getElementById('tbody-pedidos');
+  const emptyDiv= document.getElementById('ped-empty');
+  const statsDiv= document.getElementById('ped-stats');
+  const tabla   = document.getElementById('ped-tabla');
+  const sinDiv  = document.getElementById('ped-sin-tallas');
+
+  const tipoToTallaKey = {
+    'Pique':'poleras','Polo':'poleras','Buzo':'buzo','Jogger':'pantalon',
+    'Softshell':'softshell','Celeste':'camisas','Hemic':'softshell',
+  };
+  const tipoToTenida = {
+    'Pique':'Bodega','Polo':'Bodega','Buzo':'Bodega','Jogger':'Bodega',
+    'Softshell':null,'Celeste':'administrativo','Hemic':'administrativo',
+  };
+  const tiposExcluidos = ['Zapatos','michelin','Michelin'];
+  const rows = [];
+
+  inventario.forEach(item => {
+    if(tiposExcluidos.includes(item.tipo)) return;
+    const tallaKey = tipoToTallaKey[item.tipo];
+    if(!tallaKey) return;
+    const tenidaAplicable = tipoToTenida[item.tipo];
+    let tenidas = tenidaAplicable ? [tenidaAplicable] : ['Bodega','administrativo'];
+    if(filtroTenida){ tenidas=tenidas.filter(t=>t===filtroTenida); if(!tenidas.length) return; }
+    let personasConTalla=0;
+    NOMINA_BASE.forEach(w=>{
+      if(!tenidas.includes(w.tenida)) return;
+      const wTalla=(w.t[tallaKey]||'').trim().toUpperCase();
+      const iTalla=(item.talla||'').trim().toUpperCase();
+      if(wTalla===iTalla && wTalla!=='') personasConTalla++;
+    });
+    if(personasConTalla===0) return;
+    const mult=(item.tipo==='Softshell'||item.tipo==='Hemic')?1:5;
+    const stockObjetivo=personasConTalla*mult;
+    const stockMinimo  =personasConTalla*1;
+    const stockActual  =item.qty;
+    const aPedir=Math.max(0,Math.max(stockObjetivo,stockMinimo)-stockActual);
+    rows.push({nombre:item.nombre,tipo:item.tipo,talla:item.talla,modelo:item.modelo||'—',
+      tenida:tenidaAplicable||'Ambas',stockActual,stockObjetivo,stockMinimo,aPedir,personasConTalla,mult});
+  });
+
+  // Trabajadores sin tallas
+  const sinTallasMap={};
+  NOMINA_BASE.forEach(w=>{
+    if(filtroTenida && w.tenida!==filtroTenida) return;
+    const keys=w.tenida==='Bodega'?['poleras','buzo','pantalon','parka']:['camisas','poleras','softshell','parka'];
+    const pending=keys.filter(k=>!w.t[k]||!w.t[k].trim());
+    if(pending.length>0) sinTallasMap[w.rut]={nombre:`${w.ap} ${w.am}, ${w.nombres}`,tenida:w.tenida};
+  });
+  const sinTallasCount=Object.keys(sinTallasMap).length;
+
+  rows.sort((a,b)=>{
+    if(b.aPedir!==a.aPedir) return b.aPedir-a.aPedir;
+    if(a.tipo<b.tipo) return -1; if(a.tipo>b.tipo) return 1;
+    const ord=['XS','S','M','L','XL','XXL','XXXL'];
+    return ord.indexOf(a.talla.toUpperCase())-ord.indexOf(b.talla.toUpperCase());
+  });
+
+  const totalPedir=rows.reduce((s,r)=>s+r.aPedir,0);
+  const itemsAPedir=rows.filter(r=>r.aPedir>0).length;
+  const itemsOk=rows.filter(r=>r.aPedir===0).length;
+  const itemsBajoMin=rows.filter(r=>r.stockActual<r.stockMinimo).length;
+
+  statsDiv.innerHTML=`
+    <div class="ped-stat-box"><div class="val" style="color:#c0392b">${totalPedir}</div><div class="lbl">Unidades a pedir</div></div>
+    <div class="ped-stat-box"><div class="val" style="color:#c0392b">${itemsAPedir}</div><div class="lbl">Items bajo stock objetivo</div></div>
+    <div class="ped-stat-box"><div class="val" style="color:#b06a00">${itemsBajoMin}</div><div class="lbl">Items bajo minimo</div></div>
+    <div class="ped-stat-box"><div class="val" style="color:#1a7a4a">${itemsOk}</div><div class="lbl">Items con stock OK</div></div>
+    ${sinTallasCount>0?`<div class="ped-stat-box" style="border-color:#b06a00;cursor:pointer" onclick="const sd=document.getElementById('ped-sin-tallas');sd.style.display=sd.style.display==='none'?'block':'none'"><div class="val" style="color:#b06a00">${sinTallasCount}</div><div class="lbl">⚠️ Sin tallas completas</div></div>`:''}
+  `;
+
+  sinDiv.style.display='none';
+  if(sinTallasCount>0){
+    sinDiv.innerHTML=`<div style="background:#fffbf0;border:1px solid #e0a050;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px">
+      <strong style="color:#b06a00"><i class="ti ti-alert-triangle"></i> ${sinTallasCount} trabajadores sin tallas completas (no incluidos en el cálculo):</strong>
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">
+        ${Object.values(sinTallasMap).map(w=>`<span style="background:#fff;border:1px solid #e0a050;border-radius:12px;padding:2px 8px;font-size:11px">${w.nombre} <span style="color:#b06a00">(${w.tenida})</span></span>`).join('')}
+      </div>
+      <div style="margin-top:6px;color:#b06a00;font-size:11px">👉 Ingresa sus tallas en la sección <strong>Nómina</strong> para incluirlos.</div>
+    </div>`;
+  }
+
+  if(!rows.length){tbody.innerHTML='';tabla.style.display='none';emptyDiv.style.display='block';return;}
+  tabla.style.display='';emptyDiv.style.display='none';
+
+  tbody.innerHTML=rows.map(r=>{
+    const badge=r.aPedir===0
+      ?'<span class="tag-ok">✓</span>'
+      :r.stockActual<r.stockMinimo
+        ?`<span class="tag-pedir">${r.aPedir}</span>`
+        :`<span class="tag-warn">${r.aPedir}</span>`;
+    const rowBg=r.aPedir===0?'':(r.stockActual<r.stockMinimo?'background:#fff5f5':'background:#fffbf0');
+    const tenidaTag=r.tenida==='Bodega'
+      ?'<span class="tag tag-bodega" style="font-size:11px;padding:1px 6px">Bodega</span>'
+      :r.tenida==='administrativo'
+        ?'<span class="tag tag-admin" style="font-size:11px;padding:1px 6px">Admin</span>'
+        :'<span class="tag" style="font-size:11px;padding:1px 6px;background:#e8f0ff;color:#25638f">Ambas</span>';
+    const sc=r.stockActual===0?'color:#c0392b;font-weight:700':r.stockActual<r.stockMinimo?'color:#b06a00;font-weight:600':'color:#1a7a4a;font-weight:600';
+    return `<tr style="${rowBg}">
+      <td><strong>${r.nombre}</strong><br><span style="font-size:11px;color:var(--tk-muted)">${r.personasConTalla} persona(s) con talla ${r.talla} · objetivo ×${r.mult}</span></td>
+      <td style="text-align:center"><span class="tag" style="font-size:12px;padding:2px 8px">${r.talla}</span></td>
+      <td style="text-align:center;font-size:12px">${r.modelo}</td>
+      <td style="text-align:center">${tenidaTag}</td>
+      <td style="text-align:center;${sc}">${r.stockActual}</td>
+      <td style="text-align:center;color:var(--tk-blue);font-weight:600">${r.stockObjetivo}</td>
+      <td style="text-align:center;color:var(--tk-muted)">${r.stockMinimo}</td>
+      <td style="text-align:center">${badge}</td>
+    </tr>`;
+  }).join('');
+}
+
+function imprimirPedidos(){
+  const fecha=new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const rows=Array.from(document.querySelectorAll('#tbody-pedidos tr')).map(tr=>tr.outerHTML).join('');
+  const headerTh=Array.from(document.querySelectorAll('#ped-tabla thead th')).map(th=>`<th style="padding:6px 10px;background:#25638f;color:#fff;text-align:center;font-size:12px">${th.innerHTML}</th>`).join('');
+  const pw=window.open('','_blank','width=900,height=700');
+  pw.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pedido Sugerido TOOLTEK® ${fecha}</title>
+  <style>body{font-family:'Segoe UI',sans-serif;font-size:12px;color:#1a2e3b;margin:20px}h2{color:#25638f;margin-bottom:4px}.sub{color:#5a7a8e;font-size:11px;margin-bottom:16px}table{width:100%;border-collapse:collapse}th{padding:6px 10px;background:#25638f;color:#fff;text-align:center;font-size:11px}td{padding:6px 10px;border-bottom:1px solid #d0e4ef;font-size:12px;vertical-align:middle}tr:nth-child(even){background:#f4f8fb}.tag-pedir{background:#c0392b;color:#fff;border-radius:10px;padding:2px 8px;font-weight:700}.tag-ok{background:#1a7a4a;color:#fff;border-radius:10px;padding:2px 8px;font-weight:700}.tag-warn{background:#b06a00;color:#fff;border-radius:10px;padding:2px 8px;font-weight:700}.tag{background:#e8f0ff;border-radius:10px;padding:1px 6px;font-size:11px}.tag-bodega{background:#fff3e0;color:#b06a00;border-radius:10px;padding:1px 6px;font-size:11px}.tag-admin{background:#e3f2fd;color:#25638f;border-radius:10px;padding:1px 6px;font-size:11px}@media print{button{display:none}}</style></head><body>
+  <h2>📦 TOOLTEK® — Pedido Sugerido de Uniformes</h2>
+  <div class="sub">Generado el ${fecha} | Bodega: polera/buzo/jogger ×5, parka ×1 | Admin: camisa/polera ×5, softshell/parka ×1 | Mínimo: 1 por persona/talla</div>
+  <button onclick="window.print()" style="background:#25638f;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;margin-bottom:12px">🖨️ Imprimir</button>
+  <table><thead><tr>${headerTh}</tr></thead><tbody>${rows}</tbody></table>
+  </body></html>`);
+  pw.document.close();
+}
 
 // ═══ INIT ════════════════════════════════════════════════════════════════════
 cargarDatos();
