@@ -1880,9 +1880,12 @@ function renderPendientes(mapaDeficitParam){
         <td style="font-size:12px">${p.prenda}</td>
         <td style="text-align:center"><span class="qty-badge">${p.talla}</span></td>
         <td style="text-align:center"><span class="ped-badge ${motivoClass}" style="font-size:10px">${p.motivo}</span></td>
-        <td style="text-align:center">
-          <button class="btn btn-outline btn-sm" onclick="abrirDetalleEntregaDesdePendiente('${p.rut}','${p.tallaKey}')" title="Marcar entrega" style="padding:3px 6px">
+        <td style="text-align:center;white-space:nowrap">
+          <button class="btn btn-success btn-sm" onclick="marcarEntregadoDesdePendiente('${p.rut}','${p.tallaKey}')" title="Marcar como entregado (hoy, cantidad 1)" style="padding:3px 6px">
             <i class="ti ti-check"></i>
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="abrirDetalleEntrega('${p.rut}','${p.tallaKey}')" title="Detalle de entrega (fecha, cantidad, obs)" style="padding:3px 6px;margin-left:2px">
+            <i class="ti ti-notes"></i>
           </button>
         </td>
       </tr>`;
@@ -1893,9 +1896,26 @@ function renderPendientes(mapaDeficitParam){
   apiSync('saveSnapshotPendientes', {data: JSON.stringify(pendientes)}, true);
 }
 
-// Wrapper para abrir el detalle de entrega directo desde la tabla de pendientes
-function abrirDetalleEntregaDesdePendiente(rut, key){
-  abrirDetalleEntrega(rut, key);
+// Marca entregado directamente con un clic desde la tabla de Pendientes
+// (sin abrir el modal de detalle) — fecha de hoy, cantidad 1 por defecto.
+function marcarEntregadoDesdePendiente(rut, key){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  if(!w.e) w.e = E();
+  if(!w.e[key]) w.e[key] = {entregado:false,fecha:'',cantidad:0,obs:''};
+
+  w.e[key].entregado = true;
+  w.e[key].fecha     = hoy();
+  if(!w.e[key].cantidad) w.e[key].cantidad = 1;
+
+  apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rut}, true);
+
+  // Refrescar la tabla de Pendientes en pantalla (esta fila desaparecerá si ya no aplica)
+  renderPendientes();
+
+  // Si el modal de tallas de este trabajador está abierto, sincronizar su checkbox
+  const cbRapido = document.getElementById(`mwe-${key}`);
+  if(cbRapido) cbRapido.checked = true;
 }
 
 // ═══ EXPORTAR A EXCEL ═════════════════════════════════════════════════════════
