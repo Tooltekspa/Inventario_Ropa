@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TOOLTEK® — Sistema de Inventario EPP & Prendas</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -364,6 +365,7 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
         <span id="ped-count" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span>
         <span style="margin-left:auto;display:flex;gap:6px">
           <button class="btn btn-outline btn-sm" onclick="renderPedidos()"><i class="ti ti-refresh"></i> Recalcular</button>
+          <button class="btn btn-success btn-sm" onclick="exportarPedidosExcel()"><i class="ti ti-file-spreadsheet"></i> Excel</button>
           <button class="btn btn-primary btn-sm" onclick="imprimirPedidos()"><i class="ti ti-printer"></i> Imprimir</button>
         </span>
       </div>
@@ -1787,6 +1789,88 @@ function renderPendientes(mapaDeficit){
 // Wrapper para abrir el detalle de entrega directo desde la tabla de pendientes
 function abrirDetalleEntregaDesdePendiente(rut, key){
   abrirDetalleEntrega(rut, key);
+}
+
+// ═══ EXPORTAR A EXCEL ═════════════════════════════════════════════════════════
+function exportarPedidosExcel(){
+  if(typeof XLSX === 'undefined'){
+    alert('No se pudo cargar el módulo de Excel. Verifica tu conexión a internet e intenta de nuevo.');
+    return;
+  }
+
+  const filtroTipo   = document.getElementById('ped-filtro-tipo')  ? document.getElementById('ped-filtro-tipo').value  : '';
+  const filtroEstado = document.getElementById('ped-filtro-estado') ? document.getElementById('ped-filtro-estado').value : 'deficit';
+
+  const mapaDeficit = calcularDeficitPorTalla();
+  const filas = Object.values(mapaDeficit).filter(f=>{
+    if(filtroTipo && f.tipo !== filtroTipo) return false;
+    if(filtroEstado === 'deficit' && f.aPedir === 0) return false;
+    return true;
+  }).sort((a,b)=> b.aPedir-a.aPedir || a.prendaTipo.localeCompare(b.prendaTipo) || a.talla.localeCompare(b.talla));
+
+  // ── Hoja 1: Pedidos sugeridos ──
+  const dataPedidos = filas.map(f=>({
+    'Prenda':            PRENDA_LABEL[f.prendaTipo] || f.prendaTipo,
+    'Talla':             f.talla,
+    'Sexo':              f.sexo,
+    'Tipo':              f.tipo === 'Bodega' ? 'Bodega' : 'Administrativo',
+    'Trabajadores':      f.workers,
+    'Dotación (×persona)': f.cant,
+    'Dotación total':    f.dotacion,
+    'Mínimo reserva':    f.minimo,
+    'Total requerido':   f.total,
+    'Stock actual':      f.stockActual,
+    'A pedir':           f.aPedir
+  }));
+  if(!dataPedidos.length){
+    dataPedidos.push({'Prenda':'Sin datos','Talla':'','Sexo':'','Tipo':'','Trabajadores':'','Dotación (×persona)':'','Dotación total':'','Mínimo reserva':'','Total requerido':'','Stock actual':'','A pedir':''});
+  }
+
+  // ── Hoja 2: Pendientes de entrega ──
+  const pendientes = [];
+  NOMINA_BASE.forEach(w=>{
+    if(!w.t) return;
+    if(!w.e) w.e = E();
+    tallasParaTipo(w.tenida).forEach(c=>{
+      const talla = (w.t[c.key]||'').trim();
+      if(!talla) return;
+      const ent = w.e[c.key] || {entregado:false};
+      const sexo = w.sexo === 'F' ? 'Mujer' : 'Hombre';
+      const key  = `${w.tenida}|${c.key}|${talla.toUpperCase()}|${sexo}`;
+      const def  = mapaDeficit[key];
+      const hayDeficit = def && def.aPedir > 0;
+      if(!ent.entregado || hayDeficit){
+        let motivo = (!ent.entregado && hayDeficit) ? 'Sin entregar + déficit stock'
+                   : (!ent.entregado) ? 'Sin entregar' : 'Déficit de stock';
+        pendientes.push({
+          'Trabajador': nombreCompleto(w),
+          'RUT':        w.rut,
+          'Cargo':      w.cargo,
+          'Tipo':       w.tenida === 'Bodega' ? 'Bodega' : 'Administrativo',
+          'Prenda':     PRENDA_LABEL[REGLAS_PEDIDO.find(r=>r.tallaKey===c.key && r.tipo===w.tenida)?.prendaTipo] || c.label,
+          'Talla':      talla,
+          'Motivo':     motivo
+        });
+      }
+    });
+  });
+  pendientes.sort((a,b)=>a.Trabajador.localeCompare(b.Trabajador));
+  if(!pendientes.length){
+    pendientes.push({'Trabajador':'Sin pendientes','RUT':'','Cargo':'','Tipo':'','Prenda':'','Talla':'','Motivo':''});
+  }
+
+  // ── Construir libro ──
+  const wb = XLSX.utils.book_new();
+  const wsPedidos = XLSX.utils.json_to_sheet(dataPedidos);
+  wsPedidos['!cols'] = [{wch:18},{wch:8},{wch:9},{wch:14},{wch:13},{wch:16},{wch:14},{wch:13},{wch:14},{wch:12},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, wsPedidos, 'Pedidos Sugeridos');
+
+  const wsPend = XLSX.utils.json_to_sheet(pendientes);
+  wsPend['!cols'] = [{wch:28},{wch:14},{wch:30},{wch:14},{wch:16},{wch:8},{wch:24}];
+  XLSX.utils.book_append_sheet(wb, wsPend, 'Pendientes Entrega');
+
+  const fecha = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `TOOLTEK_Pedidos_${fecha}.xlsx`);
 }
 
 function imprimirPedidos(){
