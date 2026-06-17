@@ -397,6 +397,30 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
         </table>
       </div>
     </div>
+
+    <!-- Pendientes de entrega -->
+    <div class="card">
+      <div class="card-title"><i class="ti ti-clock-exclamation"></i> Pendientes de entrega
+        <span id="pend-count" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span>
+      </div>
+      <div style="font-size:11px;color:var(--tk-muted);margin-bottom:.75rem">
+        Trabajador con talla registrada que aún no tiene entrega marcada, o cuya talla tiene déficit de stock.
+      </div>
+      <div style="overflow-x:auto">
+        <table class="tbl" id="tbl-pendientes">
+          <thead><tr>
+            <th>Trabajador</th>
+            <th>Cargo</th>
+            <th style="text-align:center">Tipo</th>
+            <th>Prenda</th>
+            <th style="text-align:center">Talla</th>
+            <th style="text-align:center">Motivo</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="tbody-pendientes"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <!-- ═══ ACTAS ═══ -->
@@ -432,6 +456,40 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
 </div>
 
 <!-- MODAL EDITAR TRABAJADOR -->
+<div class="modal-bg" id="modal-detalle-entrega">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <span class="modal-title" id="de-titulo"><i class="ti ti-notes"></i> Detalle de entrega</span>
+      <button class="close-btn" onclick="cerrarDetalleEntrega()">✕</button>
+    </div>
+    <input type="hidden" id="de-rut">
+    <input type="hidden" id="de-key">
+    <div style="margin-bottom:.85rem">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+        <input type="checkbox" id="de-entregado" style="accent-color:var(--tk-success);width:16px;height:16px;cursor:pointer">
+        <strong>Marcar como entregado</strong>
+      </label>
+      <div style="font-size:11px;color:var(--tk-muted);margin-top:3px">Este registro es histórico — no descuenta stock del inventario.</div>
+    </div>
+    <div class="form-row">
+      <label>Fecha entrega</label>
+      <input id="de-fecha" type="date">
+    </div>
+    <div class="form-row">
+      <label>Cantidad</label>
+      <input id="de-cantidad" type="number" min="0" value="1" style="max-width:90px">
+    </div>
+    <div class="form-row">
+      <label>Observación</label>
+      <input id="de-obs" type="text" placeholder="Ej: entregado antes de implementar el sistema">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1rem;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="guardarDetalleEntrega()"><i class="ti ti-check"></i> Guardar</button>
+      <button class="btn btn-outline" onclick="cerrarDetalleEntrega()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="modal-edit-worker">
   <div class="modal" style="max-width:560px">
     <div class="modal-header">
@@ -607,6 +665,9 @@ async function apiSync(action, params){
 }
 
 async function cargarDatos(){
+  // Asegurar que todos los trabajadores precargados tengan el objeto 'e' (entregas)
+  NOMINA_BASE.forEach(w=>{ if(!w.e) w.e = E(); });
+
   if(!apiConfigurada()){
     setSync('err','Sin conexión a Sheets');
     alert('Configura API_URL en el código para conectar con Google Sheets.\nLa app funcionará en modo local (los datos se perderán al recargar).');
@@ -621,9 +682,10 @@ async function cargarDatos(){
       actas      = r.actas      || [];
       // Si Sheets devuelve nómina, reemplazar la precargada
       if(r.nomina && r.nomina.length){
-        // Asegurar que cada trabajador tenga el objeto t completo
+        // Asegurar que cada trabajador tenga el objeto t y e completos
         r.nomina.forEach(w=>{
           if(!w.t) w.t={camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''};
+          if(!w.e) w.e = E();
           const idx = NOMINA_BASE.findIndex(x=>x.rut===w.rut);
           if(idx>=0) NOMINA_BASE[idx] = w;   // actualizar existente (preserva orden)
           else NOMINA_BASE.push(w);           // nuevo trabajador agregado desde otra sesión
@@ -1000,6 +1062,13 @@ function stepQty(delta){
 // ═══ NÓMINA PRECARGADA ═══════════════════════════════════════════════════════
 // tallas: {camisas, poleras, softshell, parka, buzo, pantalon} — vacío = pendiente
 const T = ()=>({camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''});
+// Historial de entregas: {tallaKey: {entregado:bool, fecha:'', cantidad:n, obs:''}}
+const E = ()=>({camisas:{entregado:false,fecha:'',cantidad:0,obs:''},
+                 poleras:{entregado:false,fecha:'',cantidad:0,obs:''},
+                 softshell:{entregado:false,fecha:'',cantidad:0,obs:''},
+                 parka:{entregado:false,fecha:'',cantidad:0,obs:''},
+                 buzo:{entregado:false,fecha:'',cantidad:0,obs:''},
+                 pantalon:{entregado:false,fecha:'',cantidad:0,obs:''}});
 const NOMINA_BASE = [
   {rut:'20048228-K',nombres:'Adip Isrrael',ap:'Gallegos',am:'Apablaza',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
   {rut:'17414451-6',nombres:'Adolfo Esteban',ap:'Vallejos',am:'Aguirre',sexo:'M',cargo:'Encargado(a) de Marketing',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
@@ -1237,8 +1306,10 @@ function abrirModalWorker(rut){
     </div>`;
 
   // ── Tabla de tallas por tipo de prenda (solo las que aplican) ──
-  const tallasCols = cols.map(c=>`
-    <div class="talla-row">
+  const tallasCols = cols.map(c=>{
+    const ent = (w.e && w.e[c.key]) || {entregado:false,fecha:'',cantidad:0,obs:''};
+    return `
+    <div class="talla-row" style="align-items:center">
       <label style="font-size:12px;color:var(--tk-muted);min-width:100px">${c.label}</label>
       <input type="text" id="mwt-${c.key}"
         placeholder="ej: M, L, 42, 44…"
@@ -1246,7 +1317,15 @@ function abrirModalWorker(rut){
         style="flex:1;border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none;border-color:${w.t[c.key]?'var(--tk-success)':'var(--tk-border)'}"
         oninput="guardarTallaLive('${rut}','${c.key}',this.value);this.style.borderColor=this.value?'var(--tk-success)':'var(--tk-border)'"
         onblur="renderNomina()">
-    </div>`).join('');
+      <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:${ent.entregado?'var(--tk-success)':'var(--tk-muted)'};white-space:nowrap;cursor:pointer;min-width:auto">
+        <input type="checkbox" id="mwe-${c.key}" ${ent.entregado?'checked':''}
+          onchange="toggleEntregaRapida('${rut}','${c.key}',this.checked)"
+          style="accent-color:var(--tk-success);width:14px;height:14px;cursor:pointer">
+        Entregado
+      </label>
+      <button class="btn btn-outline btn-sm" onclick="abrirDetalleEntrega('${rut}','${c.key}')" title="Detalle de entrega" style="padding:3px 6px"><i class="ti ti-notes"></i></button>
+    </div>`;
+  }).join('');
 
   // ── Sección dotación con qty por prenda ──
   const dotacionRows = dotacion.map((p,i)=>{
@@ -1336,7 +1415,7 @@ function guardarEditarWorker(){
   }
 
   if(esNuevo){
-    // Crear nuevo
+    // Crear nuevo — automáticamente quedará "pendiente" en Pedidos al no tener entregas registradas
     const w = {
       rut:    nuevoRut,
       nombres: document.getElementById('ew-nombres').value.trim(),
@@ -1346,11 +1425,13 @@ function guardarEditarWorker(){
       cargo:  document.getElementById('ew-cargo').value.trim(),
       tenida: document.getElementById('ew-tenida').value,
       cc:     document.getElementById('ew-cc').value,
-      t:      {camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''}
+      t:      T(),
+      e:      E()
     };
     NOMINA_BASE.push(w);
     cerrarEditarWorker();
     renderNomina();
+    if(document.getElementById('panel-pedidos').classList.contains('active')) renderPedidos();
     apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: nuevoRut});
   } else {
     // Editar existente
@@ -1380,6 +1461,62 @@ function guardarTallaLive(rut, key, val){
   w.t[key] = val.trim();
   // Sincronizar talla con Sheets en segundo plano
   apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rut});
+}
+
+// ═══ HISTORIAL DE ENTREGAS (no afecta inventario) ════════════════════════════
+function toggleEntregaRapida(rut, key, checked){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  if(!w.e) w.e = E();
+  if(!w.e[key]) w.e[key] = {entregado:false,fecha:'',cantidad:0,obs:''};
+  w.e[key].entregado = checked;
+  if(checked && !w.e[key].fecha) w.e[key].fecha = hoy();
+  if(checked && !w.e[key].cantidad) w.e[key].cantidad = 1;
+  apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rut}, true);
+}
+
+function abrirDetalleEntrega(rut, key){
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  if(!w.e) w.e = E();
+  const ent = w.e[key] || {entregado:false,fecha:'',cantidad:0,obs:''};
+  const col = TALLA_COLS.find(c=>c.key===key);
+
+  document.getElementById('de-titulo').innerHTML = `<i class="ti ti-notes"></i> Entrega: ${col?col.label:key} — ${nombreCompleto(w)}`;
+  document.getElementById('de-rut').value = rut;
+  document.getElementById('de-key').value = key;
+  document.getElementById('de-entregado').checked = !!ent.entregado;
+  document.getElementById('de-fecha').value = ent.fecha || hoy();
+  document.getElementById('de-cantidad').value = ent.cantidad || 1;
+  document.getElementById('de-obs').value = ent.obs || '';
+
+  document.getElementById('modal-detalle-entrega').classList.add('open');
+}
+
+function guardarDetalleEntrega(){
+  const rut = document.getElementById('de-rut').value;
+  const key = document.getElementById('de-key').value;
+  const w = NOMINA_BASE.find(x=>x.rut===rut);
+  if(!w) return;
+  if(!w.e) w.e = E();
+
+  w.e[key] = {
+    entregado: document.getElementById('de-entregado').checked,
+    fecha:     document.getElementById('de-fecha').value || '',
+    cantidad:  parseInt(document.getElementById('de-cantidad').value)||0,
+    obs:       document.getElementById('de-obs').value.trim()
+  };
+
+  cerrarDetalleEntrega();
+  // Refrescar checkbox rápido en el modal de tallas si está abierto
+  const cbRapido = document.getElementById(`mwe-${key}`);
+  if(cbRapido) cbRapido.checked = w.e[key].entregado;
+  apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rut}, true);
+  if(document.getElementById('panel-pedidos').classList.contains('active')) renderPedidos();
+}
+
+function cerrarDetalleEntrega(){
+  document.getElementById('modal-detalle-entrega').classList.remove('open');
 }
 
 function cerrarModalWorker(){
@@ -1484,32 +1621,27 @@ const PRENDA_LABEL = {
   'Pantalon':'Pantalón','Softshell':'Softshell','Parka':'Parka'
 };
 
-function renderPedidos(){
-  const filtroTipo   = document.getElementById('ped-filtro-tipo')   ? document.getElementById('ped-filtro-tipo').value   : '';
-  const filtroEstado = document.getElementById('ped-filtro-estado')  ? document.getElementById('ped-filtro-estado').value  : 'deficit';
-
-  // ── 1. Construir mapa: {tipo+tallaKey+talla+sexo} → count de trabajadores
-  const conteo = {}; // key: "tipo|tallaKey|talla|sexo" → {cant, workers:[]}
+// Calcula, por cada combinación tipo|tallaKey|talla|sexo, si hay déficit de stock.
+// Devuelve un mapa para consulta rápida: key → {aPedir, total, stockActual}
+function calcularDeficitPorTalla(){
+  const conteo = {};
   NOMINA_BASE.forEach(w=>{
     if(!w.t) return;
     REGLAS_PEDIDO.forEach(r=>{
       if(r.tipo !== w.tenida) return;
       const talla = (w.t[r.tallaKey]||'').trim().toUpperCase();
-      if(!talla) return; // sin talla registrada → no cuenta
+      if(!talla) return;
       const sexo = w.sexo === 'F' ? 'Mujer' : 'Hombre';
       const key = `${r.tipo}|${r.tallaKey}|${talla}|${sexo}`;
       if(!conteo[key]) conteo[key] = {tipo:r.tipo, tallaKey:r.tallaKey, talla, sexo, prendaTipo:r.prendaTipo, cant:r.cant, workers:0};
       conteo[key].workers++;
     });
   });
-
-  // ── 2. Para cada entrada calcular stock actual vs requerido
-  const filas = Object.values(conteo).map(c=>{
-    const dotacion = c.workers * c.cant;        // trabajadores × cant/persona
-    const minimo   = c.workers * 1;             // reserva 1×persona
+  const mapa = {};
+  Object.entries(conteo).forEach(([key,c])=>{
+    const dotacion = c.workers * c.cant;
+    const minimo   = c.workers * 1;
     const total    = dotacion + minimo;
-
-    // Buscar stock en inventario (coincidencia por tipo+talla+sexo)
     const stockActual = inventario
       .filter(it=>{
         const matchTipo  = (it.tipo||'').toLowerCase().includes(c.prendaTipo.toLowerCase()) ||
@@ -1520,10 +1652,17 @@ function renderPedidos(){
         return matchTipo && matchTalla && matchSexo;
       })
       .reduce((s,it)=>s+it.qty, 0);
-
-    const aPedir = Math.max(0, total - stockActual);
-    return {...c, dotacion, minimo, total, stockActual, aPedir};
+    mapa[key] = {...c, dotacion, minimo, total, stockActual, aPedir: Math.max(0, total - stockActual)};
   });
+  return mapa;
+}
+
+function renderPedidos(){
+  const filtroTipo   = document.getElementById('ped-filtro-tipo')   ? document.getElementById('ped-filtro-tipo').value   : '';
+  const filtroEstado = document.getElementById('ped-filtro-estado')  ? document.getElementById('ped-filtro-estado').value  : 'deficit';
+
+  const mapaDeficit = calcularDeficitPorTalla();
+  const filas = Object.values(mapaDeficit);
 
   // ── 3. Filtros UI
   const filtradas = filas.filter(f=>{
@@ -1546,35 +1685,108 @@ function renderPedidos(){
   const tb = document.getElementById('tbody-pedidos');
   if(!filtradas.length){
     tb.innerHTML=`<tr><td colspan="9" class="empty">${filtroEstado==='deficit'?'No hay déficit detectado — stock suficiente para toda la nómina.':'No hay datos. Registra tallas en la Nómina.'}</td></tr>`;
+  } else {
+    tb.innerHTML = filtradas.map(f=>{
+      const label = PRENDA_LABEL[f.prendaTipo] || f.prendaTipo;
+      const tipoTag = f.tipo==='Bodega'
+        ? `<span class="tag tag-bodega" style="font-size:10px;padding:1px 6px">Bodega</span>`
+        : `<span class="tag tag-admin"  style="font-size:10px;padding:1px 6px">Adm.</span>`;
+      const sexoIcon = f.sexo==='Mujer' ? '♀' : '♂';
+      const aPedirClass = f.aPedir===0 ? 'ped-badge ped-ok' : 'ped-badge ped-cero';
+
+      let stockBadge;
+      if(f.stockActual===0)           stockBadge = `<span class="ped-badge ped-cero">${f.stockActual}</span>`;
+      else if(f.stockActual<f.total)  stockBadge = `<span class="ped-badge ped-warn">${f.stockActual}</span>`;
+      else                            stockBadge = `<span class="ped-badge ped-ok">${f.stockActual}</span>`;
+
+      return `<tr>
+        <td style="font-weight:600;font-size:13px">${label} <span style="font-size:11px;color:var(--tk-muted)">${sexoIcon}</span></td>
+        <td><span class="qty-badge">${f.talla}</span></td>
+        <td style="text-align:center">${tipoTag}</td>
+        <td style="text-align:center;font-size:13px">${f.workers}</td>
+        <td style="text-align:center;color:var(--tk-muted);font-size:12px">${f.dotacion} <span style="font-size:10px">(${f.workers}×${f.cant})</span></td>
+        <td style="text-align:center;color:var(--tk-muted);font-size:12px">${f.minimo}</td>
+        <td style="text-align:center;font-weight:600">${f.total}</td>
+        <td style="text-align:center">${stockBadge}</td>
+        <td style="text-align:center"><span class="${aPedirClass}" style="font-size:${f.aPedir>0?'15':'13'}px">${f.aPedir===0?'OK':f.aPedir}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  renderPendientes(mapaDeficit);
+}
+
+// ═══ PENDIENTES DE ENTREGA ════════════════════════════════════════════════════
+// Un trabajador aparece pendiente para una prenda si:
+//  (a) tiene talla registrada pero e[key].entregado es false, O
+//  (b) tiene talla registrada y esa talla tiene déficit de stock (aPedir > 0)
+function renderPendientes(mapaDeficit){
+  const pendientes = [];
+
+  NOMINA_BASE.forEach(w=>{
+    if(!w.t) return;
+    if(!w.e) w.e = E();
+    const cols = tallasParaTipo(w.tenida);
+    cols.forEach(c=>{
+      const talla = (w.t[c.key]||'').trim();
+      if(!talla) return; // sin talla → no aplica
+
+      const ent = w.e[c.key] || {entregado:false};
+      const sexo = w.sexo === 'F' ? 'Mujer' : 'Hombre';
+      const key  = `${w.tenida}|${c.key}|${talla.toUpperCase()}|${sexo}`;
+      const def  = mapaDeficit[key];
+      const hayDeficit = def && def.aPedir > 0;
+
+      if(!ent.entregado || hayDeficit){
+        let motivo;
+        if(!ent.entregado && hayDeficit) motivo = 'Sin entregar + déficit stock';
+        else if(!ent.entregado)          motivo = 'Sin entregar';
+        else                              motivo = 'Déficit de stock';
+
+        pendientes.push({
+          rut: w.rut, nombre: nombreCompleto(w), cargo: w.cargo, tenida: w.tenida,
+          prenda: PRENDA_LABEL[REGLAS_PEDIDO.find(r=>r.tallaKey===c.key && r.tipo===w.tenida)?.prendaTipo] || c.label,
+          tallaKey: c.key, talla, motivo, entregado: ent.entregado
+        });
+      }
+    });
+  });
+
+  document.getElementById('pend-count').textContent = `${pendientes.length} pendiente(s)`;
+  const tb = document.getElementById('tbody-pendientes');
+  if(!pendientes.length){
+    tb.innerHTML = `<tr><td colspan="7" class="empty">No hay pendientes — todos los trabajadores con talla registrada tienen su entrega marcada y hay stock suficiente.</td></tr>`;
     return;
   }
 
-  tb.innerHTML = filtradas.map(f=>{
-    const label = PRENDA_LABEL[f.prendaTipo] || f.prendaTipo;
-    const tipoTag = f.tipo==='Bodega'
+  pendientes.sort((a,b)=> a.nombre.localeCompare(b.nombre));
+
+  tb.innerHTML = pendientes.map(p=>{
+    const tipoTag = p.tenida==='Bodega'
       ? `<span class="tag tag-bodega" style="font-size:10px;padding:1px 6px">Bodega</span>`
       : `<span class="tag tag-admin"  style="font-size:10px;padding:1px 6px">Adm.</span>`;
-    const sexoIcon = f.sexo==='Mujer' ? '♀' : '♂';
-    const aPedirClass = f.aPedir===0 ? 'ped-badge ped-ok' : 'ped-badge ped-cero';
-
-    // Estado stock
-    let stockBadge;
-    if(f.stockActual===0)           stockBadge = `<span class="ped-badge ped-cero">${f.stockActual}</span>`;
-    else if(f.stockActual<f.total)  stockBadge = `<span class="ped-badge ped-warn">${f.stockActual}</span>`;
-    else                            stockBadge = `<span class="ped-badge ped-ok">${f.stockActual}</span>`;
-
+    const motivoClass = p.motivo.includes('déficit') || p.motivo.includes('Déficit')
+      ? (p.motivo.includes('+') ? 'ped-cero' : 'ped-warn')
+      : 'ped-warn';
     return `<tr>
-      <td style="font-weight:600;font-size:13px">${label} <span style="font-size:11px;color:var(--tk-muted)">${sexoIcon}</span></td>
-      <td><span class="qty-badge">${f.talla}</span></td>
+      <td style="font-weight:600;color:var(--tk-blue);font-size:12px">${p.nombre}<div style="font-size:10px;color:var(--tk-muted);font-weight:400">${p.rut}</div></td>
+      <td style="font-size:11px">${p.cargo}</td>
       <td style="text-align:center">${tipoTag}</td>
-      <td style="text-align:center;font-size:13px">${f.workers}</td>
-      <td style="text-align:center;color:var(--tk-muted);font-size:12px">${f.dotacion} <span style="font-size:10px">(${f.workers}×${f.cant})</span></td>
-      <td style="text-align:center;color:var(--tk-muted);font-size:12px">${f.minimo}</td>
-      <td style="text-align:center;font-weight:600">${f.total}</td>
-      <td style="text-align:center">${stockBadge}</td>
-      <td style="text-align:center"><span class="${aPedirClass}" style="font-size:${f.aPedir>0?'15':'13'}px">${f.aPedir===0?'OK':f.aPedir}</span></td>
+      <td style="font-size:12px">${p.prenda}</td>
+      <td style="text-align:center"><span class="qty-badge">${p.talla}</span></td>
+      <td style="text-align:center"><span class="ped-badge ${motivoClass}" style="font-size:10px">${p.motivo}</span></td>
+      <td style="text-align:center">
+        <button class="btn btn-outline btn-sm" onclick="abrirDetalleEntregaDesdePendiente('${p.rut}','${p.tallaKey}')" title="Marcar entrega" style="padding:3px 6px">
+          <i class="ti ti-check"></i>
+        </button>
+      </td>
     </tr>`;
   }).join('');
+}
+
+// Wrapper para abrir el detalle de entrega directo desde la tabla de pendientes
+function abrirDetalleEntregaDesdePendiente(rut, key){
+  abrirDetalleEntrega(rut, key);
 }
 
 function imprimirPedidos(){
