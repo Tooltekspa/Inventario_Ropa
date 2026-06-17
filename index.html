@@ -1147,7 +1147,11 @@ const TALLA_COLS = [
 ];
 
 function tallasParaTipo(tenida){
-  return TALLA_COLS.filter(c=>c.aplica.includes(tenida));
+  // Fuente única de verdad: la matriz REGLAS_PEDIDO decide qué aplica para cada tipo.
+  return TALLA_COLS.filter(c=>{
+    const regla = buscarReglaPedido(c.key, tenida);
+    return regla ? regla.aplica : false;
+  });
 }
 
 // ═══ REGLAS DE DOTACIÓN ══════════════════════════════════════════════════════
@@ -1616,18 +1620,43 @@ function emitirDesdeWorker(tipo){
   A pedir = MAX(0, total requerido − stock actual)
 */
 
+// Matriz explícita: cada prenda (tallaKey) x cada tipo de personal indica si aplica
+// o no, y si aplica, la cantidad por persona y el prendaTipo usado para matchear inventario.
 const REGLAS_PEDIDO = [
-  // {tallaKey, tipo, cant, prendaTipo, sexoKey}
-  {tallaKey:'poleras',   tipo:'Bodega',          cant:5, prendaTipo:'Polo',      sexoKey:'modelo'},
-  {tallaKey:'poleras',   tipo:'administrativo',  cant:5, prendaTipo:'Pique',     sexoKey:'modelo'},
-  {tallaKey:'camisas',   tipo:'administrativo',  cant:5, prendaTipo:'Camisa',    sexoKey:'modelo'},
-  {tallaKey:'buzo',      tipo:'Bodega',          cant:5, prendaTipo:'Buzo',      sexoKey:'modelo'},
-  {tallaKey:'pantalon',  tipo:'Bodega',          cant:5, prendaTipo:'Pantalon',  sexoKey:'modelo'},
-  {tallaKey:'softshell', tipo:'administrativo',  cant:1, prendaTipo:'Softshell', sexoKey:'modelo'},
-  {tallaKey:'parka',     tipo:'Bodega',          cant:1, prendaTipo:'Parka',     sexoKey:'modelo'},
-  {tallaKey:'parka',     tipo:'administrativo',  cant:1, prendaTipo:'Parka',     sexoKey:'modelo'},
-  {tallaKey:'zapatos',   tipo:'Bodega',          cant:1, prendaTipo:'Zapatos',   sexoKey:'modelo'},
+  // ── Camisas ──
+  {tallaKey:'camisas',   tipo:'Bodega',         aplica:false, cant:0, prendaTipo:'Camisa'},
+  {tallaKey:'camisas',   tipo:'administrativo', aplica:true,  cant:5, prendaTipo:'Camisa'},
+
+  // ── Poleras (Bodega usa Polo, Administrativo usa Pique) ──
+  {tallaKey:'poleras',   tipo:'Bodega',         aplica:true,  cant:5, prendaTipo:'Polo'},
+  {tallaKey:'poleras',   tipo:'administrativo', aplica:true,  cant:5, prendaTipo:'Pique'},
+
+  // ── Softshell ──
+  {tallaKey:'softshell', tipo:'Bodega',         aplica:false, cant:0, prendaTipo:'Softshell'},
+  {tallaKey:'softshell', tipo:'administrativo', aplica:true,  cant:1, prendaTipo:'Softshell'},
+
+  // ── Parka ──
+  {tallaKey:'parka',     tipo:'Bodega',         aplica:true,  cant:1, prendaTipo:'Parka'},
+  {tallaKey:'parka',     tipo:'administrativo', aplica:true,  cant:1, prendaTipo:'Parka'},
+
+  // ── Buzo ──
+  {tallaKey:'buzo',      tipo:'Bodega',         aplica:true,  cant:5, prendaTipo:'Buzo'},
+  {tallaKey:'buzo',      tipo:'administrativo', aplica:false, cant:0, prendaTipo:'Buzo'},
+
+  // ── Pantalón ──
+  {tallaKey:'pantalon',  tipo:'Bodega',         aplica:true,  cant:5, prendaTipo:'Pantalon'},
+  {tallaKey:'pantalon',  tipo:'administrativo', aplica:false, cant:0, prendaTipo:'Pantalon'},
+
+  // ── Zapatos ──
+  {tallaKey:'zapatos',   tipo:'Bodega',         aplica:true,  cant:1, prendaTipo:'Zapatos'},
+  {tallaKey:'zapatos',   tipo:'administrativo', aplica:false, cant:0, prendaTipo:'Zapatos'},
 ];
+
+// Helper: busca la regla exacta para una combinación tallaKey+tipo.
+// Devuelve null si no existe ninguna entrada (no debería pasar, la matriz es completa).
+function buscarReglaPedido(tallaKey, tipo){
+  return REGLAS_PEDIDO.find(r=>r.tallaKey===tallaKey && r.tipo===tipo) || null;
+}
 
 // Mapeo de nombre de prenda (tipo inventario) → label visible
 const PRENDA_LABEL = {
@@ -1641,13 +1670,16 @@ function calcularDeficitPorTalla(){
   const conteo = {};
   NOMINA_BASE.forEach(w=>{
     if(!w.t) return;
-    REGLAS_PEDIDO.forEach(r=>{
-      if(r.tipo !== w.tenida) return;
-      const talla = (w.t[r.tallaKey]||'').trim().toUpperCase();
-      if(!talla) return;
+    // Recorremos todas las prendas posibles (TALLA_COLS), no solo las que tengan
+    // una entrada — así la matriz de "aplica/no aplica" es la única fuente de verdad.
+    TALLA_COLS.forEach(col=>{
+      const regla = buscarReglaPedido(col.key, w.tenida);
+      if(!regla || !regla.aplica) return; // no aplica para este tipo de personal
+      const talla = (w.t[col.key]||'').trim().toUpperCase();
+      if(!talla) return; // sin talla registrada → no cuenta
       const sexo = w.sexo === 'F' ? 'Mujer' : 'Hombre';
-      const key = `${r.tipo}|${r.tallaKey}|${talla}|${sexo}`;
-      if(!conteo[key]) conteo[key] = {tipo:r.tipo, tallaKey:r.tallaKey, talla, sexo, prendaTipo:r.prendaTipo, cant:r.cant, workers:0};
+      const key = `${regla.tipo}|${regla.tallaKey}|${talla}|${sexo}`;
+      if(!conteo[key]) conteo[key] = {tipo:regla.tipo, tallaKey:regla.tallaKey, talla, sexo, prendaTipo:regla.prendaTipo, cant:regla.cant, workers:0};
       conteo[key].workers++;
     });
   });
@@ -1758,7 +1790,7 @@ function renderPendientes(mapaDeficitParam){
 
         pendientes.push({
           rut: w.rut, nombre: nombreCompleto(w), cargo: w.cargo, tenida: w.tenida,
-          prenda: PRENDA_LABEL[REGLAS_PEDIDO.find(r=>r.tallaKey===c.key && r.tipo===w.tenida)?.prendaTipo] || c.label,
+          prenda: PRENDA_LABEL[buscarReglaPedido(c.key, w.tenida)?.prendaTipo] || c.label,
           tallaKey: c.key, talla, motivo, entregado: ent.entregado
         });
       }
@@ -1858,7 +1890,7 @@ function exportarPedidosExcel(){
           'RUT':        w.rut,
           'Cargo':      w.cargo,
           'Tipo':       w.tenida === 'Bodega' ? 'Bodega' : 'Administrativo',
-          'Prenda':     PRENDA_LABEL[REGLAS_PEDIDO.find(r=>r.tallaKey===c.key && r.tipo===w.tenida)?.prendaTipo] || c.label,
+          'Prenda':     PRENDA_LABEL[buscarReglaPedido(c.key, w.tenida)?.prendaTipo] || c.label,
           'Talla':      talla,
           'Motivo':     motivo
         });
