@@ -30,7 +30,7 @@ const SHEET_NOMINA = 'Nomina';
 const HEADERS_INV    = ['ID','Barcode','Nombre','Categoria','Tipo','Talla','Modelo','Cantidad','Ubicacion'];
 const HEADERS_ACTAS  = ['Num','Tipo','Nombre','RUT','Cargo','Area','Ciudad','Fecha','Obs','Emision','Items'];
 const HEADERS_NOMINA = ['rut','nombres','ap','am','sexo','cargo','tenida','cc',
-                        't_camisas','t_poleras','t_softshell','t_parka','t_buzo','t_pantalon',
+                        't_camisas','t_poleras','t_softshell','t_parka','t_buzo','t_pantalon','t_zapatos',
                         'entregas_json'];
 
 // ═══ ENDPOINT ═════════════════════════════════════════════════════════════════
@@ -234,7 +234,8 @@ const ENTREGAS_DEFAULT = () => ({
   softshell:{entregado:false, fecha:'', cantidad:0, obs:''},
   parka:    {entregado:false, fecha:'', cantidad:0, obs:''},
   buzo:     {entregado:false, fecha:'', cantidad:0, obs:''},
-  pantalon: {entregado:false, fecha:'', cantidad:0, obs:''}
+  pantalon: {entregado:false, fecha:'', cantidad:0, obs:''},
+  zapatos:  {entregado:false, fecha:'', cantidad:0, obs:''}
 });
 
 function leerNomina() {
@@ -247,7 +248,7 @@ function leerNomina() {
     .map(r => {
       let entregas = ENTREGAS_DEFAULT();
       try {
-        if (r[14]) entregas = Object.assign(ENTREGAS_DEFAULT(), JSON.parse(r[14]));
+        if (r[15]) entregas = Object.assign(ENTREGAS_DEFAULT(), JSON.parse(r[15]));
       } catch (e) {}
       return {
         rut:    String(r[0]).trim(),
@@ -265,6 +266,7 @@ function leerNomina() {
           parka:     String(r[11] || ''),
           buzo:      String(r[12] || ''),
           pantalon:  String(r[13] || ''),
+          zapatos:   String(r[14] || ''),
         },
         e: entregas
       };
@@ -285,6 +287,7 @@ function saveWorker(w, rutOriginal) {
     (w.t && w.t.parka)     || '',
     (w.t && w.t.buzo)      || '',
     (w.t && w.t.pantalon)  || '',
+    (w.t && w.t.zapatos)   || '',
     JSON.stringify(w.e || ENTREGAS_DEFAULT())
   ];
 
