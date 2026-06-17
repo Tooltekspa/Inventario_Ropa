@@ -689,8 +689,10 @@ async function cargarDatos(){
       if(r.nomina && r.nomina.length){
         // Asegurar que cada trabajador tenga el objeto t y e completos
         r.nomina.forEach(w=>{
-          if(!w.t) w.t={camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''};
+          if(!w.t) w.t={camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:'',zapatos:''};
+          if(w.t.zapatos===undefined) w.t.zapatos='';
           if(!w.e) w.e = E();
+          if(!w.e.zapatos) w.e.zapatos = {entregado:false,fecha:'',cantidad:0,obs:''};
           const idx = NOMINA_BASE.findIndex(x=>x.rut===w.rut);
           if(idx>=0) NOMINA_BASE[idx] = w;   // actualizar existente (preserva orden)
           else NOMINA_BASE.push(w);           // nuevo trabajador agregado desde otra sesión
@@ -1067,14 +1069,15 @@ function stepQty(delta){
 
 // ═══ NÓMINA PRECARGADA ═══════════════════════════════════════════════════════
 // tallas: {camisas, poleras, softshell, parka, buzo, pantalon} — vacío = pendiente
-const T = ()=>({camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:''});
+const T = ()=>({camisas:'',poleras:'',softshell:'',parka:'',buzo:'',pantalon:'',zapatos:''});
 // Historial de entregas: {tallaKey: {entregado:bool, fecha:'', cantidad:n, obs:''}}
 const E = ()=>({camisas:{entregado:false,fecha:'',cantidad:0,obs:''},
                  poleras:{entregado:false,fecha:'',cantidad:0,obs:''},
                  softshell:{entregado:false,fecha:'',cantidad:0,obs:''},
                  parka:{entregado:false,fecha:'',cantidad:0,obs:''},
                  buzo:{entregado:false,fecha:'',cantidad:0,obs:''},
-                 pantalon:{entregado:false,fecha:'',cantidad:0,obs:''}});
+                 pantalon:{entregado:false,fecha:'',cantidad:0,obs:''},
+                 zapatos:{entregado:false,fecha:'',cantidad:0,obs:''}});
 const NOMINA_BASE = [
   {rut:'20048228-K',nombres:'Adip Isrrael',ap:'Gallegos',am:'Apablaza',sexo:'M',cargo:'Conductor y Asistente de Bodega y Despacho',tenida:'Bodega',cc:'Gerencia de Operaciones',t:T()},
   {rut:'17414451-6',nombres:'Adolfo Esteban',ap:'Vallejos',am:'Aguirre',sexo:'M',cargo:'Encargado(a) de Marketing',tenida:'administrativo',cc:'Gerencia Comercial',t:T()},
@@ -1140,6 +1143,7 @@ const TALLA_COLS = [
   {key:'parka',     label:'Parka',      aplica:['Bodega','administrativo']},
   {key:'buzo',      label:'Buzo',       aplica:['Bodega']},
   {key:'pantalon',  label:'Pantalón',   aplica:['Bodega']},
+  {key:'zapatos',   label:'Zapatos',    aplica:['Bodega']},
 ];
 
 function tallasParaTipo(tenida){
@@ -1605,6 +1609,7 @@ function emitirDesdeWorker(tipo){
   │ Pantalón     │ 5            │ —             │
   │ Softshell    │ —            │ 1             │
   │ Parka        │ 1            │ 1             │
+  │ Zapatos      │ 1            │ —             │
   └──────────────┴──────────────┴───────────────┘
   Mínimo en stock adicional: 1 unidad por trabajador con esa talla (reserva).
   Total requerido = (trabajadores × dotación) + (trabajadores × 1 reserva)
@@ -1621,12 +1626,13 @@ const REGLAS_PEDIDO = [
   {tallaKey:'softshell', tipo:'administrativo',  cant:1, prendaTipo:'Softshell', sexoKey:'modelo'},
   {tallaKey:'parka',     tipo:'Bodega',          cant:1, prendaTipo:'Parka',     sexoKey:'modelo'},
   {tallaKey:'parka',     tipo:'administrativo',  cant:1, prendaTipo:'Parka',     sexoKey:'modelo'},
+  {tallaKey:'zapatos',   tipo:'Bodega',          cant:1, prendaTipo:'Zapatos',   sexoKey:'modelo'},
 ];
 
 // Mapeo de nombre de prenda (tipo inventario) → label visible
 const PRENDA_LABEL = {
   'Polo':'Polera Polo','Pique':'Polera Pique','Camisa':'Camisas','Buzo':'Buzo / Overol',
-  'Pantalon':'Pantalón','Softshell':'Softshell','Parka':'Parka'
+  'Pantalon':'Pantalón','Softshell':'Softshell','Parka':'Parka','Zapatos':'Zapatos de seguridad'
 };
 
 // Calcula, por cada combinación tipo|tallaKey|talla|sexo, si hay déficit de stock.
