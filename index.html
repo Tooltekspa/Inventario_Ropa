@@ -154,6 +154,7 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
     <button class="tab" onclick="showTab('entrega-uniforme',this)"><i class="ti ti-shirt"></i> Entrega Uniformes</button>
     <button class="tab" onclick="showTab('nomina',this)"><i class="ti ti-users"></i> Nómina</button>
     <button class="tab" onclick="showTab('pedidos',this)"><i class="ti ti-shopping-cart"></i> Pedidos</button>
+    <button class="tab" onclick="showTab('pendientes',this)"><i class="ti ti-clock-exclamation"></i> Pendientes</button>
     <button class="tab" onclick="showTab('actas',this)"><i class="ti ti-file-description"></i> Actas Emitidas</button>
   </div>
 
@@ -399,8 +400,10 @@ code{font-size:11px;color:var(--tk-teal);background:#eef6fa;padding:1px 5px;bord
         </table>
       </div>
     </div>
+  </div>
 
-    <!-- Pendientes de entrega -->
+  <!-- ═══ PENDIENTES DE ENTREGA ═══ -->
+  <div class="panel" id="panel-pendientes">
     <div class="card">
       <div class="card-title"><i class="ti ti-clock-exclamation"></i> Pendientes de entrega
         <span id="pend-count" style="font-size:11px;color:var(--tk-muted);font-weight:400;margin-left:4px"></span>
@@ -718,6 +721,7 @@ function showTab(t, btn) {
   if (t === 'entrega-uniforme') initUni();
   if (t === 'nomina') renderNomina();
   if (t === 'pedidos') renderPedidos();
+  if (t === 'pendientes') renderPendientes();
   if (t === 'actas') renderActas();
 }
 
@@ -1434,6 +1438,7 @@ function guardarEditarWorker(){
     cerrarEditarWorker();
     renderNomina();
     if(document.getElementById('panel-pedidos').classList.contains('active')) renderPedidos();
+    if(document.getElementById('panel-pendientes').classList.contains('active')) renderPendientes();
     apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: nuevoRut});
   } else {
     // Editar existente
@@ -1515,6 +1520,7 @@ function guardarDetalleEntrega(){
   if(cbRapido) cbRapido.checked = w.e[key].entregado;
   apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rut}, true);
   if(document.getElementById('panel-pedidos').classList.contains('active')) renderPedidos();
+  if(document.getElementById('panel-pendientes').classList.contains('active')) renderPendientes();
 }
 
 function cerrarDetalleEntrega(){
@@ -1714,15 +1720,14 @@ function renderPedidos(){
       </tr>`;
     }).join('');
   }
-
-  renderPendientes(mapaDeficit);
 }
 
 // ═══ PENDIENTES DE ENTREGA ════════════════════════════════════════════════════
 // Un trabajador aparece pendiente para una prenda si:
 //  (a) tiene talla registrada pero e[key].entregado es false, O
 //  (b) tiene talla registrada y esa talla tiene déficit de stock (aPedir > 0)
-function renderPendientes(mapaDeficit){
+function renderPendientes(mapaDeficitParam){
+  const mapaDeficit = mapaDeficitParam || calcularDeficitPorTalla();
   const pendientes = [];
 
   NOMINA_BASE.forEach(w=>{
