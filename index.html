@@ -1383,6 +1383,11 @@ function eliminarWorker(rut){
   NOMINA_BASE.splice(idx,1);
   renderNomina();
   apiSync('deleteWorker',{rut});
+  if(document.getElementById('panel-pendientes').classList.contains('active')){
+    renderPendientes();
+  } else {
+    apiSync('saveSnapshotPendientes', {data: JSON.stringify(calcularPendientes())}, true);
+  }
 }
 
 function abrirNuevoWorker(){
@@ -1448,7 +1453,6 @@ function guardarEditarWorker(){
     cerrarEditarWorker();
     renderNomina();
     if(document.getElementById('panel-pedidos').classList.contains('active')) renderPedidos();
-    if(document.getElementById('panel-pendientes').classList.contains('active')) renderPendientes();
     apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: nuevoRut});
   } else {
     // Editar existente
@@ -1464,7 +1468,15 @@ function guardarEditarWorker(){
     w.cc      = document.getElementById('ew-cc').value;
     cerrarEditarWorker();
     renderNomina();
+    if(document.getElementById('panel-pedidos').classList.contains('active')) renderPedidos();
     apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rutOrig});
+  }
+
+  // Respaldo de Pendientes en Drive, siempre, sin depender de qué pestaña esté activa
+  if(document.getElementById('panel-pendientes').classList.contains('active')){
+    renderPendientes();
+  } else {
+    apiSync('saveSnapshotPendientes', {data: JSON.stringify(calcularPendientes())}, true);
   }
 }
 
@@ -1490,6 +1502,13 @@ function toggleEntregaRapida(rut, key, checked){
   if(checked && !w.e[key].fecha) w.e[key].fecha = hoy();
   if(checked && !w.e[key].cantidad) w.e[key].cantidad = 1;
   apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rut}, true);
+  // Recalcular y respaldar Pendientes en Drive siempre, sin importar la pestaña activa.
+  // Si la pestaña Pendientes está visible, además refresca su tabla en pantalla.
+  if(document.getElementById('panel-pendientes').classList.contains('active')){
+    renderPendientes();
+  } else {
+    apiSync('saveSnapshotPendientes', {data: JSON.stringify(calcularPendientes())}, true);
+  }
 }
 
 function abrirDetalleEntrega(rut, key){
@@ -1530,7 +1549,12 @@ function guardarDetalleEntrega(){
   if(cbRapido) cbRapido.checked = w.e[key].entregado;
   apiSync('saveWorker',{data: JSON.stringify(w), rutOriginal: rut}, true);
   if(document.getElementById('panel-pedidos').classList.contains('active')) renderPedidos();
-  if(document.getElementById('panel-pendientes').classList.contains('active')) renderPendientes();
+  // Recalcular y respaldar Pendientes en Drive siempre, sin importar la pestaña activa.
+  if(document.getElementById('panel-pendientes').classList.contains('active')){
+    renderPendientes();
+  } else {
+    apiSync('saveSnapshotPendientes', {data: JSON.stringify(calcularPendientes())}, true);
+  }
 }
 
 function cerrarDetalleEntrega(){
