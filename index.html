@@ -1668,10 +1668,26 @@ const PRENDA_LABEL = {
 
 // Calcula, por cada combinación tipo|tallaKey|talla|sexo, si hay déficit de stock.
 // Devuelve un mapa para consulta rápida: key → {aPedir, total, stockActual}
+// ═══ VIGENCIA DE ENTREGAS (renovación anual) ══════════════════════════════════
+const DIAS_VIGENCIA_ENTREGA = 365;
+
+// Determina si una entrega cuenta como "completada y vigente":
+// debe estar marcada entregado=true Y su fecha debe tener menos de 365 días.
+// Si no tiene fecha registrada (caso antiguo), se considera vigente igual.
+function entregaVigente(ent){
+  if(!ent || !ent.entregado) return false;
+  if(!ent.fecha) return true; // sin fecha registrada: se asume vigente
+  const fechaEnt = new Date(ent.fecha);
+  if(isNaN(fechaEnt.getTime())) return true;
+  const dias = (new Date() - fechaEnt) / (1000*60*60*24);
+  return dias < DIAS_VIGENCIA_ENTREGA;
+}
+
 function calcularDeficitPorTalla(){
   const conteo = {};
   NOMINA_BASE.forEach(w=>{
     if(!w.t) return;
+    if(!w.e) w.e = E();
     // Recorremos todas las prendas posibles (TALLA_COLS), no solo las que tengan
     // una entrada — así la matriz de "aplica/no aplica" es la única fuente de verdad.
     TALLA_COLS.forEach(col=>{
@@ -1681,15 +1697,23 @@ function calcularDeficitPorTalla(){
       if(!talla) return; // sin talla registrada → no cuenta
       const sexo = w.sexo === 'F' ? 'Mujer' : 'Hombre';
       const key = `${regla.tipo}|${regla.tallaKey}|${talla}|${sexo}`;
-      if(!conteo[key]) conteo[key] = {tipo:regla.tipo, tallaKey:regla.tallaKey, talla, sexo, prendaTipo:regla.prendaTipo, cant:regla.cant, workers:0};
+      if(!conteo[key]) conteo[key] = {
+        tipo:regla.tipo, tallaKey:regla.tallaKey, talla, sexo,
+        prendaTipo:regla.prendaTipo, cant:regla.cant,
+        workers:0, workersEntregados:0, workersPendientes:0
+      };
       conteo[key].workers++;
+      const ent = w.e[col.key] || {entregado:false};
+      if(entregaVigente(ent)) conteo[key].workersEntregados++;
+      else conteo[key].workersPendientes++;
     });
   });
   const mapa = {};
   Object.entries(conteo).forEach(([key,c])=>{
-    const dotacion = c.workers * c.cant;
-    const minimo   = c.workers * 1;
-    const total    = dotacion + minimo;
+    // Regla de reserva: trabajador con entrega vigente → 1 unidad de respaldo.
+    // Trabajador sin entrega vigente (nunca entregado, o venció el año) → dotación completa (cant).
+    const dotacion = (c.workersPendientes * c.cant) + (c.workersEntregados * 1);
+    const total    = dotacion; // ya incluye el respaldo de 1xpersona entregada
     const stockActual = inventario
       .filter(it=>{
         const matchTipo  = (it.tipo||'').toLowerCase().includes(c.prendaTipo.toLowerCase()) ||
@@ -1700,7 +1724,7 @@ function calcularDeficitPorTalla(){
         return matchTipo && matchTalla && matchSexo;
       })
       .reduce((s,it)=>s+it.qty, 0);
-    mapa[key] = {...c, dotacion, minimo, total, stockActual, aPedir: Math.max(0, total - stockActual)};
+    mapa[key] = {...c, dotacion, minimo:c.workersEntregados, total, stockActual, aPedir: Math.max(0, total - stockActual)};
   });
   return mapa;
 }
@@ -1765,39 +1789,51 @@ function renderPedidos(){
 // ═══ PENDIENTES DE ENTREGA ════════════════════════════════════════════════════
 // Un trabajador aparece pendiente para una prenda si:
 //  (a) tiene talla registrada pero e[key].entregado es false, O
-//  (b) tiene talla registrada y esa talla tiene déficit de stock (aPedir > 0)
-function renderPendientes(mapaDeficitParam){
+// Calcula el array de pendientes (mismo criterio usado en renderPendientes y en
+// la exportación a Excel) — única fuente de verdad para ambos.
+function calcularPendientes(mapaDeficitParam){
   const mapaDeficit = mapaDeficitParam || calcularDeficitPorTalla();
   const pendientes = [];
 
   NOMINA_BASE.forEach(w=>{
     if(!w.t) return;
     if(!w.e) w.e = E();
-    const cols = tallasParaTipo(w.tenida);
-    cols.forEach(c=>{
+    tallasParaTipo(w.tenida).forEach(c=>{
       const talla = (w.t[c.key]||'').trim();
-      if(!talla) return; // sin talla → no aplica
+      if(!talla) return;
 
       const ent = w.e[c.key] || {entregado:false};
+      const vigente = entregaVigente(ent);
+      const vencidaPorAno = ent.entregado && !vigente;
       const sexo = w.sexo === 'F' ? 'Mujer' : 'Hombre';
       const key  = `${w.tenida}|${c.key}|${talla.toUpperCase()}|${sexo}`;
       const def  = mapaDeficit[key];
       const hayDeficit = def && def.aPedir > 0;
 
-      if(!ent.entregado || hayDeficit){
+      if(!vigente || hayDeficit){
         let motivo;
-        if(!ent.entregado && hayDeficit) motivo = 'Sin entregar + déficit stock';
-        else if(!ent.entregado)          motivo = 'Sin entregar';
-        else                              motivo = 'Déficit de stock';
+        if(vencidaPorAno && hayDeficit)      motivo = 'Renovación anual + déficit stock';
+        else if(vencidaPorAno)                motivo = 'Renovación anual (+1 año)';
+        else if(!ent.entregado && hayDeficit) motivo = 'Sin entregar + déficit stock';
+        else if(!ent.entregado)               motivo = 'Sin entregar';
+        else                                   motivo = 'Déficit de stock';
 
         pendientes.push({
           rut: w.rut, nombre: nombreCompleto(w), cargo: w.cargo, tenida: w.tenida,
           prenda: PRENDA_LABEL[buscarReglaPedido(c.key, w.tenida)?.prendaTipo] || c.label,
-          tallaKey: c.key, talla, motivo, entregado: ent.entregado
+          tallaKey: c.key, talla, motivo, entregado: ent.entregado, vigente
         });
       }
     });
   });
+
+  return pendientes;
+}
+
+//  (b) tiene talla registrada y esa talla tiene déficit de stock (aPedir > 0)
+function renderPendientes(mapaDeficitParam){
+  const mapaDeficit = mapaDeficitParam || calcularDeficitPorTalla();
+  const pendientes  = calcularPendientes(mapaDeficit);
 
   document.getElementById('pend-count').textContent = `${pendientes.length} pendiente(s)`;
   const tb = document.getElementById('tbody-pendientes');
@@ -1874,33 +1910,16 @@ function exportarPedidosExcel(){
   }
 
   // ── Hoja 2: Pendientes de entrega ──
-  const pendientes = [];
-  NOMINA_BASE.forEach(w=>{
-    if(!w.t) return;
-    if(!w.e) w.e = E();
-    tallasParaTipo(w.tenida).forEach(c=>{
-      const talla = (w.t[c.key]||'').trim();
-      if(!talla) return;
-      const ent = w.e[c.key] || {entregado:false};
-      const sexo = w.sexo === 'F' ? 'Mujer' : 'Hombre';
-      const key  = `${w.tenida}|${c.key}|${talla.toUpperCase()}|${sexo}`;
-      const def  = mapaDeficit[key];
-      const hayDeficit = def && def.aPedir > 0;
-      if(!ent.entregado || hayDeficit){
-        let motivo = (!ent.entregado && hayDeficit) ? 'Sin entregar + déficit stock'
-                   : (!ent.entregado) ? 'Sin entregar' : 'Déficit de stock';
-        pendientes.push({
-          'Trabajador': nombreCompleto(w),
-          'RUT':        w.rut,
-          'Cargo':      w.cargo,
-          'Tipo':       w.tenida === 'Bodega' ? 'Bodega' : 'Administrativo',
-          'Prenda':     PRENDA_LABEL[buscarReglaPedido(c.key, w.tenida)?.prendaTipo] || c.label,
-          'Talla':      talla,
-          'Motivo':     motivo
-        });
-      }
-    });
-  });
+  const pendientesRaw = calcularPendientes(mapaDeficit);
+  const pendientes = pendientesRaw.map(p=>({
+    'Trabajador': p.nombre,
+    'RUT':        p.rut,
+    'Cargo':      p.cargo,
+    'Tipo':       p.tenida === 'Bodega' ? 'Bodega' : 'Administrativo',
+    'Prenda':     p.prenda,
+    'Talla':      p.talla,
+    'Motivo':     p.motivo
+  }));
   pendientes.sort((a,b)=>a.Trabajador.localeCompare(b.Trabajador));
   if(!pendientes.length){
     pendientes.push({'Trabajador':'Sin pendientes','RUT':'','Cargo':'','Tipo':'','Prenda':'','Talla':'','Motivo':''});
