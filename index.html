@@ -1177,7 +1177,8 @@ function renderNomina(){
       <td style="font-size:10px;color:var(--tk-muted);white-space:nowrap;padding:5px 6px">${ccShort}</td>
       ${tallaCeldas}
       <td style="white-space:nowrap;padding:5px 4px">
-        <button class="btn btn-outline btn-sm" onclick="abrirEditarWorker('${w.rut}')" title="Editar" style="padding:3px 6px"><i class="ti ti-pencil"></i></button>
+        <button class="btn btn-outline btn-sm" onclick="abrirModalWorker('${w.rut}')" title="Editar tallas" style="padding:3px 6px"><i class="ti ti-ruler-2"></i></button>
+        <button class="btn btn-outline btn-sm" onclick="abrirEditarWorker('${w.rut}')" title="Editar datos" style="padding:3px 6px;margin-left:2px"><i class="ti ti-pencil"></i></button>
         <button class="btn btn-danger btn-sm"  onclick="eliminarWorker('${w.rut}')"    title="Eliminar" style="padding:3px 6px;margin-left:2px"><i class="ti ti-trash"></i></button>
       </td>
     </tr>`;
@@ -1242,8 +1243,9 @@ function abrirModalWorker(rut){
       <input type="text" id="mwt-${c.key}"
         placeholder="ej: M, L, 42, 44…"
         value="${w.t[c.key]||''}"
-        style="flex:1;border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none"
-        onchange="guardarTallaLive('${rut}','${c.key}',this.value)">
+        style="flex:1;border:1px solid var(--tk-border);border-radius:6px;padding:5px 9px;font-size:13px;outline:none;border-color:${w.t[c.key]?'var(--tk-success)':'var(--tk-border)'}"
+        oninput="guardarTallaLive('${rut}','${c.key}',this.value);this.style.borderColor=this.value?'var(--tk-success)':'var(--tk-border)'"
+        onblur="renderNomina()">
     </div>`).join('');
 
   // ── Sección dotación con qty por prenda ──
