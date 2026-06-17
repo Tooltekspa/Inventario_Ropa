@@ -653,18 +653,20 @@ async function apiGet(params){
   return res.json();
 }
 
-async function apiSync(action, params){
+async function apiSync(action, params, silent){
   if(!apiConfigurada()) return null;
   try{
-    setSync('busy','Guardando…');
+    if(!silent) setSync('busy','Guardando…');
     const r = await apiGet(Object.assign({action}, params||{}));
     if(r && r.ok===false) throw new Error(r.error||'Error en servidor');
-    setSync('ok','Sincronizado');
+    if(!silent) setSync('ok','Sincronizado');
     return r;
   }catch(err){
     console.error('Error de sincronización:', err);
-    setSync('err','Sin conexión');
-    alert('⚠ No se pudo guardar en Google Sheets:\n' + err.message + '\n\nEl cambio quedó solo en esta sesión.');
+    if(!silent){
+      setSync('err','Sin conexión');
+      alert('⚠ No se pudo guardar en Google Sheets:\n' + err.message + '\n\nEl cambio quedó solo en esta sesión.');
+    }
     return null;
   }
 }
@@ -1801,32 +1803,34 @@ function renderPendientes(mapaDeficitParam){
   const tb = document.getElementById('tbody-pendientes');
   if(!pendientes.length){
     tb.innerHTML = `<tr><td colspan="7" class="empty">No hay pendientes — todos los trabajadores con talla registrada tienen su entrega marcada y hay stock suficiente.</td></tr>`;
-    return;
+  } else {
+    pendientes.sort((a,b)=> a.nombre.localeCompare(b.nombre));
+
+    tb.innerHTML = pendientes.map(p=>{
+      const tipoTag = p.tenida==='Bodega'
+        ? `<span class="tag tag-bodega" style="font-size:10px;padding:1px 6px">Bodega</span>`
+        : `<span class="tag tag-admin"  style="font-size:10px;padding:1px 6px">Adm.</span>`;
+      const motivoClass = p.motivo.includes('déficit') || p.motivo.includes('Déficit')
+        ? (p.motivo.includes('+') ? 'ped-cero' : 'ped-warn')
+        : 'ped-warn';
+      return `<tr>
+        <td style="font-weight:600;color:var(--tk-blue);font-size:12px">${p.nombre}<div style="font-size:10px;color:var(--tk-muted);font-weight:400">${p.rut}</div></td>
+        <td style="font-size:11px">${p.cargo}</td>
+        <td style="text-align:center">${tipoTag}</td>
+        <td style="font-size:12px">${p.prenda}</td>
+        <td style="text-align:center"><span class="qty-badge">${p.talla}</span></td>
+        <td style="text-align:center"><span class="ped-badge ${motivoClass}" style="font-size:10px">${p.motivo}</span></td>
+        <td style="text-align:center">
+          <button class="btn btn-outline btn-sm" onclick="abrirDetalleEntregaDesdePendiente('${p.rut}','${p.tallaKey}')" title="Marcar entrega" style="padding:3px 6px">
+            <i class="ti ti-check"></i>
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
   }
 
-  pendientes.sort((a,b)=> a.nombre.localeCompare(b.nombre));
-
-  tb.innerHTML = pendientes.map(p=>{
-    const tipoTag = p.tenida==='Bodega'
-      ? `<span class="tag tag-bodega" style="font-size:10px;padding:1px 6px">Bodega</span>`
-      : `<span class="tag tag-admin"  style="font-size:10px;padding:1px 6px">Adm.</span>`;
-    const motivoClass = p.motivo.includes('déficit') || p.motivo.includes('Déficit')
-      ? (p.motivo.includes('+') ? 'ped-cero' : 'ped-warn')
-      : 'ped-warn';
-    return `<tr>
-      <td style="font-weight:600;color:var(--tk-blue);font-size:12px">${p.nombre}<div style="font-size:10px;color:var(--tk-muted);font-weight:400">${p.rut}</div></td>
-      <td style="font-size:11px">${p.cargo}</td>
-      <td style="text-align:center">${tipoTag}</td>
-      <td style="font-size:12px">${p.prenda}</td>
-      <td style="text-align:center"><span class="qty-badge">${p.talla}</span></td>
-      <td style="text-align:center"><span class="ped-badge ${motivoClass}" style="font-size:10px">${p.motivo}</span></td>
-      <td style="text-align:center">
-        <button class="btn btn-outline btn-sm" onclick="abrirDetalleEntregaDesdePendiente('${p.rut}','${p.tallaKey}')" title="Marcar entrega" style="padding:3px 6px">
-          <i class="ti ti-check"></i>
-        </button>
-      </td>
-    </tr>`;
-  }).join('');
+  // Respaldo automático a Google Drive (hoja "Pendientes" del mismo Sheet)
+  apiSync('saveSnapshotPendientes', {data: JSON.stringify(pendientes)}, true);
 }
 
 // Wrapper para abrir el detalle de entrega directo desde la tabla de pendientes
