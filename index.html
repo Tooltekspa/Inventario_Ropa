@@ -1590,25 +1590,25 @@ function emitirDesdeWorker(tipo){
 // ═══ PEDIDOS ══════════════════════════════════════════════════════════════════
 /*
   Reglas de dotación por trabajador CON talla registrada:
-  ┌──────────────┬──────────┬───────────────┐
-  │ Prenda       │ Bodega   │ Administrativo│
-  ├──────────────┼──────────┼───────────────┤
-  │ Poleras      │ 5        │ 5             │
-  │ Camisas      │ —        │ 5             │
-  │ Buzo         │ 5        │ —             │
-  │ Pantalón     │ 5        │ —             │
-  │ Softshell    │ —        │ 1             │
-  │ Parka        │ 1        │ 1             │
-  └──────────────┴──────────┴───────────────┘
+  ┌──────────────┬──────────────┬───────────────┐
+  │ Prenda       │ Bodega       │ Administrativo│
+  ├──────────────┼──────────────┼───────────────┤
+  │ Poleras      │ Polo  ×5     │ Pique ×5      │
+  │ Camisas      │ —            │ 5             │
+  │ Buzo         │ 5            │ —             │
+  │ Pantalón     │ 5            │ —             │
+  │ Softshell    │ —            │ 1             │
+  │ Parka        │ 1            │ 1             │
+  └──────────────┴──────────────┴───────────────┘
   Mínimo en stock adicional: 1 unidad por trabajador con esa talla (reserva).
   Total requerido = (trabajadores × dotación) + (trabajadores × 1 reserva)
   A pedir = MAX(0, total requerido − stock actual)
 */
 
 const REGLAS_PEDIDO = [
-  // {tallaKey, nombreInv, cantBodega, cantAdmin}
-  {tallaKey:'poleras',   tipo:'Bodega',         cant:5, prendaTipo:'Polera',    sexoKey:'modelo'},
-  {tallaKey:'poleras',   tipo:'administrativo',  cant:5, prendaTipo:'Polera',    sexoKey:'modelo'},
+  // {tallaKey, tipo, cant, prendaTipo, sexoKey}
+  {tallaKey:'poleras',   tipo:'Bodega',          cant:5, prendaTipo:'Polo',      sexoKey:'modelo'},
+  {tallaKey:'poleras',   tipo:'administrativo',  cant:5, prendaTipo:'Pique',     sexoKey:'modelo'},
   {tallaKey:'camisas',   tipo:'administrativo',  cant:5, prendaTipo:'Camisa',    sexoKey:'modelo'},
   {tallaKey:'buzo',      tipo:'Bodega',          cant:5, prendaTipo:'Buzo',      sexoKey:'modelo'},
   {tallaKey:'pantalon',  tipo:'Bodega',          cant:5, prendaTipo:'Pantalon',  sexoKey:'modelo'},
@@ -1619,7 +1619,7 @@ const REGLAS_PEDIDO = [
 
 // Mapeo de nombre de prenda (tipo inventario) → label visible
 const PRENDA_LABEL = {
-  'Polera':'Poleras','Camisa':'Camisas','Buzo':'Buzo / Overol',
+  'Polo':'Polera Polo (Bodega)','Pique':'Polera Pique (Adm.)','Camisa':'Camisas','Buzo':'Buzo / Overol',
   'Pantalon':'Pantalón','Softshell':'Softshell','Parka':'Parka'
 };
 
