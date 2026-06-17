@@ -23,15 +23,17 @@
  *   ?action=deleteWorker&rut=<rut>                  → elimina trabajador
  */
 
-const SHEET_INV    = 'Inventario';
-const SHEET_ACTAS  = 'Actas';
-const SHEET_NOMINA = 'Nomina';
+const SHEET_INV        = 'Inventario';
+const SHEET_ACTAS      = 'Actas';
+const SHEET_NOMINA     = 'Nomina';
+const SHEET_PENDIENTES = 'Pendientes';
 
 const HEADERS_INV    = ['ID','Barcode','Nombre','Categoria','Tipo','Talla','Modelo','Cantidad','Ubicacion'];
 const HEADERS_ACTAS  = ['Num','Tipo','Nombre','RUT','Cargo','Area','Ciudad','Fecha','Obs','Emision','Items'];
 const HEADERS_NOMINA = ['rut','nombres','ap','am','sexo','cargo','tenida','cc',
                         't_camisas','t_poleras','t_softshell','t_parka','t_buzo','t_pantalon','t_zapatos',
                         'entregas_json'];
+const HEADERS_PENDIENTES = ['rut','trabajador','cargo','tipo','prenda','talla','motivo','actualizado'];
 
 // ═══ ENDPOINT ═════════════════════════════════════════════════════════════════
 function doGet(e) {
@@ -47,6 +49,7 @@ function doGet(e) {
       case 'addActa':       result = withLock(() => addActa(JSON.parse(p.data))); break;
       case 'saveWorker':    result = withLock(() => saveWorker(JSON.parse(p.data), p.rutOriginal)); break;
       case 'deleteWorker':  result = withLock(() => deleteWorker(p.rut)); break;
+      case 'saveSnapshotPendientes': result = withLock(() => saveSnapshotPendientes(JSON.parse(p.data))); break;
       default: result = { ok: false, error: 'Acción desconocida: ' + action };
     }
   } catch (err) {
@@ -308,6 +311,36 @@ function deleteWorker(rut) {
   return { ok: true };
 }
 
+// ═══ RESPALDO — PENDIENTES DE ENTREGA ════════════════════════════════════════
+// Recibe el listado completo calculado en el frontend y sobrescribe la hoja
+// "Pendientes" por completo (es un snapshot del estado actual, no un historial
+// acumulativo). Se llama automáticamente cada vez que el usuario abre/recalcula
+// la pestaña Pendientes en la app.
+function saveSnapshotPendientes(lista) {
+  const sh = getSheet(SHEET_PENDIENTES);
+
+  // Limpiar todo excepto la cabecera
+  const lastRow = sh.getLastRow();
+  if (lastRow > 1) {
+    sh.getRange(2, 1, lastRow - 1, HEADERS_PENDIENTES.length).clearContent();
+  }
+
+  if (!lista || !lista.length) {
+    return { ok: true, filas: 0 };
+  }
+
+  const ahora = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
+  const filas = lista.map(p => [
+    p.rut || '', p.nombre || '', p.cargo || '', p.tenida || '',
+    p.prenda || '', p.talla || '', p.motivo || '', ahora
+  ]);
+
+  sh.getRange(2, 1, filas.length, HEADERS_PENDIENTES.length).setValues(filas);
+  sh.getRange(2, 1, filas.length, 1).setNumberFormat('@'); // RUT como texto
+
+  return { ok: true, filas: filas.length };
+}
+
 // ═══ SETUP INICIAL (ejecutar una sola vez manualmente) ════════════════════════
 function setupInicial() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -359,7 +392,18 @@ function setupInicial() {
   shNom.getRange('A:A').setNumberFormat('@'); // RUT como texto
   shNom.autoResizeColumns(1, HEADERS_NOMINA.length);
 
-  Logger.log('Setup completo: ' + SHEET_INV + ', ' + SHEET_ACTAS + ' y ' + SHEET_NOMINA + ' listas.');
+  // ── Hoja Pendientes (respaldo de la pestaña "Pendientes de entrega") ──
+  let shPend = ss.getSheetByName(SHEET_PENDIENTES);
+  if (!shPend) shPend = ss.insertSheet(SHEET_PENDIENTES);
+  if (shPend.getLastRow() === 0) {
+    shPend.getRange(1, 1, 1, HEADERS_PENDIENTES.length).setValues([HEADERS_PENDIENTES])
+      .setFontWeight('bold').setBackground('#b06a00').setFontColor('#ffffff');
+    shPend.setFrozenRows(1);
+    shPend.getRange('A:A').setNumberFormat('@');
+    shPend.autoResizeColumns(1, HEADERS_PENDIENTES.length);
+  }
+
+  Logger.log('Setup completo: ' + SHEET_INV + ', ' + SHEET_ACTAS + ', ' + SHEET_NOMINA + ' y ' + SHEET_PENDIENTES + ' listas.');
 }
 
 // ═══ CATÁLOGO INICIAL ═════════════════════════════════════════════════════════
